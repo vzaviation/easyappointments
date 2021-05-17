@@ -28,6 +28,7 @@ class Appointments extends EA_Controller {
         $this->load->helper('google_analytics');
         $this->load->model('appointments_model');
         $this->load->model('providers_model');
+        $this->load->model('inmates_model');
         $this->load->model('admins_model');
         $this->load->model('secretaries_model');
         $this->load->model('services_model');
@@ -74,6 +75,8 @@ class Appointments extends EA_Controller {
             $privacy_policy_content = $this->settings_model->get_setting('privacy_policy_content');
             $display_any_provider = $this->settings_model->get_setting('display_any_provider');
             $timezones = $this->timezones->to_array();
+            $available_inmates = $this->inmates_model->get_available_inmates();
+           
 
             // Remove the data that are not needed inside the $available_providers array.
             foreach ($available_providers as $index => $provider)
@@ -150,12 +153,14 @@ class Appointments extends EA_Controller {
                 $appointment = [];
                 $provider = [];
                 $customer = [];
+                $inmate =[];
             }
 
             // Load the book appointment view.
             $variables = [
                 'available_services' => $available_services,
                 'available_providers' => $available_providers,
+                'available_inmates' => $available_inmates,
                 'company_name' => $company_name,
                 'manage_mode' => $manage_mode,
                 'customer_token' => $customer_token,
