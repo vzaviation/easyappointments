@@ -41,6 +41,7 @@ class Providers implements ParsersInterface {
             'zip' => $response['zip_code'],
             'notes' => $response['notes'],
             'timezone' => $response['timezone'],
+            'securitylevel' => $response['security_level'],
         ];
 
         if (array_key_exists('services', $response))
@@ -213,6 +214,11 @@ class Providers implements ParsersInterface {
             if (array_key_exists('workingPlan', $request['settings']))
             {
                 $decoded_request['settings']['working_plan'] = json_encode($request['settings']['workingPlan']);
+            }
+            
+            if (array_key_exists('securitylevel', $request))
+            {
+                $decoded_request['security_level'] = $request['ssecurity_level'];
             }
 
             if (array_key_exists('workingPlanExceptions', $request['settings']))

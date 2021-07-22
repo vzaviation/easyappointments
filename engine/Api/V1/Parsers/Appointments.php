@@ -36,10 +36,29 @@ class Appointments implements ParsersInterface {
             'hash' => $response['hash'],
             'location' => $response['location'],
             'notes' => $response['notes'],
+            'visitor_2_name' => $response['visitor_2_name'],
+            'visitor_3_name' => $response['visitor_3_name'],
+            'visitor_4_name' => $response['visitor_4_name'],
+            'visitor_1_dl_number' => $response['visitor_1_dl_number'],
+            'visitor_2_dl_number' => $response['visitor_2_dl_number'],
+            'visitor_3_dl_number' => $response['visitor_3_dl_number'],
+            'visitor_4_dl_number' => $response['visitor_4_dl_number'],
+            'visitor_1_dl_state' => $response['visitor_1_dl_state'],
+            'visitor_2_dl_state' => $response['visitor_2_dl_state'],
+            'visitor_3_dl_state' => $response['visitor_3_dl_state'],
+            'visitor_4_dl_state' => $response['visitor_4_dl_state'],
+            'visitor_1_dl' => $response['visitor_1_dl'],
+            'visitor_2_dl' => $response['visitor_2_dl'],
+            'visitor_3_dl' => $response['visitor_3_dl'],
+            'visitor_4_dl' => $response['visitor_4_dl'],
+            'inmate_name' => $response['inmate_name'],
+            'inmateId' => $response['id_inmate'] !== NULL ? (int)$response['id_inmate'] : NULL,
+            'new_test_field' => $response['new_test_field'],
             'customerId' => $response['id_users_customer'] !== NULL ? (int)$response['id_users_customer'] : NULL,
             'providerId' => $response['id_users_provider'] !== NULL ? (int)$response['id_users_provider'] : NULL,
             'serviceId' => $response['id_services'] !== NULL ? (int)$response['id_services'] : NULL,
-            'googleCalendarId' => $response['id_google_calendar'] !== NULL ? (int)$response['id_google_calendar'] : NULL
+            'googleCalendarId' => $response['id_google_calendar'] !== NULL ? (int)$response['id_google_calendar'] : NULL,
+            
         ];
 
         if (isset($response['provider']))
@@ -47,6 +66,13 @@ class Appointments implements ParsersInterface {
             $provider_parser = new Providers();
             $provider_parser->encode($response['provider']);
             $encoded_response['provider'] = $response['provider'];
+        }
+        
+        if (isset($response['inamte']))
+        {
+            $inmate_parser = new Inmates();
+            $inmate_parser->encode($response['inmate']);
+            $encoded_response['inmate'] = $response['inmate'];
         }
 
         if (isset($response['customer']))
@@ -86,6 +112,96 @@ class Appointments implements ParsersInterface {
             $decoded_request['book_datetime'] = $request['book'];
         }
 
+        if (array_key_exists('new_test_field', $request))
+        {
+            $decoded_request['new_test_field'] = $request['new_test_field'];
+        }
+
+        if (array_key_exists('visitor_2_name', $request))
+        {
+            $decoded_request['visitor_2_name'] = $request['visitor_2_name'];
+        }
+        
+        if (array_key_exists('visitor_3_name', $request))
+        {
+            $decoded_request['visitor_3_name'] = $request['visitor_3_name'];
+        }
+        
+        if (array_key_exists('visitor_4_name', $request))
+        {
+            $decoded_request['visitor_4_name'] = $request['visitor_4_name'];
+        }
+        
+        if (array_key_exists('visitor_1_dl_number', $request))
+        {
+            $decoded_request['visitor_1_dl_number'] = $request['visitor_1_dl_number'];
+        }
+        
+        if (array_key_exists('visitor_2_dl_number', $request))
+        {
+            $decoded_request['visitor_2_dl_number'] = $request['visitor_2_dl_number'];
+        }
+        
+        if (array_key_exists('visitor_3_dl_number', $request))
+        {
+            $decoded_request['visitor_3_dl_number'] = $request['visitor_3_dl_number'];
+        }
+        
+        if (array_key_exists('visitor_4_dl_number', $request))
+        {
+            $decoded_request['visitor_4_dl_number'] = $request['visitor_4_dl_number'];
+        }
+        
+        if (array_key_exists('visitor_1_dl_state', $request))
+        {
+            $decoded_request['visitor_1_dl_state'] = $request['visitor_1_dl_state'];
+        }
+        
+        if (array_key_exists('visitor_2_dl_state', $request))
+        {
+            $decoded_request['visitor_2_dl_state'] = $request['visitor_2_dl_state'];
+        }
+        
+        if (array_key_exists('visitor_3_dl_state', $request))
+        {
+            $decoded_request['visitor_3_dl_state'] = $request['visitor_3_dl_state'];
+        }
+        
+        if (array_key_exists('visitor_4_dl_state', $request))
+        {
+            $decoded_request['visitor_4_dl_state'] = $request['visitor_4_dl_state'];
+        }
+        
+        if (array_key_exists('visitor_1_dl', $request))
+        {
+            $decoded_request['visitor_1_dl'] = $request['visitor_1_dl'];
+        }
+        
+        if (array_key_exists('visitor_2_dl', $request))
+        {
+            $decoded_request['visitor_2_dl'] = $request['visitor_2_dl'];
+        }
+        
+        if (array_key_exists('visitor_3_dl', $request))
+        {
+            $decoded_request['visitor_3_dl'] = $request['visitor_3_dl'];
+        }
+        
+        if (array_key_exists('visitor_4_dl', $request))
+        {
+            $decoded_request['visitor_4_dl'] = $request['visitor_4_dl'];
+        }
+        
+        if (array_key_exists('inmateId', $request))
+        {
+            $decoded_request['id_inmate'] = $request['inmateId'];
+        }
+
+        if (array_key_exists('inmate_name', $request))
+        {
+            $decoded_request['inmate_name'] = $request['inmate_name'];
+        }
+
         if (array_key_exists('start', $request))
         {
             $decoded_request['start_datetime'] = $request['start'];
@@ -96,6 +212,10 @@ class Appointments implements ParsersInterface {
             $decoded_request['end_datetime'] = $request['end'];
         }
 
+        if (array_key_exists('end', $request))
+        {
+            $decoded_request['visitor_2_name'] = $request['end'];
+        }
         if (array_key_exists('hash', $request))
         {
             $decoded_request['hash'] = $request['hash'];

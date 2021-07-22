@@ -304,7 +304,7 @@ $config['cache_path'] = __DIR__ . '/../../storage/cache/';
 | new release.
 |
 */
-$config['cache_busting_token'] = '924WX';
+$config['cache_busting_token'] = '654RF';
 
 /*
 |--------------------------------------------------------------------------

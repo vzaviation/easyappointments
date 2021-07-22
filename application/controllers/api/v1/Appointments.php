@@ -39,6 +39,7 @@ class Appointments extends API_V1_Controller {
         $this->load->model('appointments_model');
         $this->load->model('services_model');
         $this->load->model('providers_model');
+        $this->load->model('inmates_model');
         $this->load->model('customers_model');
         $this->load->model('settings_model');
         $this->load->library('synchronization');

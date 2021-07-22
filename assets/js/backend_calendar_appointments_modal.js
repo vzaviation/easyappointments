@@ -62,6 +62,22 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                 end_datetime: endDatetime,
                 location: $dialog.find('#appointment-location').val(),
                 notes: $dialog.find('#appointment-notes').val(),
+                visitor_1_dl_number: $dialog.find('#visitor-1-dl-number').val(),
+                visitor_2_dl_number: $dialog.find('#visitor-2-dl-number').val(),
+                visitor_3_dl_number: $dialog.find('#visitor-3-dl-number').val(),
+                visitor_4_dl_number: $dialog.find('#visitor-4-dl-number').val(),
+                visitor_1_dl_state: $dialog.find('#visitor-1-dl-state').val(),
+                visitor_2_dl_state: $dialog.find('#visitor-2-dl-state').val(),
+                visitor_3_dl_state: $dialog.find('#visitor-3-dl-state').val(),
+                visitor_4_dl_state: $dialog.find('#visitor-4-dl-state').val(),
+                visitor_1_dl: $dialog.find('#visitor-1-dl').val(),
+                visitor_2_dl: $dialog.find('#visitor-2-dl').val(),
+                visitor_3_dl: $dialog.find('#visitor-3-dl').val(),
+                visitor_4_dl: $dialog.find('#visitor-4-dl').val(),
+                visitor_2_name: $dialog.find('#visitor-2-name').val(),
+                visitor_3_name: $dialog.find('#visitor-3-name').val(),
+                visitor_4_name: $dialog.find('#visitor-4-name').val(),
+                inmate_name: $dialog.find('#inmate-name').val(),
                 is_unavailable: false
             };
 
@@ -218,6 +234,7 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                 $('#city').val(customer.city);
                 $('#zip-code').val(customer.zip_code);
                 $('#customer-notes').val(customer.notes);
+                $('#inmate-name').val(appointment.inmate_name);
             }
 
             $('#select-customer').trigger('click'); // Hide the list.

@@ -87,14 +87,9 @@ class Admins extends API_V1_Controller {
             $admin = $request->get_body();
             $this->parser->decode($admin);
 
-            if (array_key_exists('id', $admin))
+            if (isset($admin['id']))
             {
                 unset($admin['id']);
-            }
-
-            if ( ! array_key_exists('settings', $admin))
-            {
-                throw new Exception('No settings property provided.');
             }
 
             $id = $this->admins_model->add($admin);

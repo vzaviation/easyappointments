@@ -5,6 +5,7 @@ $lang['service_and_provider'] = 'Seleccione Servicio y Proveedor';
 $lang['select_service'] = 'Seleccione Servicio';
 $lang['select_provider'] = 'Seleccione Proveedor';
 $lang['duration'] = 'Duración';
+$lang['inmates'] = 'Preso';
 $lang['minutes'] = 'Minutos';
 $lang['price'] = 'Precio';
 $lang['back'] = 'Atrás';

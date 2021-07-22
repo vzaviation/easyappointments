@@ -155,6 +155,7 @@ class Appointments_model extends EA_Model {
         $appointment['book_datetime'] = date('Y-m-d H:i:s');
         $appointment['hash'] = $this->generate_hash();
 
+
         if ( ! $this->db->insert('appointments', $appointment))
         {
             throw new Exception('Could not insert appointment record.');

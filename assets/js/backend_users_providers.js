@@ -152,6 +152,7 @@
                 state: $('#provider-state').val(),
                 zip_code: $('#provider-zip-code').val(),
                 notes: $('#provider-notes').val(),
+                security_level: $('#provider-security-level').val(),
                 timezone: $('#provider-timezone').val(),
                 settings: {
                     username: $('#provider-username').val(),
@@ -391,6 +392,7 @@
         $('#provider-notes').val(provider.notes);
         $('#provider-timezone').val(provider.timezone);
 
+        $('#provider-security-level').val(provider.security_level);
         $('#provider-username').val(provider.settings.username);
         $('#provider-calendar-view').val(provider.settings.calendar_view);
         $('#provider-notifications').prop('checked', Boolean(Number(provider.settings.notifications)));
