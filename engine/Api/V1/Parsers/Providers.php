@@ -41,7 +41,7 @@ class Providers implements ParsersInterface {
             'zip' => $response['zip_code'],
             'notes' => $response['notes'],
             'timezone' => $response['timezone'],
-            'securitylevel' => $response['security_level'],
+            'inmate_classification_level' => $response['inmate_classification_level'],
         ];
 
         if (array_key_exists('services', $response))
@@ -151,6 +151,12 @@ class Providers implements ParsersInterface {
         {
             $decoded_request['timezone'] = $request['timezone'];
         }
+        
+        if (array_key_exists('inmate_classification_level', $request))
+        {
+            $decoded_request['inmate_classification_level'] = $request['inmate_classification_level'];
+         }
+
 
         if (array_key_exists('services', $request))
         {
@@ -216,11 +222,7 @@ class Providers implements ParsersInterface {
                 $decoded_request['settings']['working_plan'] = json_encode($request['settings']['workingPlan']);
             }
             
-            if (array_key_exists('securitylevel', $request))
-            {
-                $decoded_request['security_level'] = $request['ssecurity_level'];
-            }
-
+        
             if (array_key_exists('workingPlanExceptions', $request['settings']))
             {
                 $decoded_request['settings']['working_plan_exceptions'] = json_encode($request['settings']['workingPlanExceptions']);

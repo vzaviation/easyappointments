@@ -435,12 +435,12 @@
                                     <input id="zip-code" class="form-control">
                                 </div>
                                 
-                                <form>
+                            <form>
                                 <div class="form-group">
-                                <label for="visitor_1_dl" class="control-label">
-                                    <?= lang('visitor_1_dl') ?>
-                                </label>
-                                    <input type="text" class="form-control" id="visitor-1-dl">
+                                    <label for="visitor_1_dl" class="control-label">
+                                        <?= lang('visitor_1_dl') ?>
+                                    </label>
+                                    <input type="text" id="visitor-1-dl" class="form-control" maxlength="120"/>
                                 </div>
                             </form>
                             

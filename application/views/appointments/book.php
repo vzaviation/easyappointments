@@ -200,6 +200,7 @@
                                 <select id="select-provider" class="form-control"></select>
                             </div>
 
+
                             <div id="service-description"></div>
                         </div>
                     </div>
@@ -388,7 +389,7 @@
                                 <label for="visitor_1_dl" class="control-label">
                                     <?= lang('visitor_1_dl') ?>
                                 </label>
-                                    <input type="text" id="visitor-1-dl" class="form-control" maxlength="120"/>
+                                    <input type="file" id="visitor-1-dl" class="form-control" maxlength="120"/>
                                 </div>
                             </form>
                             
@@ -396,7 +397,7 @@
                                 <label for="visitor_1_dl_number" class="control-label">
                                     <?= lang('visitor_1_dl_number') ?>
                                 </label>
-                                <input type="text" id="visitor-1-dl-number" class="form-control" maxlength="500"/>
+                                <input type="number" id="visitor-1-dl-number" class="form-control"/>
                             </div>
                             
                         </div>
@@ -417,7 +418,7 @@
                                 <label for="visitor_2_dl_number" class="control-label">
                                     <?= lang('visitor_2_dl_number') ?>
                                 </label>
-                                <input type="text" id="visitor-2-dl-number" class="form-control" maxlength="500"/>
+                                <input type="number" id="visitor-2-dl-number" class="form-control"/>
                             </div>
                             
                             <div class="form-group">
@@ -431,7 +432,7 @@
                                 <label for="visitor_3_dl_number" class="control-label">
                                     <?= lang('visitor_3_dl_number') ?>
                                 </label>
-                                <input type="text" id="visitor-3-dl-number" class="form-control" maxlength="500"/>
+                                <input type="number" id="visitor-3-dl-number" class="form-control"/>
                             </div>
                             
 
@@ -447,7 +448,7 @@
                                 <label for="visitor_4_dl_number" class="control-label">
                                     <?= lang('visitor_4_dl_number') ?>
                                 </label>
-                                <input type="text" id="visitor-4-dl-number" class="form-control" maxlength="500"/>
+                                <input type="number" id="visitor-4-dl-number" class="form-control"/>
                             </div>
                         
                         </div>
@@ -459,7 +460,7 @@
                                 <label for="visitor_2_dl" class="control-label">
                                     <?= lang('visitor_2_dl') ?>
                                 </label>
-                                    <input type="text" id="visitor-2-dl" class="form-control" maxlength="120"/>
+                                    <input type="file" id="visitor-2-dl" class="form-control" maxlength="120"/>
                                 </div>
                             </form>   
                 
@@ -527,7 +528,7 @@
                                 <label for="visitor_3_dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
                                 </label>
-                                    <input type="text" id="visitor-3-dl" class="form-control" maxlength="120"/>
+                                    <input type="file" id="visitor-3-dl" class="form-control" maxlength="120"/>
                                 </div>
                             </form> 
                             
@@ -595,7 +596,7 @@
                                 <label for="visitor_4_dl" class="control-label">
                                     <?= lang('visitor_4_dl') ?>
                                 </label>
-                                    <input type="text" id="visitor-4-dl" class="form-control" maxlength="120"/>
+                                    <input type="file" id="visitor-4-dl" class="form-control" maxlength="120"/>
                                 </div>
                             </form>
                             

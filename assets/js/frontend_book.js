@@ -217,6 +217,64 @@ window.FrontendBook = window.FrontendBook || {};
                 $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
         });
+        
+         /**
+         * Event: Selected Inmate "Changed"
+         *
+         * Whenever the Inmate changes the security level updates for the provider.
+         */
+        $('#select-inmate').on('change', function () {
+            var inmateID = $('#select-inmate').val();
+            var inmate;
+            var serviceId = $('#select-service').val();
+         
+            
+            $('#select-provider').empty();
+            
+            // Select a inmate of this provider in order to make the provider available in the select box.
+                for (var index in GlobalVariables.availableInmates) {
+                    var myinmate = GlobalVariables.availableInmates[index];
+                    if (inmateID === myinmate.id)
+                    {
+                        inmate=myinmate;
+                        break;
+                        }
+                
+                }
+
+                if (typeof inmate!=="undefined") {
+            GlobalVariables.availableProviders.forEach(function (provider) {
+                // If the current provider is able to provide the selected service, add him to the list box.
+               //let filteredarray = provider.services.filter( (provider) =>
+                
+                
+                var canServeService1 = provider.inmate_classification_level === inmate.inmate_classification_level;
+    
+                var canServeService2 = provider.services.filter(function (providerServiceId) {
+                    return Number(providerServiceId) === Number(serviceId);
+                }).length > 0;
+                
+                //filteredarray.length > 0;
+                
+                
+                if (canServeService1 && canServeService2) {
+                    $('#select-provider').append(new Option(provider.first_name + ' ' + provider.last_name, provider.id));
+                }
+            });
+                }
+                
+                 // Add the "Any Provider" entry.
+            if ($('#select-provider option').length >= 1 && GlobalVariables.displayAnyProvider === '1') {
+                $('#select-provider').prepend(new Option('- ' + EALang.any_provider + ' -', 'any-provider',true,true));
+            }
+            
+
+            FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
+                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
+            FrontendBook.updateConfirmFrame();
+            updateServiceDescription(serviceId);
+        });
+
 
         /**
          * Event: Selected Service "Changed"
@@ -228,6 +286,7 @@ window.FrontendBook = window.FrontendBook || {};
             var serviceId = $('#select-service').val();
 
             $('#select-provider').empty();
+           
 
             GlobalVariables.availableProviders.forEach(function (provider) {
                 // If the current provider is able to provide the selected service, add him to the list box.
@@ -531,7 +590,7 @@ window.FrontendBook = window.FrontendBook || {};
         var visitor2dl = GeneralFunctions.escapeHtml($('#visitor-2-dl').val());
         var visitor3dl = GeneralFunctions.escapeHtml($('#visitor-3-dl').val());
         var visitor4dl = GeneralFunctions.escapeHtml($('#visitor-4-dl').val());
-        var newTestField = GeneralFunctions.escapeHtml($('#new-test-field').val());
+        
 
         if (selectedDate !== null) {
             selectedDate = GeneralFunctions.formatDate(selectedDate, GlobalVariables.dateFormat);
@@ -631,10 +690,6 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<br/>'),
                         $('<span/>', {
                             'text': EALang.inmate + ': ' + $('#select-inmate option:selected').text()
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.new_test_field + ': ' + newTestField 
                         }),
                         $('<br/>'),
                         $('<span/>', {
@@ -752,7 +807,7 @@ window.FrontendBook = window.FrontendBook || {};
             visitor_2_dl: $('#visitor-2-dl').val(),
             visitor_3_dl: $('#visitor-3-dl').val(),
             visitor_4_dl: $('#visitor-4-dl').val(),
-            new_test_field: $('#new-test-field').val()            
+                      
             
         };
 
@@ -811,6 +866,7 @@ window.FrontendBook = window.FrontendBook || {};
             $('#select-service').val(appointment.id_services).trigger('change');
             $('#select-provider').val(appointment.id_users_provider);
             $('#select-inmate').val(appointment.inmate_name);
+            $('#select-user').val(appointment.users.id);
 
             // Set Appointment Date
             $('#select-date').datepicker('setDate',
@@ -828,7 +884,7 @@ window.FrontendBook = window.FrontendBook || {};
             $('#address').val(customer.address);
             $('#city').val(customer.city);
             $('#zip-code').val(customer.zip_code);
-            $('#test').val(customer.test);
+           
 
             
             if (customer.timezone) {

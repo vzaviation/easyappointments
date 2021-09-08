@@ -86,7 +86,8 @@ class Appointments extends EA_Controller {
                     'first_name' => $provider['first_name'],
                     'last_name' => $provider['last_name'],
                     'services' => $provider['services'],
-                    'timezone' => $provider['timezone']
+                    'timezone' => $provider['timezone'],
+                    'inmate_classification_level' => $provider['inmate_classification_level']
                 ];
                 $available_providers[$index] = $stripped_data;
             }

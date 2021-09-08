@@ -41,8 +41,11 @@ class Inmates_model extends EA_Model {
     {
         // Get provider records from database.
         $this->db
-            ->select('ea_inmates.id, ea_inmates.inmate_name')
-            ->from('ea_inmates');
+            ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
+            ->from('ea_inmates')
+            ->where('ea_inmates.booking_status= "1"');
+            
+
 
         $inmates = $this->db->get()->result_array();
 

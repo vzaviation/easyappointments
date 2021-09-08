@@ -36,6 +36,9 @@ class Inmates implements ParsersInterface {
          //   'dob' => $response['DOB'],
          //   'dl' => $response['DL'],
             //'booking_date' => $response['phone_number'],
+            'booking_status' => $response['booking_status'],
+            'inmate_classification_level' => $response['inmate_classification_level']
+            'gender' => $response['gender']
            // 'release_date' => $response['address']
         ];
 
@@ -61,7 +64,22 @@ class Inmates implements ParsersInterface {
         {
             $decoded_request['inmate_name'] = $request['inmate_name'];
         }
-
+  
+        if (array_key_exists('booking_status', $request))
+        {
+            $decoded_request['booking_status'] = $request['booking_status'];
+        }
+        
+        if (array_key_exists('inmate_classification_level', $request))
+        {
+            $decoded_request['inmate_classification_level'] = $request['inmate_classification_level'];
+        }
+            
+        if (array_key_exists('gender', $request))
+        {
+            $decoded_request['gender'] = $request['gender'];
+        }    
+        
       /*  if (array_key_exists('so', $request))
         {
             $decoded_request['so'] = $request['so'];
@@ -77,7 +95,9 @@ class Inmates implements ParsersInterface {
         if (array_key_exists('booking_date', $request))
         {
             $decoded_request['booking_date'] = $request['booking_date'];
+    
         }
+       
         if (array_key_exists('release_date', $request))
         {
             $decoded_request['release_date'] = $request['release_date'];
