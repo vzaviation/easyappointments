@@ -59,12 +59,12 @@ gulp.task('package', (done) => {
     fs.copySync('index.php', 'build/index.php');
     fs.copySync('composer.json', 'build/composer.json');
     fs.copySync('composer.lock', 'build/composer.lock');
-    fs.copySync('config-sample.php', 'build/config-sample.php');
+   // fs.copySync('config-sample.php', 'build/config-sample.php');
     fs.copySync('CHANGELOG.md', 'build/CHANGELOG.md');
     fs.copySync('README.md', 'build/README.md');
     fs.copySync('LICENSE', 'build/LICENSE');
 
-    execSync('cd build && composer install --no-interaction --no-dev --no-scripts --optimize-autoloader', function (err, stdout, stderr) {
+    execSync('cd build && composer install --no-interaction --ignore-platform-reqs --no-dev --no-scripts --optimize-autoloader', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
     });
