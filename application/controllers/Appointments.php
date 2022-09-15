@@ -586,13 +586,18 @@ class Appointments extends EA_Controller {
             $manage_mode = $this->input->get_post('manage_mode');
             $selected_date_string = $this->input->get('selected_date');
             $selected_date = new DateTime($selected_date_string);
-            $number_of_days_in_month = (int)$selected_date->format('t');
+	    $number_of_days_in_month = (int)$selected_date->format('t');
+	    $inmate_id = $this->input->get_post('selectedInmateId');
             $unavailable_dates = [];
-
-            $provider_ids = $provider_id === ANY_PROVIDER
+	   if($inmate_id){
+                $provider_ids = $provider_id === ANY_PROVIDER
+                ? $this->search_providers_by_inmates($inmate_id, $service_id)
+                : [$provider_id];
+            } else{
+            	$provider_ids = $provider_id === ANY_PROVIDER
                 ? $this->search_providers_by_service($service_id)
                 : [$provider_id];
-
+	    }
             $exclude_appointment_id = $manage_mode ? $appointment_id : NULL;
 
             // Get the service record.
@@ -680,5 +685,34 @@ class Appointments extends EA_Controller {
         return $provider_list;
     }
 
+    protected function search_providers_by_inmates($inmate_id, $service_id)
+    {
+        $available_providers = $this->inmates_model->get_providers_by_inmates($inmate_id, $service_id);
+        $provider_list = [];
+
+        foreach ($available_providers as $provider)
+        {
+            $provider_list[] = $provider['id'];
+        }
+
+        return $provider_list;
+    }
+    public function ajax_upload_document(){
+    
+	$target_dir = $_SERVER['DOCUMENT_ROOT']."/storage/uploads/user_doc/";
+        // create file name
+        $temp = explode(".", $_FILES["user_document"]["name"]);
+        $newfilename = time() . '.' . end($temp);
+        $target_file = $target_dir.$newfilename;
+        if(move_uploaded_file($_FILES["user_document"]["tmp_name"],$target_file)){
+            $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(["message" => "file uploaded successfully", 'fileName' => $newfilename, 'error' => false]));
+        } else{
+            $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(["message" => "file upload failed",  'error' => false]));
+        }
+    }
 
 }

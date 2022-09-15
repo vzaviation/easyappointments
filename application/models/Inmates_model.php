@@ -53,4 +53,28 @@ class Inmates_model extends EA_Model {
         return $inmates;
     }
 
+
+    public function get_providers_by_inmates($id, $service_id){
+        $this->db
+            ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
+            ->from('ea_inmates')
+            ->where('ea_inmates.id='.$id);
+
+
+
+        $inmates = $this->db->get()->result_array();
+
+        $this->db
+            ->select('ea_u.id')
+            ->from('ea_users ea_u')
+            ->join('ea_services_providers ea_sp', 'ea_u.id = ea_sp.id_users', 'left')
+            ->where('ea_u.inmate_classification_level='.$inmates[0]['inmate_classification_level'])
+            ->where('ea_u.id_roles=2')
+            ->where('ea_sp.id_services='.$service_id);
+
+        $providers = $this->db->get()->result_array();
+
+        // Return provider records.
+        return $providers;
+    }
 }

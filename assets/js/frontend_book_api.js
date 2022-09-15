@@ -66,7 +66,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             manage_mode: FrontendBook.manageMode,
             appointment_id: appointmentId
         };
-
+$("#loading").css("display", "");
         $.post(url, data)
             .done(function (response) {
                 // The response contains the available hours for the selected provider and
@@ -126,6 +126,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 } else {
                     $('#available-hours').text(EALang.no_available_hours);
                 }
+		    $("#loading").css("display", "none");
             });
     };
 
@@ -223,7 +224,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
      * @param {Number} serviceId The selected service ID.
      * @param {String} selectedDateString Y-m-d value of the selected date.
      */
-    exports.getUnavailableDates = function (providerId, serviceId, selectedDateString) {
+    exports.getUnavailableDates = function (providerId, serviceId, selectedDateString, selectedInmateId=null) {
         if (processingUnavailabilities) {
             return;
         }
@@ -242,14 +243,21 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             selected_date: encodeURIComponent(selectedDateString),
             csrfToken: GlobalVariables.csrfToken,
             manage_mode: FrontendBook.manageMode,
-            appointment_id: appointmentId
+            appointment_id: appointmentId,
+	    selectedInmateId
         };
 
         $.ajax({
             url: url,
             type: 'GET',
             data: data,
-            dataType: 'json'
+            dataType: 'json',
+	    beforeSend: function () {
+                $("#loading").css("display", "");
+            },
+            complete: function () {
+                $("#loading").css("display", "none");
+            },
         })
             .done(function (response) {
                 unavailableDatesBackup = response;

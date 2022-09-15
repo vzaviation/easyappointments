@@ -269,8 +269,8 @@ window.FrontendBook = window.FrontendBook || {};
             }
             
 
-            FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
-                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
+            FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
+                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
             FrontendBook.updateConfirmFrame();
             updateServiceDescription(serviceId);
         });
@@ -803,10 +803,10 @@ window.FrontendBook = window.FrontendBook || {};
             visitor_2_dl_state: $('#visitor-2-dl-state').val(),
             visitor_3_dl_state: $('#visitor-3-dl-state').val(),
             visitor_4_dl_state: $('#visitor-4-dl-state').val(),
-            visitor_1_dl: $('#visitor-1-dl').val(),
-            visitor_2_dl: $('#visitor-2-dl').val(),
-            visitor_3_dl: $('#visitor-3-dl').val(),
-            visitor_4_dl: $('#visitor-4-dl').val(),
+            visitor_1_dl: $('#visitor-1-dl-file-name').val(),
+            visitor_2_dl: $('#visitor-2-dl-file-name').val(),
+            visitor_3_dl: $('#visitor-3-dl-file-name').val(),
+            visitor_4_dl: $('#visitor-4-dl-file-name').val(),
                       
             
         };

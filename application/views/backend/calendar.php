@@ -11,6 +11,7 @@
 <script src="<?= asset_url('assets/js/backend_calendar_appointments_modal.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_calendar_unavailability_events_modal.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_calendar_api.js') ?>"></script>
+<script src="<?= asset_url('assets/js/upload_documents.js') ?>"></script>
 <script>
     var GlobalVariables = {
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
@@ -439,8 +440,9 @@
                                 <div class="form-group">
                                     <label for="visitor_1_dl" class="control-label">
                                         <?= lang('visitor_1_dl') ?>
-                                    </label>
-                                    <input type="text" id="visitor-1-dl" class="form-control" maxlength="120"/>
+                                    </label> <span><a id="visitor-1-dl-link" href="" target="_blank">View Doc</a></span>
+				    <input type="file" id="visitor-1-dl" class="form-control" onchange="uploadDocument('visitor-1-dl')" maxlength="120"/>
+					<input type="hidden" id="visitor-1-dl-file-name" value="" />
                                 </div>
                             </form>
                             
@@ -510,8 +512,9 @@
                                 <div class="form-group">
                                 <label for="visitor_2_dl" class="control-label">
                                     <?= lang('visitor_2_dl') ?>
-                                </label>
-                                    <input type="text" class="form-control" id="visitor-2-dl">
+                                </label><span><a id="visitor-2-dl-link" href="" target="_blank">View Doc</a></span>
+				    <input type="file" onchange="uploadDocument('visitor-2-dl')" class="form-control" id="visitor-2-dl">
+					<input type="hidden" id="visitor-2-dl-file-name" value="" />
                                 </div>
                             </form>   
                 
@@ -578,8 +581,9 @@
                                 <div class="form-group">
                                 <label for="visitor_3_dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
-                                </label>
-                                    <input type="text" class="form-control" id="visitor-3-dl">
+                                </label> <span><a id="visitor-3-dl-link" href="" target="_blank">View Doc</a></span>
+				    <input type="file" class="form-control" id="visitor-3-dl" onchange="uploadDocument('visitor-3-dl')">
+				<input type="hidden" id="visitor-3-dl-file-name" value="" />
                                 </div>
                             </form> 
                             
@@ -646,8 +650,9 @@
                                 <div class="form-group">
                                 <label for="visitor_4_dl" class="control-label">
                                     <?= lang('visitor_4_dl') ?>
-                                </label>
-                                    <input type="text" class="form-control" id="visitor-4-dl">
+                                </label> <span><a id="visitor-4-dl-link" href="" target="_blank">View Doc</a></span>
+				    <input type="file" class="form-control" id="visitor-4-dl" onchange="uploadDocument('visitor-4-dl')">
+					<input type="hidden" id="visitor-4-dl-file-name" value="" />
                                 </div>
                             </form>
                             

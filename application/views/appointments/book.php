@@ -19,9 +19,32 @@
 
     <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>
     <script src="<?= asset_url('assets/ext/fontawesome/js/solid.min.js') ?>"></script>
+   <script src="<?= asset_url('assets/js/upload_documents.js') ?>"></script>
+<style>
+     #loading {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0.7;
+  background-color: #fff;
+  z-index: 99;
+}
+
+#loading-image {
+  z-index: 100;
+}
+   </style>
 </head>
 
 <body>
+<div id="loading" style="display: none;">
+  <img id="loading-image" src="<?= asset_url('assets/img/loading.gif') ?>" alt="Loading..." />
+</div>
 <div id="main" class="container">
     <div class="row wrapper">
         <div id="book-appointment-wizard" class="col-12 col-lg-10 col-xl-8">
@@ -384,14 +407,15 @@
                                 <input type="text" id="zip-code" class="form-control" maxlength="120"/>
                             </div>
                             
-                            <form>
+                            
                                 <div class="form-group">
                                 <label for="visitor_1_dl" class="control-label">
                                     <?= lang('visitor_1_dl') ?>
                                 </label>
-                                    <input type="file" id="visitor-1-dl" class="form-control" maxlength="120"/>
+				    <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
+					<input type="hidden" id="visitor-1-dl-file-name" value="" />
                                 </div>
-                            </form>
+                           
                             
                             <div class="form-group">
                                 <label for="visitor_1_dl_number" class="control-label">
@@ -455,14 +479,15 @@
                 
                 <div class="col-12 col-md-6">
                 
-                            <form>
+                           
                                 <div class="form-group">
                                 <label for="visitor_2_dl" class="control-label">
                                     <?= lang('visitor_2_dl') ?>
                                 </label>
-                                    <input type="file" id="visitor-2-dl" class="form-control" maxlength="120"/>
+				    <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
+				<input type="hidden" id="visitor-2-dl-file-name" value="" />
                                 </div>
-                            </form>   
+                           
                 
                             <div class="form-group">
                                 <label for="visitor_2_dl_state" class="control-label">
@@ -523,14 +548,15 @@
                                         </select>
                             </div>
                             
-                            <form>
+                            
                                 <div class="form-group">
                                 <label for="visitor_3_dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
                                 </label>
-                                    <input type="file" id="visitor-3-dl" class="form-control" maxlength="120"/>
+				    <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
+					 <input type="hidden" id="visitor-3-dl-file-name" value="" />
                                 </div>
-                            </form> 
+                            
                             
                             <div class="form-group">
                                 <label for="visitor_3_dl_state" class="control-label">
@@ -591,14 +617,16 @@
                                         </select>
                             </div>
                             
-                            <form>
+                           
                                 <div class="form-group">
                                 <label for="visitor_4_dl" class="control-label">
                                     <?= lang('visitor_4_dl') ?>
                                 </label>
-                                    <input type="file" id="visitor-4-dl" class="form-control" maxlength="120"/>
+			   
+					 <input type="file" id="visitor-4-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-4-dl')"/>
+					<input type="hidden" id="visitor-4-dl-file-name" value="" />
                                 </div>
-                            </form>
+                            
                             
                             <div class="form-group">
                                 <label for="visitor_4_dl_state" class="control-label">
@@ -738,7 +766,7 @@
                         <i class="fas fa-chevron-left mr-2"></i>
                         <?= lang('back') ?>
                     </button>
-                    <form id="book-appointment-form" style="display:inline-block" method="post">
+                    <form enctype="multipart/form-data" id="book-appointment-form" style="display:inline-block" method="post">
                         <button id="book-appointment-submit" type="button" class="btn btn-success">
                             <i class="fas fa-check-square mr-2"></i>
                             <?= ! $manage_mode ? lang('confirm') : lang('update') ?>

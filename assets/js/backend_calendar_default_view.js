@@ -137,11 +137,40 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 $dialog.find('#visitor-2-dl-state').val(appointment.visitor_2_dl_state);
                 $dialog.find('#visitor-3-dl-state').val(appointment.visitor_3_dl_state);
                 $dialog.find('#visitor-4-dl-state').val(appointment.visitor_4_dl_state);
-                $dialog.find('#visitor-1-dl').val(appointment.visitor_1_dl);
-                $dialog.find('#visitor-2-dl').val(appointment.visitor_2_dl);
-                $dialog.find('#visitor-3-dl').val(appointment.visitor_3_dl);
-                $dialog.find('#visitor-4-dl').val(appointment.visitor_4_dl);
-                $dialog.find('#visitor-2-name').val(appointment.visitor_2_name);
+                $dialog.find('#visitor-1-dl-file-name').val(appointment.visitor_1_dl);
+                $dialog.find('#visitor-2-dl-file-name').val(appointment.visitor_2_dl);
+                $dialog.find('#visitor-3-dl-file-name').val(appointment.visitor_3_dl);
+                $dialog.find('#visitor-4-dl-file-name').val(appointment.visitor_4_dl);
+
+		if(appointment.visitor_1_dl){
+                   $("#visitor-1-dl-link").attr("href", GlobalVariables.baseUrl +"/storage/uploads/user_doc/"+appointment.visitor_1_dl);
+			$("#visitor-1-dl-link").show();
+                } else {
+                   $("#visitor-1-dl-link").hide();
+                }
+
+                if(appointment.visitor_2_dl){
+			$("#visitor-2-dl-link").attr("href", GlobalVariables.baseUrl +"/storage/uploads/user_doc/"+appointment.visitor_2_dl);
+			$("#visitor-1-dl-link").show();
+                } else {
+                   $("#visitor-2-dl-link").hide();
+                }
+
+                if(appointment.visitor_3_dl){
+                   $("#visitor-3-dl-link").attr("href", GlobalVariables.baseUrl +"/storage/uploads/user_doc/"+appointment.visitor_3_dl);
+                  $("#visitor-3-dl-link").show();
+		} else {
+                   $("#visitor-3-dl-link").hide();
+                }
+
+                if(appointment.visitor_4_dl){
+                   $("#visitor-4-dl-link").attr("href", GlobalVariables.baseUrl +"/storage/uploads/user_doc/"+appointment.visitor_4_dl);
+               		$("#visitor-4-dl-link").show();
+		} else {
+                   $("#visitor-4-dl-link").hide();
+                }
+
+		$dialog.find('#visitor-2-name').val(appointment.visitor_2_name);
                 $dialog.find('#visitor-3-name').val(appointment.visitor_3_name);
                 $dialog.find('#visitor-4-name').val(appointment.visitor_4_name);
                 $dialog.find('#inmate-name').val(appointment.inmate_name);
