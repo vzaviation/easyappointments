@@ -586,18 +586,23 @@ class Appointments extends EA_Controller {
             $manage_mode = $this->input->get_post('manage_mode');
             $selected_date_string = $this->input->get('selected_date');
             $selected_date = new DateTime($selected_date_string);
-	    $number_of_days_in_month = (int)$selected_date->format('t');
-	    $inmate_id = $this->input->get_post('selectedInmateId');
+
+            $number_of_days_in_month = (int)$selected_date->format('t');
+	        $inmate_id = $this->input->get_post('selectedInmateId');
             $unavailable_dates = [];
-	   if($inmate_id){
+
+    	    if($inmate_id){
                 $provider_ids = $provider_id === ANY_PROVIDER
-                ? $this->search_providers_by_inmates($inmate_id, $service_id)
-                : [$provider_id];
-            } else{
-            	$provider_ids = $provider_id === ANY_PROVIDER
-                ? $this->search_providers_by_service($service_id)
-                : [$provider_id];
-	    }
+                    ? $this->search_providers_by_inmates($inmate_id, $service_id)
+                    : [$provider_id];
+            } else {
+                /* Skip the call if there is no inmate chosen - it just takes too long
+               	$provider_ids = $provider_id === ANY_PROVIDER
+                    ? $this->search_providers_by_service($service_id)
+                    : [$provider_id];
+                    */
+                $provider_ids = [];
+            }
             $exclude_appointment_id = $manage_mode ? $appointment_id : NULL;
 
             // Get the service record.
