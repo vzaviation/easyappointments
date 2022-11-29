@@ -325,9 +325,8 @@ window.FrontendBook = window.FrontendBook || {};
                 // Add check for inmate selected as well
                 if (!$('#select-inmate').val() || 
                     ($('#select-inmate').val() === '0') ||
-                    !$('#select-provider').val() ||
-                    ($('#select-provider').val() === 'any-provider')) {
-                        alert("Please select an Inmate and Phone");
+                    !$('#select-provider').val()) {
+                        alert("Please select an Inmate");
                         return;
                 } else {
                     // if all good, now we get the unavailable dates
