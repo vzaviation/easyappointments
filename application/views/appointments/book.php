@@ -842,6 +842,7 @@
 <script src="<?= asset_url('assets/js/general_functions.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/jquery/jquery.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.js') ?>"></script>
+<script src="<?= asset_url('assets/ext/jquery-ui/jquery-ui-timepicker-addon.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/cookieconsent/cookieconsent.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/popper/popper.min.js') ?>"></script>

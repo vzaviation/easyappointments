@@ -126,7 +126,7 @@ window.FrontendBook = window.FrontendBook || {};
             onChangeMonthYear: function (year, month, instance) {
                 var currentDate = new Date(year, month - 1, 1);
                 FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
-                    currentDate.toString('yyyy-MM-dd'));
+                    currentDate.toString('yyyy-MM-dd'), $('#select-inmate').val());
             }
         });
 
@@ -213,8 +213,9 @@ window.FrontendBook = window.FrontendBook || {};
          * Whenever the provider changes the available appointment date - time periods must be updated.
          */
         $('#select-provider').on('change', function () {
-            FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
-                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
+            // KPB 2022-11-28 We don't need to get the dates here
+            //FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
+            //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
         });
         
@@ -268,11 +269,11 @@ window.FrontendBook = window.FrontendBook || {};
                 $('#select-provider').prepend(new Option('- ' + EALang.any_provider + ' -', 'any-provider',true,true));
             }
             
-
-            FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
-                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
+            // KPB 2022-11-28 We don't need to get the dates here
+            //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
+            //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
             FrontendBook.updateConfirmFrame();
-            updateServiceDescription(serviceId);
+            //updateServiceDescription(serviceId);
         });
 
 
@@ -305,8 +306,9 @@ window.FrontendBook = window.FrontendBook || {};
             }
             
 
-            FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
-                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
+            // KPB 2022-11-28 We don't need to get the dates here
+            //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
+            //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
             updateServiceDescription(serviceId);
         });
@@ -319,8 +321,19 @@ window.FrontendBook = window.FrontendBook || {};
          */
         $('.button-next').on('click', function () {
             // If we are on the first step and there is not provider selected do not continue with the next step.
-            if ($(this).attr('data-step_index') === '1' && !$('#select-provider').val()) {
-                return;
+            if ($(this).attr('data-step_index') === '1') {
+                // Add check for inmate selected as well
+                if (!$('#select-inmate').val() || 
+                    ($('#select-inmate').val() === '0') ||
+                    !$('#select-provider').val() ||
+                    ($('#select-provider').val() === 'any-provider')) {
+                        alert("Please select an Inmate and Phone");
+                        return;
+                } else {
+                    // if all good, now we get the unavailable dates
+                    FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
+                        $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
+                }
             }
 
             // If we are on the 2nd tab then the user should have an appointment hour selected.
