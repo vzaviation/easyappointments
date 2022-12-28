@@ -795,6 +795,12 @@ window.FrontendBook = window.FrontendBook || {};
             
         };
 
+        // Remove number from inmate name for database
+        var inmateName = $('#select-inmate option:selected').text();
+        if (inmateName.indexOf("-") >= 0) {
+            inmateName = inmateName.substring(inmateName.indexOf("-") + 1);
+        }
+
         data.appointment = {
             start_datetime: $('#select-date').datepicker('getDate').toString('yyyy-MM-dd')
                 + ' ' + Date.parse($('.selected-hour').data('value') || '').toString('HH:mm') + ':00',
@@ -819,8 +825,7 @@ window.FrontendBook = window.FrontendBook || {};
             visitor_2_dl: $('#visitor-2-dl-file-name').val(),
             visitor_3_dl: $('#visitor-3-dl-file-name').val(),
             visitor_4_dl: $('#visitor-4-dl-file-name').val(),
-                      
-            
+            inmate_name: inmateName
         };
 
         data.manage_mode = FrontendBook.manageMode;
