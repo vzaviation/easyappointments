@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/cookieconsent/cookieconsent.min.css') ?>">
-    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend.css') ?>">
+    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend-andersonco.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/general.css') ?>">
 
     <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
@@ -52,7 +52,14 @@
             <!-- FRAME TOP BAR -->
 
             <div id="header">
-                <span id="company-name"><?= $company_name ?></span>
+                <span id="company-name">
+                    <?= $company_name ?><br />
+                    <span class="company-address">
+                        1200 East Lacy St<br />
+                        Palestine, TX 75801<br />
+                        (903) 729-6069
+                    </span>
+                </span>
 
                 <div id="steps">
                     <div id="step-1" class="book-step active-step"
@@ -73,6 +80,10 @@
                         <strong>4</strong>
                     </div>
                 </div>
+
+                <span id="vis-link">
+                    VisitationLink by <image src="/assets/img/TarmacTech-small.png" height="20px"/> TarmacTech
+                </span>
             </div>
 
             <?php if ($manage_mode): ?>
@@ -215,7 +226,7 @@
             					</select>
                             </div>       
                                                  
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="select-provider">
                                     <strong><?= lang('provider') ?></strong>
                                 </label>
@@ -254,7 +265,7 @@
 
                         <div class="col-12 col-md-6">
                             <div id="select-time">
-                                <div class="form-group">
+                                <div class="form-group" style="display:none;">
                                     <label for="select-timezone"><?= lang('timezone') ?></label>
                                     <?= render_timezone_dropdown('id="select-timezone" class="form-control" value="UTC"'); ?>
                                 </div>
@@ -782,9 +793,10 @@
             <div id="frame-footer">
                 <small>
                     <span class="footer-powered-by">
-                        Powered By
-
-                        <a href="https://easyappointments.org" target="_blank">Easy!Appointments</a>
+                        Provided by
+                        <a href="https://tarmactech.com/home" target="_blank">Tarmac Technologies VisitationLink</a>
+                        and Powered By
+                        <a href="https://easyappointments.org" target="_blank">E!A</a>
                     </span>
 
                     <span class="footer-options">

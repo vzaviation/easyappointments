@@ -66,7 +66,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             manage_mode: FrontendBook.manageMode,
             appointment_id: appointmentId
         };
-$("#loading").css("display", "");
+        $("#loading").css("display", "");
         $.post(url, data)
             .done(function (response) {
                 // The response contains the available hours for the selected provider and
@@ -126,7 +126,7 @@ $("#loading").css("display", "");
                 } else {
                     $('#available-hours').text(EALang.no_available_hours);
                 }
-		    $("#loading").css("display", "none");
+                $("#loading").css("display", "none");
             });
     };
 
@@ -224,7 +224,7 @@ $("#loading").css("display", "");
      * @param {Number} serviceId The selected service ID.
      * @param {String} selectedDateString Y-m-d value of the selected date.
      */
-    exports.getUnavailableDates = function (providerId, serviceId, selectedDateString, selectedInmateId=null) {
+    exports.getUnavailableDates = function (providerId, serviceId, selectedDateString, selectedInmateId = null) {
         if (processingUnavailabilities) {
             return;
         }
@@ -244,7 +244,7 @@ $("#loading").css("display", "");
             csrfToken: GlobalVariables.csrfToken,
             manage_mode: FrontendBook.manageMode,
             appointment_id: appointmentId,
-	    selectedInmateId
+            selectedInmateId
         };
 
         $.ajax({
@@ -252,7 +252,7 @@ $("#loading").css("display", "");
             type: 'GET',
             data: data,
             dataType: 'json',
-	    beforeSend: function () {
+            beforeSend: function () {
                 $("#loading").css("display", "");
             },
             complete: function () {
@@ -297,7 +297,7 @@ $("#loading").css("display", "");
 
         // Grey out unavailable dates.
         $('#select-date .ui-datepicker-calendar td:not(.ui-datepicker-other-month)').each(function (index, td) {
-            selectedDate.set({day: index + 1});
+            selectedDate.set({ day: index + 1 });
             if (unavailableDates.indexOf(selectedDate.toString('yyyy-MM-dd')) !== -1) {
                 $(td).addClass('ui-datepicker-unselectable ui-state-disabled');
             }
