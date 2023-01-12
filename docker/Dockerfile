@@ -1,5 +1,4 @@
 FROM ubuntu:20.04
-
 LABEL maintainer="karlpbuchmann@gmail.com"
 
 WORKDIR /var/www/html

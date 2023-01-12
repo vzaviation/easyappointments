@@ -587,6 +587,16 @@ window.FrontendBook = window.FrontendBook || {};
         // Appointment Details
         
         var selectedDate = $('#select-date').datepicker('getDate');
+
+        // Customer Details
+        var firstName = GeneralFunctions.escapeHtml($('#first-name').val());
+        var lastName = GeneralFunctions.escapeHtml($('#last-name').val());
+        var phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
+        var email = GeneralFunctions.escapeHtml($('#email').val());
+        var address = GeneralFunctions.escapeHtml($('#address').val());
+        var city = GeneralFunctions.escapeHtml($('#city').val());
+        var zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
+        
         var visitor2name = GeneralFunctions.escapeHtml($('#visitor-2-name').val());
         var visitor3name = GeneralFunctions.escapeHtml($('#visitor-3-name').val());
         var visitor4name = GeneralFunctions.escapeHtml($('#visitor-4-name').val());
@@ -598,8 +608,8 @@ window.FrontendBook = window.FrontendBook || {};
         var visitor2dlstate = GeneralFunctions.escapeHtml($('#visitor-2-dl-state').val());
         var visitor3dlstate = GeneralFunctions.escapeHtml($('#visitor-3-dl-state').val());
         var visitor4dlstate = GeneralFunctions.escapeHtml($('#visitor-4-dl-state').val());
-        var visitor1dl = GeneralFunctions.escapeHtml($('#visitor-1-dl').val());
-        var visitor2dl = GeneralFunctions.escapeHtml($('#visitor-2-dl').val());
+        var visitor1dl = GeneralFunctions.escapeHtml($('#visitor-1-dl-file-name').val());
+        var visitor2dl = GeneralFunctions.escapeHtml($('#visitor-2-dl-file-name').val());
         var visitor3dl = GeneralFunctions.escapeHtml($('#visitor-3-dl').val());
         var visitor4dl = GeneralFunctions.escapeHtml($('#visitor-4-dl').val());
         
@@ -612,9 +622,6 @@ window.FrontendBook = window.FrontendBook || {};
         var servicePrice = '';
         var serviceCurrency = '';
         
-        
-       
-
         GlobalVariables.availableServices.forEach(function (service, index) {
             if (Number(service.id) === Number(serviceId) && Number(service.price) > 0) {
                 servicePrice = service.price;
@@ -640,66 +647,6 @@ window.FrontendBook = window.FrontendBook || {};
                             'text': EALang.provider + ': ' + $('#select-provider option:selected').text()
                         }),
                         $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_2_name + ': ' + visitor2name 
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_3_name + ': ' + visitor3name
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_4_name + ': ' + visitor4name
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_1_dl_number + ': ' + visitor1dlnumber
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_2_dl_number + ': ' + visitor2dlnumber
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_3_dl_number + ': ' + visitor3dlnumber
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_4_dl_number + ': ' + visitor4dlnumber
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_1_dl_state + ': ' + visitor1dlstate
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_2_dl_state + ': ' + visitor2dlstate
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_3_dl_state + ': ' + visitor3dlstate
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_4_dl_state + ': ' + visitor4dlstate
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_1_dl + ': ' + visitor1dl
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_2_dl + ': ' + visitor2dl
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_3_dl + ': ' + visitor3dl
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_4_dl + ': ' + visitor4dl
-                        }),
-                        $('<br/>'),
                         $('<span/>', {
                             'text': EALang.inmate + ': ' + $('#select-inmate option:selected').text()
                         }),
@@ -707,10 +654,10 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<span/>', {
                             'text': EALang.start + ': ' + selectedDate + ' ' + $('.selected-hour').text()
                         }),
-                        $('<br/>'),
-                        $('<span/>', {
-                            'text': EALang.timezone + ': ' + $('#select-timezone option:selected').text()
-                        }),
+//                        $('<br/>'),
+//                        $('<span/>', {
+//                            'text': EALang.timezone + ': ' + $('#select-timezone option:selected').text()
+//                        }),
                         $('<br/>'),
                         $('<span/>', {
                             'text': EALang.price + ': ' + servicePrice + ' ' + serviceCurrency,
@@ -724,18 +671,6 @@ window.FrontendBook = window.FrontendBook || {};
         })
             .appendTo('#appointment-details');
 
-        // Customer Details
-        var firstName = GeneralFunctions.escapeHtml($('#first-name').val());
-        var lastName = GeneralFunctions.escapeHtml($('#last-name').val());
-        var phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
-        var email = GeneralFunctions.escapeHtml($('#email').val());
-        var address = GeneralFunctions.escapeHtml($('#address').val());
-        var city = GeneralFunctions.escapeHtml($('#city').val());
-        var zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
-
-        
-       
-        
 
         $('#customer-details').empty();
         
@@ -771,6 +706,66 @@ window.FrontendBook = window.FrontendBook || {};
                             'text': zipCode ? EALang.zip_code + ': ' + zipCode : ''
                         }),
                         $('<br/>'),
+						$('<span/>', {
+                            'text': EALang.visitor_1_dl_state + ': ' + visitor1dlstate
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': EALang.visitor_1_dl_number + ': ' + visitor1dlnumber
+                        }),
+                        $('<br/>'),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': EALang.visitor_2_name + ': ' + visitor2name 
+                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_3_name + ': ' + visitor3name
+//                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_4_name + ': ' + visitor4name
+//                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': EALang.visitor_2_dl_state + ': ' + visitor2dlstate
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': EALang.visitor_2_dl_number + ': ' + visitor2dlnumber
+                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_3_dl_number + ': ' + visitor3dlnumber
+//                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_4_dl_number + ': ' + visitor4dlnumber
+//                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_3_dl_state + ': ' + visitor3dlstate
+//                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                           'text': EALang.visitor_4_dl_state + ': ' + visitor4dlstate
+//                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_1_dl + ': ' + visitor1dl
+//                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_2_dl + ': ' + visitor2dl
+//                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_3_dl + ': ' + visitor3dl
+//                        }),
+//                        $('<br/>'),
+//						$('<span/>', {
+//                            'text': EALang.visitor_4_dl + ': ' + visitor4dl
+//                        }),
                     ]
                 })
             ]

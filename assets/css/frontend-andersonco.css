@@ -372,6 +372,28 @@ body {
         padding: 5px;
         margin: 5px auto;
     }
+
+    #book-appointment-wizard .vl_information {
+        display: inline-block;
+        width: 98%;
+        justify-content: center;
+        align-items: center;
+        text-align: justify;
+        padding: 5px;
+        margin-bottom: 10px;
+        border: 1px solid var(--dark-tan);
+    }
+
+    #book-appointment-wizard .vl_information_red {
+        display: inline-block;
+        width: 98%;
+        justify-content: center;
+        align-items: center;
+        text-align: justify;
+        padding: 5px;
+        margin-bottom: 10px;
+        border: 2px solid #FF0000;
+    }
 }
 
 /* BOOK SUCCESS & MESSAGE

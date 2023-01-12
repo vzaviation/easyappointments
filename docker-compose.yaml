@@ -1,4 +1,4 @@
-version: '3.7'
+version: '1.0'
 
 services:
   easyapp:
@@ -11,3 +11,30 @@ services:
       - '.:/var/www/html/easyappointments'
     ports:
       - '80:80'
+    networks:
+      - easyapp
+    depends_on:
+      - mysql
+  mysql:
+    image: 'mysql:8.0'
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root123'
+      MYSQL_DATABASE: 'JailNewData'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'admin123'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    networks:
+      - easyapp
+    volumes:
+      - mysql_datavolume:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-padmin123"]
+      retries: 3
+      timeout: 5s
+networks:
+  easyapp:
+    driver: bridge
+volumes:
+  mysql_datavolume:

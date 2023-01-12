@@ -297,6 +297,12 @@
 
                     <h2 class="frame-title"><?= lang('customer_information') ?></h2>
 
+                    <div class="vl_information">
+                    PLEASE NOTE: ALL VISITORS WHO ARE 17 OR OLDER SCHEDULING A VISIT WITH AN INMATE HOUSED IN THE JAIL, WILL HAVE A SEPARATE VISITATION TIME.
+                    <br/><br/>
+                    ALL VISITORS MUST HAVE A VALID GOVERNMENT ISSUED IDENTIFICATION CARD WITH A PHOTO TO SCHEDULE A VISIT. THE ID MUST BE AVAILABLE UPON ARRIVAL FOR INSPECTION WHEN YOU ARRIVE FOR THE SCHEDULED VISIT.    
+                    </div>
+
                     <div class="row frame-content">
                         <div class="col-12 col-md-6">
                             <div class="form-group">
@@ -432,13 +438,17 @@
                                 <label for="visitor_1_dl_number" class="control-label">
                                     <?= lang('visitor_1_dl_number') ?>
                                 </label>
-                                <input type="number" id="visitor-1-dl-number" class="form-control"/>
+                                <input type="text" id="visitor-1-dl-number" class="form-control"/>
                             </div>
                             
                         </div>
                     </div>
                 <h2 class="frame-title"><?= lang('additional_customer_information') ?></h2> 
-                
+
+                    <div class="vl_information">
+                    ONLY ONE ADDITIONAL VISITOR WILL BE ALLOWED. THE ADDITIONAL VISITOR MUST BE UNDER THE AGE OF 17 AND ACCOMPANIED BY AN ADULT GUARDIAN.
+                    </div>
+
                     <div class="row frame-content">
                         <div class="col-12 col-md-6">
                 
@@ -449,57 +459,6 @@
                                 <input type="text" id="visitor-2-name" class="form-control" maxlength="500"/>
                             </div>
                             
-                             <div class="form-group">
-                                <label for="visitor_2_dl_number" class="control-label">
-                                    <?= lang('visitor_2_dl_number') ?>
-                                </label>
-                                <input type="number" id="visitor-2-dl-number" class="form-control"/>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="visitor_3_name" class="control-label">
-                                    <?= lang('visitor_3_name') ?>
-                                </label>
-                                <input type="text" id="visitor-3-name" class="form-control" maxlength="500"/>
-                            </div>
-                            
-                              <div class="form-group">
-                                <label for="visitor_3_dl_number" class="control-label">
-                                    <?= lang('visitor_3_dl_number') ?>
-                                </label>
-                                <input type="number" id="visitor-3-dl-number" class="form-control"/>
-                            </div>
-                            
-
-                            
-                            <div class="form-group">
-                                <label for="visitor_4_name" class="control-label">
-                                    <?= lang('visitor_4_name') ?>
-                                </label>
-                                <input type="text" id="visitor-4-name" class="form-control" maxlength="500"/>
-                            </div>
-                            
-                              <div class="form-group">
-                                <label for="visitor_4_dl_number" class="control-label">
-                                    <?= lang('visitor_4_dl_number') ?>
-                                </label>
-                                <input type="number" id="visitor-4-dl-number" class="form-control"/>
-                            </div>
-                        
-                        </div>
-                
-                <div class="col-12 col-md-6">
-                
-                           
-                                <div class="form-group">
-                                <label for="visitor_2_dl" class="control-label">
-                                    <?= lang('visitor_2_dl') ?>
-                                </label>
-				    <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
-				<input type="hidden" id="visitor-2-dl-file-name" value="" />
-                                </div>
-                           
-                
                             <div class="form-group">
                                 <label for="visitor_2_dl_state" class="control-label">
                                     <?= lang('visitor_2_dl_state') ?>
@@ -559,7 +518,59 @@
                                         </select>
                             </div>
                             
+                            <div style="display:none;">
+                            <div class="form-group">
+                                <label for="visitor_3_name" class="control-label">
+                                    <?= lang('visitor_3_name') ?>
+                                </label>
+                                <input type="text" id="visitor-3-name" class="form-control" maxlength="500"/>
+                            </div>
                             
+                              <div class="form-group">
+                                <label for="visitor_3_dl_number" class="control-label">
+                                    <?= lang('visitor_3_dl_number') ?>
+                                </label>
+                                <input type="text" id="visitor-3-dl-number" class="form-control"/>
+                            </div>
+                            
+
+                            
+                            <div class="form-group">
+                                <label for="visitor_4_name" class="control-label">
+                                    <?= lang('visitor_4_name') ?>
+                                </label>
+                                <input type="text" id="visitor-4-name" class="form-control" maxlength="500"/>
+                            </div>
+                            
+                              <div class="form-group">
+                                <label for="visitor_4_dl_number" class="control-label">
+                                    <?= lang('visitor_4_dl_number') ?>
+                                </label>
+                                <input type="text" id="visitor-4-dl-number" class="form-control"/>
+                            </div>
+                            </div>
+                        </div>
+                
+                <div class="col-12 col-md-6">
+                
+                           
+                                <div class="form-group">
+                                <label for="visitor_2_dl" class="control-label">
+                                    <?= lang('visitor_2_dl') ?>
+                                </label>
+				    <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
+				<input type="hidden" id="visitor-2-dl-file-name" value="" />
+                                </div>
+
+                            <div class="form-group">
+                                <label for="visitor_2_dl_number" class="control-label">
+                                    <?= lang('visitor_2_dl_number') ?>
+                                </label>
+                                <input type="text" id="visitor-2-dl-number" class="form-control"/>
+                            </div>
+                                                       
+                            
+                            <div style="display:none;">
                                 <div class="form-group">
                                 <label for="visitor_3_dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
@@ -697,7 +708,7 @@
                                             <option value="Wyoming">Wyoming</option>
                                         </select>
                             </div>            
-                           
+                            </div>
                 </div>
                 </div>
                 </div>
@@ -753,6 +764,9 @@
                     <div class="row frame-content">
                         <div id="appointment-details" class="col-12 col-md-6"></div>
                         <div id="customer-details" class="col-12 col-md-6"></div>
+                        <span class="vl_information_red">
+                        *REMINDER* BEFORE CONFIRMING YOUR VISIT, YOU MUST HAVE PROPER VALID GOVERNMENT IDENTIFICATION UPON ARRIVAL FOR YOUR VISIT.
+                        </span>
                     </div>
                     <?php if ($this->settings_model->get_setting('require_captcha') === '1'): ?>
                         <div class="row frame-content">
@@ -777,6 +791,7 @@
                         <i class="fas fa-chevron-left mr-2"></i>
                         <?= lang('back') ?>
                     </button>
+
                     <form enctype="multipart/form-data" id="book-appointment-form" style="display:inline-block" method="post">
                         <button id="book-appointment-submit" type="button" class="btn btn-success">
                             <i class="fas fa-check-square mr-2"></i>

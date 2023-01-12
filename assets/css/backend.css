@@ -13,6 +13,13 @@
  * BACKEND CSS FILE FOR EASY!APPOINTMENTS
  */
 
+ :root {
+    --light-tan: #D1B48C;
+    --medium-tan: #8C785C;
+    --dark-tan: #4D4232;    
+}
+
+
 root {
     display: block;
 }
@@ -21,7 +28,7 @@ root {
    -------------------------------------------------------------------- */
 
 #header {
-    background-color: #429a82;
+    background-color: var(--light-tan);
     box-shadow: none;
     border-radius: 0;
     padding: 0;
@@ -66,11 +73,11 @@ root {
 }
 
 #header #header-menu .nav-item:hover {
-    background: #3a8873;
+    background: var(--medium-tan);
 }
 
 #header #header-menu .nav-item.active {
-    background: #2e6a5b;
+    background: var(--dark-tan);
 }
 
 #footer {
@@ -148,7 +155,7 @@ body .modal .modal-title {
 
 body .modal-header {
     padding: 20px 15px;
-    background: #429a82;
+    background: var(--medium-tan);
 }
 
 body .modal-header h3 {
@@ -255,7 +262,7 @@ body legend {
 
 .backend-page .filter-records .results .entry.selected {
     background-color: #F4F4F4;
-    border-right: 5px solid #429a82;
+    border-right: 5px solid var(--medium-tan);
 }
 
 .backend-page .filter-records .results hr {
@@ -446,7 +453,7 @@ body legend {
 }
 
 #existing-customers-list div:hover {
-    background: #429a82;
+    background: var(--medium-tan);
     font-weight: bold;
     color: #FFF;
     cursor: pointer;
@@ -551,7 +558,7 @@ body .form-horizontal .controls {
 }
 
 #calendar .calendar-view .date-column .provider-column .event.unavailability {
-    background: #409482;
+    background: var(--medium-tan);
     color: #fff;
 
 }

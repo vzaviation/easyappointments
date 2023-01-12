@@ -1569,6 +1569,21 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
         calendarWindowResize();
 
         // Fill the select list boxes of the page.
+        if (GlobalVariables.availableServices.length > 0) {
+            $('<optgroup/>', {
+                'label': EALang.services,
+                'type': 'services-group',
+                'html': GlobalVariables.availableServices.map(function (availableService) {
+                    return $('<option/>', {
+                        'value': availableService.id,
+                        'type': FILTER_TYPE_SERVICE,
+                        'text': availableService.name
+                    })
+                })
+            })
+                .appendTo('#select-filter-item');
+        }
+
         if (GlobalVariables.availableProviders.length > 0) {
             $('<optgroup/>', {
                 'label': EALang.providers,
@@ -1581,21 +1596,6 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                         'type': FILTER_TYPE_PROVIDER,
                         'google-sync': hasGoogleSync,
                         'text': availableProvider.first_name + ' ' + availableProvider.last_name
-                    })
-                })
-            })
-                .appendTo('#select-filter-item');
-        }
-
-        if (GlobalVariables.availableServices.length > 0) {
-            $('<optgroup/>', {
-                'label': EALang.services,
-                'type': 'services-group',
-                'html': GlobalVariables.availableServices.map(function (availableService) {
-                    return $('<option/>', {
-                        'value': availableService.id,
-                        'type': FILTER_TYPE_SERVICE,
-                        'text': availableService.name
                     })
                 })
             })

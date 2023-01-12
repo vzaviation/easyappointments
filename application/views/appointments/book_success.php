@@ -61,10 +61,12 @@
             </div>
 
             <div class="mt-2">
-                <small>
-                    Powered by
-                    <a href="https://easyappointments.org">Easy!Appointments</a>
-                </small>
+                <span class="footer-powered-by">
+                    Provided by
+                    <a href="https://tarmactech.com/home" target="_blank">Tarmac Technologies VisitationLink</a>
+                    and Powered By
+                    <a href="https://easyappointments.org" target="_blank">E!A</a>
+                </span>
             </div>
         </div>
     </div>
