@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <title><?= isset($page_title) ? $page_title : lang('backend_section') ?> | Easy!Appointments</title>
+    <title><?= isset($page_title) ? $page_title : lang('backend_section') ?> | VisitationLink</title>
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.css') ?>">
@@ -86,6 +86,17 @@
                    data-tippy-content="<?= lang('manage_users_hint') ?>">
                     <i class="fas fa-users-cog mr-2"></i>
                     <?= lang('users') ?>
+                </a>
+            </li>
+
+            <?php $hidden = ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE
+                || $privileges[PRIV_USER_SETTINGS]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_SYSTEM_SETTINGS) ? 'active' : '' ?>
+            <li class="nav-item <?= $active . $hidden ?>">
+                <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/18dbec88-bfae-468e-b031-388bcd4372dd?directory_alias=hillhouse" class="nav-link"
+                   data-tippy-content="Reporting" target="_blank">
+                    <i class="fas fa-users-cog mr-2"></i>
+                    Reporting
                 </a>
             </li>
 
