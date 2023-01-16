@@ -78,6 +78,10 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                 visitor_3_name: $dialog.find('#visitor-3-name').val(),
                 visitor_4_name: $dialog.find('#visitor-4-name').val(),
                 inmate_name: $dialog.find('#inmate-name').val(),
+                visitor_1_arrived: $dialog.find('#visitor-1-arrived').is(":checked"),
+                visitor_2_arrived: $dialog.find('#visitor-2-arrived').is(":checked"),
+                visitor_3_arrived: $dialog.find('#visitor-3-arrived').is(":checked"),
+                visitor_4_arrived: $dialog.find('#visitor-4-arrived').is(":checked"),
                 is_unavailable: false
             };
 

@@ -231,7 +231,15 @@
 
                                 <div class="form-group">
                                     <label for="appointment-notes" class="control-label"><?= lang('notes') ?></label>
-                                    <textarea id="appointment-notes" class="form-control" rows="3"></textarea>
+                                    <textarea id="appointment-notes" class="form-control" rows="3"></textarea>                                    
+                                </div>
+
+                                <!-- Checkboxes for visitor arrival -->
+                                <div class="form-group">
+                                    <label for="visitor_1_arrived" class="control-label">Visitor Arrival Confirmation
+                                    <br/><span style="font-size:80%;">(please click 'Save' after updating)</span></label>
+                                    <br/>Visitor 1 Arrived: <input type="checkbox" id="visitor-1-arrived" value="true" />
+                                    <br/>Visitor 2 Arrived: <input type="checkbox" id="visitor-2-arrived" value="true" /> (if applicable)
                                 </div>
                             </div>
 
@@ -351,7 +359,7 @@
                                 <label for="visitor_1_dl_state" class="control-label">
                                     <?= lang('visitor_1_dl_state') ?>
                                 </label>
-                                <select id="visitor_1_dl_state" class="form-control">
+                                <select id="visitor-1-dl-state" class="form-control">
                                             <option value="Select">Select</option>
                                             <option value="Alabama">Alabama</option>
                                             <option value="Alaska">Alaska</option>
@@ -474,30 +482,30 @@
                                 <input type="text" id="visitor-2-dl-number" class="form-control" maxlength="500"/>
                             </div>        
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="visitor_3_name" class="control-label">
                                     <?= lang('visitor_3_name') ?>
                                 </label>
                                 <input type="text" id="visitor-3-name" class="form-control" maxlength="500"/>
                             </div>
                             
-                              <div class="form-group">
+                              <div class="form-group" style="display:none;">
                                 <label for="visitor_3_dl_number" class="control-label">
                                     <?= lang('visitor_3_dl_number') ?>
                                 </label>
-                                <input type="text" id="visitor-3-dl-number" class="required form-control" maxlength="500"/>
+                                <input type="text" id="visitor-3-dl-number" class="form-control" maxlength="500"/>
                             </div>
                             
 
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="visitor_4_name" class="control-label">
                                     <?= lang('visitor_4_name') ?>
                                 </label>
                                 <input type="text" id="visitor-4-name" class="form-control" maxlength="500"/>
                             </div>
                             
-                              <div class="form-group">
+                              <div class="form-group" style="display:none;">
                                 <label for="visitor_4_dl_number" class="control-label">
                                     <?= lang('visitor_4_dl_number') ?>
                                 </label>
@@ -578,7 +586,7 @@
                             </div>
                             
                             <form>
-                                <div class="form-group">
+                                <div class="form-group" style="display:none;">
                                 <label for="visitor_3_dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
                                 </label> <span><a id="visitor-3-dl-link" href="" target="_blank">View Doc</a></span>
@@ -587,7 +595,7 @@
                                 </div>
                             </form> 
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="visitor_3_dl_state" class="control-label">
                                     <?= lang('visitor_3_dl_state') ?>
                                 </label>
@@ -647,7 +655,7 @@
                             </div>
                             
                             <form>
-                                <div class="form-group">
+                                <div class="form-group" style="display:none;">
                                 <label for="visitor_4_dl" class="control-label">
                                     <?= lang('visitor_4_dl') ?>
                                 </label> <span><a id="visitor-4-dl-link" href="" target="_blank">View Doc</a></span>
@@ -656,7 +664,7 @@
                                 </div>
                             </form>
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="visitor_4_dl_state" class="control-label">
                                     <?= lang('visitor_4_dl_state') ?>
                                 </label>

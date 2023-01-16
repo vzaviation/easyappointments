@@ -74,7 +74,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 if (response.length > 0) {
                     var providerId = $('#select-provider').val();
 
-                    if (providerId === 'any-provider') {
+                    if ((!providerId) || (providerId === 'any-provider')) {
                         providerId = GlobalVariables.availableProviders[0].id; // Use first available provider.
                     }
 
@@ -229,7 +229,11 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             return;
         }
 
-        if (!providerId || !serviceId) {
+        if (!providerId) {
+            providerId = 'any-provider';
+        }
+        
+        if (!serviceId) {
             return;
         }
 

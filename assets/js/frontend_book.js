@@ -320,12 +320,11 @@ window.FrontendBook = window.FrontendBook || {};
          * Some special tasks might be performed, depending the current wizard step.
          */
         $('.button-next').on('click', function () {
-            // If we are on the first step and there is not provider selected do not continue with the next step.
+            // If we are on the first step and there is not an inmate selected do not continue with the next step.
             if ($(this).attr('data-step_index') === '1') {
                 // Add check for inmate selected as well
                 if (!$('#select-inmate').val() || 
-                    ($('#select-inmate').val() === '0') ||
-                    !$('#select-provider').val()) {
+                    ($('#select-inmate').val() === '0')) {
                         alert("Please select an Inmate");
                         return;
                 } else {

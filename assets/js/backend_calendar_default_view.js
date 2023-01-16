@@ -176,6 +176,13 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 $dialog.find('#inmate-name').val(appointment.inmate_name);
                 $dialog.find('#appointment-notes').val(appointment.notes);
                 $dialog.find('#customer-notes').val(customer.notes);
+                if (appointment.visitor_1_arrived == 1) {
+                    $dialog.find('#visitor-1-arrived').prop('checked', true);
+                }
+                if (appointment.visitor_2_arrived == 1) {
+                    $dialog.find('#visitor-2-arrived').prop('checked', true);
+                }
+
                 $dialog.modal('show');
             } else {
                 var unavailable = lastFocusedEventData.data;
@@ -1675,11 +1682,17 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             $dialog.find('#visitor-2-dl').val(appointment.visitor_2_dl);
             $dialog.find('#visitor-3-dl').val(appointment.visitor_3_dl);
             $dialog.find('#visitor-4-dl').val(appointment.visitor_4_dl);
-            $dialog.find('#visitor-2-name').val(appointment.visitor_2_name);
+            $dialog.find('#visitor-2-name').val('appointment.visitor_2_name');
             $dialog.find('#visitor-3-name').val(appointment.visitor_3_name);
             $dialog.find('#visitor-4-name').val(appointment.visitor_4_name);
             $dialog.find('#inmate-name').val(appointment.inmate_name);
             $dialog.find('#customer-notes').val(customer.notes);
+            if (appointment.visitor_1_arrived == 1) {
+                $dialog.find('#visitor-1-arrived').prop('checked', true);
+            }
+            if (appointment.visitor_2_arrived == 1) {
+                $dialog.find('#visitor-2-arrived').prop('checked', true);
+            }
 
             $dialog.modal('show');
         }
