@@ -19,29 +19,55 @@
 
     <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>
     <script src="<?= asset_url('assets/ext/fontawesome/js/solid.min.js') ?>"></script>
-   <script src="<?= asset_url('assets/js/upload_documents.js') ?>"></script>
-<style>
-     #loading {
-  position: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  opacity: 0.7;
-  background-color: #fff;
-  z-index: 99;
-}
+    <script src="<?= asset_url('assets/js/upload_documents.js') ?>"></script>
 
-#loading-image {
-  z-index: 100;
-}
+    <script type="text/javascript">
+        var inactivityTime = function () {
+            var time;
+            window.onload = resetTimer;
+            // DOM Events
+            document.onmousemove = resetTimer;
+            document.onmousedown = resetTimer; // touchscreen presses
+            document.ontouchstart = resetTimer;
+            document.onclick = resetTimer;  
+            document.onkeydown = resetTimer;
+
+            function resetForm() {
+                alert("Resetting form due to inactivity");
+                window.location.href = window.location.href;
+                window.location.reload();
+            }
+
+            function resetTimer() {
+                clearTimeout(time);
+                time = setTimeout(resetForm, 600000);  // 10 minutes = 600,000 ms
+            }
+        };
+   </script>
+
+    <style>
+            #loading {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0.7;
+        background-color: #fff;
+        z-index: 99;
+        }
+
+        #loading-image {
+        z-index: 100;
+        }
    </style>
 </head>
 
-<body>
+<body onload="inactivityTime();">
+
 <div id="loading" style="display: none;">
   <img id="loading-image" src="<?= asset_url('assets/img/loading.gif') ?>" alt="Loading..." />
 </div>
@@ -126,6 +152,14 @@
                 </div>
             <?php endif ?>
 
+            <!-- Add a form "reset" button -->
+            <div id="form-wizard-reset">
+                <div class="command-buttons">
+                    <button type="button" id="button-reset" class="btn button-reset btn-outline-primary">
+                        Clear Form / Reset
+                    </button>
+                </div>
+            </div>
 
             <!-- SELECT SERVICE AND PROVIDER -->
 

@@ -314,6 +314,14 @@ window.FrontendBook = window.FrontendBook || {};
         });
 
         /**
+         * Add a "reset" button that just reloads the start page
+         */
+        $('.button-reset').on('click', function () {
+            window.location.href = window.location.href;
+            window.location.reload();
+        });
+
+        /**
          * Event: Next Step Button "Clicked"
          *
          * This handler is triggered every time the user pressed the "next" button on the book wizard.

@@ -93,9 +93,9 @@
                 || $privileges[PRIV_USER_SETTINGS]['view'] == TRUE) ? '' : 'd-none' ?>
             <?php $active = ($active_menu == PRIV_SYSTEM_SETTINGS) ? 'active' : '' ?>
             <li class="nav-item <?= $active . $hidden ?>">
-                <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/18dbec88-bfae-468e-b031-388bcd4372dd?directory_alias=hillhouse" class="nav-link"
+                <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/b2a98bc7-0ce2-4303-8443-b5974b6c58a3?directory_alias=tarmactech" class="nav-link"
                    data-tippy-content="Reporting" target="_blank">
-                    <i class="fas fa-users-cog mr-2"></i>
+                    <i class="fas fa-cogs mr-2"></i>
                     Reporting
                 </a>
             </li>

@@ -315,6 +315,10 @@ body {
         margin: 5px auto;
     }
 
+    #form-wizard-reset {
+        padding: 10px 20px;
+    }
+
     #book-appointment-wizard .wizard-frame {
         padding: 10px 20px;
     }
