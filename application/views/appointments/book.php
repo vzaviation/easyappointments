@@ -45,6 +45,24 @@
         };
    </script>
 
+   <script type="text/javascript">
+        var inmateFilter = function () {
+          $('#inmate-filter').keyup(function () {
+            let valthis = $(this).val().toLowerCase();
+
+            $('#select-inmate>option').each(function () {
+                let text = $(this).text().toLowerCase();
+                if (text.indexOf(valthis) === 0) {
+                    $(this).show(); $(this).prop('selected',true);
+                }
+                else {
+                    $(this).hide();
+                }
+            });
+          });
+        };
+   </script>
+
     <style>
             #loading {
         position: fixed;
@@ -66,7 +84,7 @@
    </style>
 </head>
 
-<body onload="inactivityTime();">
+<body onload="inactivityTime();inmateFilter();">
 
 <div id="loading" style="display: none;">
   <img id="loading-image" src="<?= asset_url('assets/img/loading.gif') ?>" alt="Loading..." />
@@ -249,12 +267,38 @@
                                 <label for="select-inmate">
                                     <strong><?= lang('inmates') ?></strong>
                                 </label>
-                                
+                                <br/><span style="padding:10px 10px 10px 10px;">Filter by last name: <input type="text" id="inmate-filter" size="10" /></span>
                                 <select id="select-inmate" class="form-control">
                                 <?php 
+                                //  First create an array of lastname, first middle
+                                $inmateLFM = array();
                                 foreach ($available_inmates as $inmate)
                                 {
-                                    echo '<option value="' . $inmate['id'] . '">' . $inmate['id']. "-" .$inmate['inmate_name'] . '</option>';
+                                    $fmlname = strtolower(trim($inmate['inmate_name']));
+                                    $fmlname = preg_replace('/\s+/', ' ', $fmlname);
+                                    $nameparts = explode(' ', $fmlname);
+                                    $inmateLastFirst = $fmlname;
+                                    if (count($nameparts) > 3) {
+                                        $inmateLastFirst = ucfirst($nameparts[count($nameparts) - 1]) . ", ";
+                                        for ($i = 0; $i < count($nameparts) - 1; $i++) {
+                                            $inmateLastFirst .= ucfirst($nameparts[$i]) . " ";
+                                        }
+                                    } else if (count($nameparts) == 3) {
+                                        $inmateLastFirst = ucfirst($nameparts[2]) . ", " . ucfirst($nameparts[0]) . " " . ucfirst($nameparts[1]);
+                                    } else if (count($nameparts) == 2) {
+                                        $inmateLastFirst = ucfirst($nameparts[1]) . ", " . ucfirst($nameparts[0]);
+                                    }
+                                    $obj = array('id' => $inmate['id'], 'name' => $inmateLastFirst);
+                                    array_push($inmateLFM, $obj);
+                                }
+
+                                usort($inmateLFM, function($a, $b) {
+                                    return strcmp($a['name'], $b['name']);
+                                });
+
+                                foreach ($inmateLFM as $inmate)
+                                {
+                                    echo '<option value="' . $inmate['id'] . '">' . $inmate['name'] . '</option>';
                                 }                            
             					?>
             					</select>
