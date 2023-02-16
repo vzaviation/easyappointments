@@ -268,7 +268,7 @@
                                     <strong><?= lang('inmates') ?></strong>
                                 </label>
                                 <br/><span style="padding:10px 10px 10px 10px;">Filter by last name: <input type="text" id="inmate-filter" size="10" /></span>
-                                <select id="select-inmate" class="form-control">
+                                <select id="select-inmate" size="3" class="form-control">
                                 <?php 
                                 //  First create an array of lastname, first middle
                                 $inmateLFM = array();
