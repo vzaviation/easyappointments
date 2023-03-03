@@ -63,6 +63,241 @@
         };
    </script>
 
+    <script type="text/javascript">
+        var birthDateV1 = function () {
+          $('#birth-date-v1').focusout(function () {
+            const dateregex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+            let valthis = $(this).val();
+            if (valthis != "") {
+                const matches = valthis.match(dateregex);
+                if ((matches == null) || (matches.length == 0)) {
+                    alert("Please enter the bithdate in the format mm/dd/yyyy");
+                    $(this).val("");
+                } else {
+                    // Check the given date vs the current date to determine visitor age
+                    let today = new Date();
+                    try {
+                        let bDate = new Date(matches[3], matches[1] - 1, matches[2]);
+                        var age = today.getFullYear() - bDate.getFullYear();
+                        var m = today.getMonth() - bDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+                            age--;
+                        }
+                        if (age <= 0) {
+                            alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                            $(this).val("");
+                        } else {
+                            if (age == 16) {
+                                $('#visitor-1-dl-box').show();
+                                $('#visitor-1-dl-file-name').addClass("required");
+                                $('#visitor-1-dl-number-box').hide();
+                                $('#visitor-1-dl-number').removeClass("required");
+                                $('#visitor-1-dl-state-box').hide();
+                                $('#visitor-1-dl-state').removeClass("required");
+                            } else if (age >= 17) {
+                                $('#visitor-1-dl-box').show();
+                                $('#visitor-1-dl-file-name').addClass("required");
+                                $('#visitor-1-dl-number-box').show();
+                                $('#visitor-1-dl-number').addClass("required");
+                                $('#visitor-1-dl-state-box').show();
+                                $('#visitor-1-dl-state').addClass("required");
+                            } else {
+                                $('#visitor-1-dl-box').hide();
+                                $('#visitor-1-dl-file-name').removeClass("required");
+                                $('#visitor-1-dl-number-box').hide();
+                                $('#visitor-1-dl-number').removeClass("required");
+                                $('#visitor-1-dl-state-box').hide();
+                                $('#visitor-1-dl-state').removeClass("required");
+                            }
+                        }
+                    } catch (err) {
+                        alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                        $(this).val("");
+                    }
+                }
+            } else {
+                alert("Birth Date is required");
+            }
+          });
+        };
+
+        var birthDateV2 = function () {
+          $('#birth-date-v2').focusout(function () {
+            const dateregex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+            let valthis = $(this).val();
+            if (valthis != "") {
+                const matches = valthis.match(dateregex);
+                if ((matches == null) || (matches.length == 0)) {
+                    alert("Please enter the bithdate in the format mm/dd/yyyy");
+                    $(this).val("");
+                } else {
+                    // Check the given date vs the current date to determine visitor age
+                    let today = new Date();
+                    try {
+                        let bDate = new Date(matches[3], matches[1] - 1, matches[2]);
+                        var age = today.getFullYear() - bDate.getFullYear();
+                        var m = today.getMonth() - bDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+                            age--;
+                        }
+                        if (age <= 0) {
+                            alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                            $(this).val("");
+                        } else {
+                            if (age == 16) {
+                                $('#visitor-2-dl-box').show();
+                                $('#visitor-2-dl-file-name').addClass("required");
+                                $('#visitor-2-dl-number-box').hide();
+                                $('#visitor-2-dl-number').removeClass("required");
+                                $('#visitor-2-dl-state-box').hide();
+                                $('#visitor-2-dl-state').removeClass("required");
+                            } else if (age >= 17) {
+                                $('#visitor-2-dl-box').show();
+                                $('#visitor-2-dl-file-name').addClass("required");
+                                $('#visitor-2-dl-number-box').show();
+                                $('#visitor-2-dl-number').addClass("required");
+                                $('#visitor-2-dl-state-box').show();
+                                $('#visitor-2-dl-state').addClass("required");
+                            } else {
+                                $('#visitor-2-dl-box').hide();
+                                $('#visitor-2-dl-file-name').removeClass("required");
+                                $('#visitor-2-dl-number-box').hide();
+                                $('#visitor-2-dl-number').removeClass("required");
+                                $('#visitor-2-dl-state-box').hide();
+                                $('#visitor-2-dl-state').removeClass("required");
+                            }
+                        }
+                    } catch (err) {
+                        alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                        $(this).val("");
+                    }
+                }
+            } else {
+                alert("Birth Date is required");
+            }
+          });
+        };
+
+        var birthDateV3 = function () {
+          $('#birth-date-v3').focusout(function () {
+            const dateregex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+            let valthis = $(this).val();
+            if (valthis != "") {
+                const matches = valthis.match(dateregex);
+                if ((matches == null) || (matches.length == 0)) {
+                    alert("Please enter the bithdate in the format mm/dd/yyyy");
+                    $(this).val("");
+                } else {
+                    // Check the given date vs the current date to determine visitor age
+                    let today = new Date();
+                    try {
+                        let bDate = new Date(matches[3], matches[1] - 1, matches[2]);
+                        var age = today.getFullYear() - bDate.getFullYear();
+                        var m = today.getMonth() - bDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+                            age--;
+                        }
+                        if (age <= 0) {
+                            alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                            $(this).val("");
+                        } else {
+                            if (age == 16) {
+                                $('#visitor-3-dl-box').show();
+                                $('#visitor-3-dl-file-name').addClass("required");
+                                $('#visitor-3-dl-number-box').hide();
+                                $('#visitor-3-dl-number').removeClass("required");
+                                $('#visitor-3-dl-state-box').hide();
+                                $('#visitor-3-dl-state').removeClass("required");
+                            } else if (age >= 17) {
+                                $('#visitor-3-dl-box').show();
+                                $('#visitor-3-dl-file-name').addClass("required");
+                                $('#visitor-3-dl-number-box').show();
+                                $('#visitor-3-dl-number').addClass("required");
+                                $('#visitor-3-dl-state-box').show();
+                                $('#visitor-3-dl-state').addClass("required");
+                            } else {
+                                $('#visitor-3-dl-box').hide();
+                                $('#visitor-3-dl-file-name').removeClass("required");
+                                $('#visitor-3-dl-number-box').hide();
+                                $('#visitor-3-dl-number').removeClass("required");
+                                $('#visitor-3-dl-state-box').hide();
+                                $('#visitor-3-dl-state').removeClass("required");
+                            }
+                        }
+                    } catch (err) {
+                        alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                        $(this).val("");
+                    }
+                }
+            } else {
+                alert("Birth Date is required");
+            }
+          });
+        };
+
+        var addVisitor2 = function () {
+          $('#button-add-visitor-2').click(function () {
+            $('#visitor-2-info').show();
+            $('#button-add-visitor-2').hide();
+            $('#button-remove-visitor-2').show();
+            $('#visitor-2-name').addClass('required');
+            $('#birth-date-v2').addClass('required');
+          });
+        }
+
+        var removeVisitor2 = function () {
+          $('#button-remove-visitor-2').click(function () {
+            $('#visitor-2-info').hide();
+            $('#button-add-visitor-2').show();
+            $('#button-remove-visitor-2').hide();
+            $('#visitor-2-name').removeClass('required');
+            $('#birth-date-v2').removeClass('required');
+            $('#visitor-2-dl-box').hide();
+            $('#visitor-2-dl-file-name').removeClass("required");
+            $('#visitor-2-dl-number-box').hide();
+            $('#visitor-2-dl-number').removeClass("required");
+            $('#visitor-2-dl-state-box').hide();
+            $('#visitor-2-dl-state').removeClass("required");
+            $('#visitor-2-name').val("");
+            $('#birth-date-v2').val("");
+            $('#visitor-2-dl-file-name').val("");
+            $('#visitor-2-dl-number').val("");
+            $('#visitor-2-dl-state').val("");
+          });
+        }
+
+        var addVisitor3 = function () {
+          $('#button-add-visitor-3').click(function () {
+            $('#visitor-3-info').show();
+            $('#button-add-visitor-3').hide();
+            $('#button-remove-visitor-3').show();
+            $('#visitor-3-name').addClass('required');
+            $('#birth-date-v3').addClass('required');
+          });
+        }
+
+        var removeVisitor3 = function () {
+          $('#button-remove-visitor-3').click(function () {
+            $('#visitor-3-info').hide();
+            $('#button-add-visitor-3').show();
+            $('#button-remove-visitor-3').hide();
+            $('#visitor-3-name').removeClass('required');
+            $('#birth-date-v3').removeClass('required');
+            $('#visitor-3-dl-box').hide();
+            $('#visitor-3-dl-file-name').removeClass("required");
+            $('#visitor-3-dl-number-box').hide();
+            $('#visitor-3-dl-number').removeClass("required");
+            $('#visitor-3-dl-state-box').hide();
+            $('#visitor-3-dl-state').removeClass("required");
+            $('#visitor-3-name').val("");
+            $('#birth-date-v3').val("");
+            $('#visitor-3-dl-file-name').val("");
+            $('#visitor-3-dl-number').val("");
+            $('#visitor-3-dl-state').val("");
+          });
+        }
+    </script>
+
     <style>
             #loading {
         position: fixed;
@@ -84,7 +319,7 @@
    </style>
 </head>
 
-<body onload="inactivityTime();inmateFilter();">
+<body onload="inactivityTime();inmateFilter();birthDateV1();birthDateV2();birthDateV3();addVisitor2();removeVisitor2();addVisitor3();removeVisitor3();">
 
 <div id="loading" style="display: none;">
   <img id="loading-image" src="<?= asset_url('assets/img/loading.gif') ?>" alt="Loading..." />
@@ -368,7 +603,7 @@
                 </div>
             </div>
 
-            <!-- ENTER CUSTOMER DATA -->
+            <!-- ENTER VISITOR DATA -->
 
             <div id="wizard-frame-3" class="wizard-frame" style="display:none;">
                 <div class="frame-container">
@@ -376,9 +611,9 @@
                     <h2 class="frame-title"><?= lang('customer_information') ?></h2>
 
                     <div class="vl_information">
-                    PLEASE NOTE: ALL VISITORS WHO ARE 17 OR OLDER SCHEDULING A VISIT WITH AN INMATE HOUSED IN THE JAIL, WILL HAVE A SEPARATE VISITATION TIME.
+                    1. The inmate designates five (5) individuals who are authorized to visit.  Minors fifteen (15) years or younger are not required to be listed.  All visitors sixteen (16) years or older must show some form of picture identification.  Minors under sixteen (16) years of age must be accompanied by an adult.
                     <br/><br/>
-                    ALL VISITORS MUST HAVE A VALID GOVERNMENT ISSUED IDENTIFICATION CARD WITH A PHOTO TO SCHEDULE A VISIT. THE ID MUST BE AVAILABLE UPON ARRIVAL FOR INSPECTION WHEN YOU ARRIVE FOR THE SCHEDULED VISIT.    
+                    2. Only three (3) people from the inmate's list may be in the visitation room at any one time.
                     </div>
 
                     <div class="row frame-content">
@@ -390,6 +625,8 @@
                                 </label>
                                 <input type="text" id="first-name" class="required form-control" maxlength="100"/>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label for="last-name" class="control-label">
                                     <?= lang('last_name') ?>
@@ -397,6 +634,36 @@
                                 </label>
                                 <input type="text" id="last-name" class="required form-control" maxlength="120"/>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="address" class="control-label">
+                                    <?= lang('address') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="address" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="city" class="control-label">
+                                    <?= lang('city') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="city" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="zip-code" class="control-label">
+                                    <?= lang('zip_code') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="zip-code" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6"><br/></div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label for="email" class="control-label">
                                     <?= lang('email') ?>
@@ -404,6 +671,8 @@
                                 </label>
                                 <input type="text" id="email" class="required form-control" maxlength="120"/>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label for="phone-number" class="control-label">
                                     <?= lang('phone_number') ?>
@@ -412,10 +681,41 @@
                                 <input type="text" id="phone-number" maxlength="60"
                                        class="<?= $require_phone_number === '1' ? 'required' : '' ?> form-control"/>
                             </div>
-                             
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
-                                <label for="visitor_1_dl_state" class="control-label">
+                                <label for="birth-date-v1" class="control-label">
+                                    <?= lang('birth_date') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="birth-date-v1" maxlength="10" class="required form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-box" style="display:none;">
+                                <label for="visitor-1-dl" class="control-label">
+                                    <?= lang('visitor_1_dl') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
+                                <input type="hidden" id="visitor-1-dl-file-name" value="" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-number-box" style="display:none;">
+                                <label for="visitor-1-dl-number" class="control-label">
+                                    <?= lang('visitor_1_dl_number') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-1-dl-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-state-box" style="display:none;">
+                                <label for="visitor-1-dl-state" class="control-label">
                                     <?= lang('visitor_1_dl_state') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
                                 
                                 <select id="visitor-1-dl-state" class="form-control">
@@ -471,76 +771,85 @@
                                             <option value="Wisconsin">Wisconsin</option>
                                             <option value="Wyoming">Wyoming</option>
                                         </select>
-                            </div> 
-                             
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label for="notes" class="control-label">
                                     <?= lang('notes') ?>
                                 </label>
                                 <textarea id="notes" maxlength="500" class="form-control" rows="1"></textarea>
                             </div>                        
-                            
                         </div>
-                      
                         <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label for="address" class="control-label">
-                                    <?= lang('address') ?>
-                                </label>
-                                <input type="text" id="address" class="form-control" maxlength="120"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="city" class="control-label">
-                                    <?= lang('city') ?>
-                                </label>
-                                <input type="text" id="city" class="form-control" maxlength="120"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="zip-code" class="control-label">
-                                    <?= lang('zip_code') ?>
-                                </label>
-                                <input type="text" id="zip-code" class="form-control" maxlength="120"/>
-                            </div>
-                            
-                            
-                                <div class="form-group">
-                                <label for="visitor_1_dl" class="control-label">
-                                    <?= lang('visitor_1_dl') ?>
-                                </label>
-				    <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
-					<input type="hidden" id="visitor-1-dl-file-name" value="" />
-                                </div>
-                           
-                            
-                            <div class="form-group">
-                                <label for="visitor_1_dl_number" class="control-label">
-                                    <?= lang('visitor_1_dl_number') ?>
-                                </label>
-                                <input type="text" id="visitor-1-dl-number" class="form-control"/>
-                            </div>
-                            
+                            <br/>
                         </div>
-                    </div>
-                <h2 class="frame-title"><?= lang('additional_customer_information') ?></h2> 
-
-                    <div class="vl_information">
-                    ONLY ONE ADDITIONAL VISITOR WILL BE ALLOWED. THE ADDITIONAL VISITOR MUST BE UNDER THE AGE OF 17 AND ACCOMPANIED BY AN ADULT GUARDIAN.
                     </div>
 
                     <div class="row frame-content">
+                        <hr style="width:95%;" />
                         <div class="col-12 col-md-6">
-                
-                            <div class="form-group">
-                                <label for="visitor_2_name" class="control-label">
-                                    <?= lang('visitor_2_name') ?>
-                                </label>
-                                <input type="text" id="visitor-2-name" class="form-control" maxlength="500"/>
+                            <div class="command-buttons">
+                                <button type="button" id="button-add-visitor-2" class="btn btn-dark">
+                                    Add Visitor
+                                </button>
+                                <button type="button" id="button-remove-visitor-2" class="btn btn-outline-secondary" style="display:none;">
+                                    Remove Visitor
+                                </button>
                             </div>
-                            
+                        </div>
+                    </div>
+
+                    <!-- Visitor 2 -->
+                    <div class="row frame-content" id="visitor-2-info" style="display:none;">
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="visitor_2_dl_state" class="control-label">
-                                    <?= lang('visitor_2_dl_state') ?>
+                                <label for="visitor-2-name" class="control-label">
+                                    <?= lang('visitor_2_name') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
+                                <input type="text" id="visitor-2-name" class="form-control" maxlength="100"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <br/>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
+                            <div class="form-group">
+                                <label for="birth-date-v2" class="control-label">
+                                    <?= lang('birth_date') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="birth-date-v2" maxlength="10" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-box" style="display:none;">
+                                <label for="visitor-2-dl" class="control-label">
+                                    <?= lang('visitor_2_dl') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
+                                <input type="hidden" id="visitor-2-dl-file-name" value="" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-number-box" style="display:none;">
+                                <label for="visitor-2-dl-number" class="control-label">
+                                    <?= lang('visitor_2_dl_number') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-dl-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-state-box" style="display:none;">
+                                <label for="visitor-2-dl-state" class="control-label">
+                                    <?= lang('visitor_2_dl_state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
                                 <select id="visitor-2-dl-state" class="form-control">
                                             <option value="Select">Select</option>
                                             <option value="Alabama">Alabama</option>
@@ -595,73 +904,70 @@
                                             <option value="Wyoming">Wyoming</option>
                                         </select>
                             </div>
-                            
-                            <div style="display:none;">
-                            <div class="form-group">
-                                <label for="visitor_3_name" class="control-label">
-                                    <?= lang('visitor_3_name') ?>
-                                </label>
-                                <input type="text" id="visitor-3-name" class="form-control" maxlength="500"/>
+                        </div>
+                        <hr style="width:95%;" />
+                        <div class="col-12 col-md-6">
+                            <div class="command-buttons">
+                                <button type="button" id="button-add-visitor-3" class="btn btn-dark">
+                                    Add Visitor
+                                </button>
+                                <button type="button" id="button-remove-visitor-3" class="btn btn-outline-secondary" style="display:none;">
+                                    Remove Visitor
+                                </button>
                             </div>
-                            
-                              <div class="form-group">
-                                <label for="visitor_3_dl_number" class="control-label">
+                        </div>
+                    </div>
+
+                    <!-- Visitor 3 -->
+                    <div class="row frame-content" id="visitor-3-info" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-name" class="control-label">
+                                    <?= lang('visitor_3_name') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-name" class="form-control" maxlength="100"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <br/>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
+                            <div class="form-group">
+                                <label for="birth-date-v3" class="control-label">
+                                    <?= lang('birth_date') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="birth-date-v3" maxlength="10" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-box" style="display:none;">
+                                <label for="visitor-3-dl" class="control-label">
+                                    <?= lang('visitor_3_dl') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
+                                <input type="hidden" id="visitor-3-dl-file-name" value="" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-number-box" style="display:none;">
+                                <label for="visitor-3-dl-number" class="control-label">
                                     <?= lang('visitor_3_dl_number') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="visitor-3-dl-number" class="form-control"/>
                             </div>
-                            
-
-                            
-                            <div class="form-group">
-                                <label for="visitor_4_name" class="control-label">
-                                    <?= lang('visitor_4_name') ?>
-                                </label>
-                                <input type="text" id="visitor-4-name" class="form-control" maxlength="500"/>
-                            </div>
-                            
-                              <div class="form-group">
-                                <label for="visitor_4_dl_number" class="control-label">
-                                    <?= lang('visitor_4_dl_number') ?>
-                                </label>
-                                <input type="text" id="visitor-4-dl-number" class="form-control"/>
-                            </div>
-                            </div>
                         </div>
-                
-                <div class="col-12 col-md-6">
-                
-                           
-                                <div class="form-group">
-                                <label for="visitor_2_dl" class="control-label">
-                                    <?= lang('visitor_2_dl') ?>
-                                </label>
-				    <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
-				<input type="hidden" id="visitor-2-dl-file-name" value="" />
-                                </div>
-
-                            <div class="form-group">
-                                <label for="visitor_2_dl_number" class="control-label">
-                                    <?= lang('visitor_2_dl_number') ?>
-                                </label>
-                                <input type="text" id="visitor-2-dl-number" class="form-control"/>
-                            </div>
-                                                       
-                            
-                            <div style="display:none;">
-                                <div class="form-group">
-                                <label for="visitor_3_dl" class="control-label">
-                                    <?= lang('visitor_3_dl') ?>
-                                </label>
-				    <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
-					 <input type="hidden" id="visitor-3-dl-file-name" value="" />
-                                </div>
-                            
-                            
-                            <div class="form-group">
-                                <label for="visitor_3_dl_state" class="control-label">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-state-box" style="display:none;">
+                                <label for="visitor-3-dl-state" class="control-label">
                                     <?= lang('visitor_3_dl_state') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
+                                
                                 <select id="visitor-3-dl-state" class="form-control">
                                             <option value="Select">Select</option>
                                             <option value="Alabama">Alabama</option>
@@ -716,79 +1022,8 @@
                                             <option value="Wyoming">Wyoming</option>
                                         </select>
                             </div>
-                            
-                           
-                                <div class="form-group">
-                                <label for="visitor_4_dl" class="control-label">
-                                    <?= lang('visitor_4_dl') ?>
-                                </label>
-			   
-					 <input type="file" id="visitor-4-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-4-dl')"/>
-					<input type="hidden" id="visitor-4-dl-file-name" value="" />
-                                </div>
-                            
-                            
-                            <div class="form-group">
-                                <label for="visitor_4_dl_state" class="control-label">
-                                    <?= lang('visitor_4_dl_state') ?>
-                                </label>
-                                <select id="visitor-4-dl-state" class="form-control">
-                                            <option value="Select">Select</option>
-                                            <option value="Alabama">Alabama</option>
-                                            <option value="Alaska">Alaska</option>
-                                            <option value="Arizona">Arizona</option>
-                                            <option value="Arkansas">Arkansas</option>
-                                            <option value="California">California</option>
-                                            <option value="Colorado">Colorado</option>
-                                            <option value="Connecticut">Connecticut</option>
-                                            <option value="Delaware">Delaware</option>
-                                            <option value="Florida">Florida</option>
-                                            <option value="Georgia">Georgia</option>
-                                            <option value="Hawaii">Hawaii</option>
-                                            <option value="Idaho">Idaho</option>
-                                            <option value="Illinois">Illinois</option>
-                                            <option value="Indiana">Indiana</option>
-                                            <option value="Iowa">Iowa</option>
-                                            <option value="Kansas">Kansas</option>
-                                            <option value="Kentucky">Kentucky</option>
-                                            <option value="Louisiana">Louisiana</option>
-                                            <option value="Maine">Maine</option>
-                                            <option value="Maryland">Maryland</option>
-                                            <option value="Massachusetts">Massachusetts</option>
-                                            <option value="Michigan">Michigan</option>
-                                            <option value="Minnesota">Minnesota</option>
-                                            <option value="Mississippi">Mississippi</option>
-                                            <option value="Missouri">Missouri</option>
-                                            <option value="Montana">Montana</option>
-                                            <option value="Nebraska">Nebraska</option>
-                                            <option value="Nevada">Nevada</option>
-                                            <option value="New Hampshire">New Hampshire</option>
-                                            <option value="New Jersey">New Jersey</option>
-                                            <option value="New Mexico">New Mexico</option>
-                                            <option value="New York">New York</option>
-                                            <option value="North Carolina">North Carolina</option>
-                                            <option value="North Dakota">North Dakota</option>
-                                            <option value="Ohio">Ohio</option>
-                                            <option value="Oklahoma">Oklahoma</option>
-                                            <option value="Oregon">Oregon</option>
-                                            <option value="Pennsylvania">Pennsylvania</option>
-                                            <option value="Rhode Island">Rhode Island</option>
-                                            <option value="South Carolina">South Carolina</option>
-                                            <option value="South Dakota">South Dakota</option>
-                                            <option value="Tennessee">Tennessee</option>
-                                            <option value="Texas">Texas</option>
-                                            <option value="Utah">Utah</option>
-                                            <option value="Vermont">Vermont</option>
-                                            <option value="Virginia">Virginia</option>
-                                            <option value="Washington">Washington</option>
-                                            <option value="West Virginia">West Virginia</option>
-                                            <option value="Wisconsin">Wisconsin</option>
-                                            <option value="Wyoming">Wyoming</option>
-                                        </select>
-                            </div>            
-                            </div>
-                </div>
-                </div>
+                        </div>
+                    </div>
                 </div>
                    
 

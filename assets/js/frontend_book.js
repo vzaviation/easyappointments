@@ -550,6 +550,9 @@ window.FrontendBook = window.FrontendBook || {};
                 if (!$(requiredField).val()) {
                     $(requiredField).parents('.form-group').addClass('has-error');
                     missingRequiredField = true;
+                } else if ($(requiredField).val() == "Select") {
+                    $(requiredField).parents('.form-group').addClass('has-error');
+                    missingRequiredField = true;
                 }
             });
             if (missingRequiredField) {

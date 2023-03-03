@@ -20,6 +20,7 @@ $lang['phone_number'] = 'Número de teléfono';
 $lang['address'] = 'Domicilio';
 $lang['city'] = 'Ciudad';
 $lang['zip_code'] = 'Código postal';
+$lang['birth_date'] = 'Fecha de nacimiento (mm/dd/yyyy)';
 $lang['notes'] = 'Notas';
 $lang['fields_are_required'] = 'Los campos con * son obligatorios';
 $lang['appointment_confirmation'] = 'Confirme la cita';
