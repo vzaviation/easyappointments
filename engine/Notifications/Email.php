@@ -22,6 +22,7 @@ use EA\Engine\Types\Url;
 use EA_Controller;
 use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
 use RuntimeException;
 
 /**
@@ -154,9 +155,9 @@ class Email {
         ], TRUE);
 
         $mailer = $this->create_mailer();
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
-        $mailer->AddAddress($recipient_email->get());
+//        $mailer->From = $settings['company_email'];
+//        $mailer->FromName = $settings['company_name'];
+        $mailer->AddAddress($recipient_email->get(),'Vistitation Link User');
         $mailer->Subject = $title->get();
         $mailer->Body = $html;
         $mailer->addStringAttachment($ics_stream->get(), 'invitation.ics');
@@ -256,8 +257,8 @@ class Email {
         $mailer = $this->create_mailer();
 
         // Send email to recipient.
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
+//        $mailer->From = $settings['company_email'];
+//        $mailer->FromName = $settings['company_name'];
         $mailer->AddAddress($recipient_email->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = lang('appointment_cancelled_title');
         $mailer->Body = $html;
@@ -290,8 +291,8 @@ class Email {
 
         $mailer = $this->create_mailer();
 
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
+//        $mailer->From = $settings['company_email'];
+//        $mailer->FromName = $settings['company_name'];
         $mailer->AddAddress($recipientEmail->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = lang('new_account_password');
         $mailer->Body = $html;
@@ -312,8 +313,12 @@ class Email {
     {
         $mailer = new PHPMailer();
 
-        if ($this->config['protocol'] === 'smtp')
-        {
+        $from_email = "noreply@visitationlink.com";
+
+        // Using AWS SES we are going to use SMTP
+//        if ($this->config['protocol'] === 'smtp')
+//        {
+//            $mailer->SMTPDebug = SMTP::DEBUG_SERVER;
             $mailer->isSMTP();
             $mailer->Host = $this->config['smtp_host'];
             $mailer->SMTPAuth = TRUE;
@@ -321,8 +326,8 @@ class Email {
             $mailer->Password = $this->config['smtp_pass'];
             $mailer->SMTPSecure = $this->config['smtp_crypto'];
             $mailer->Port = $this->config['smtp_port'];
-        }
-
+//        }
+        $mailer->SetFrom($from_email, 'Visitation Link');
         $mailer->IsHTML($this->config['mailtype'] === 'html');
         $mailer->CharSet = $this->config['charset'];
 
