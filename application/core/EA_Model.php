@@ -50,6 +50,7 @@
  * @property Settings_model $settings_model
  * @property User_model $user_model
  * @property Inmates_model $inmates_model
+ * @property Visitors_model $visitors_model
  *
  * @property Availability $availability
  * @property Google_Sync $google_sync

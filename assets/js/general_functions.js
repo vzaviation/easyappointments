@@ -636,4 +636,23 @@ window.GeneralFunctions = window.GeneralFunctions || {};
         return date;
     }
 
+    /**
+     * Change birthdate format from mm/dd/yyyy to yyyy-mm-dd for database
+     */
+    exports.dateToDBFormat = function (inDate) {
+        const dmyRegex = new RegExp(/([\d]{1,2})\/([\d]{1,2})\/(\d\d\d\d)/);
+
+        let outDate = inDate;
+
+        let matches = inDate.match(dmyRegex);
+        if (matches != null) {
+            if (matches.length == 4) {
+                // 1 = month, 2 = day, 3 = 4-digit year -- format as YYYY-MM-DD
+                outDate = matches[3] + "-" + String(matches[1]).padStart(2, '0') + "-" + String(matches[2]).padStart(2, '0');
+                if (outDate == "2000-01-00") outDate = "";
+            }
+        }
+        return outDate;
+    }
+
 })(window.GeneralFunctions);

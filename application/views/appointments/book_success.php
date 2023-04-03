@@ -84,7 +84,7 @@
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
         appointmentData: <?= json_encode($appointment_data) ?>,
         providerData: <?= json_encode($provider_data) ?>,
-        customerData: <?= json_encode($customer_data) ?>,
+        customerData: <?= json_encode($visitor_data) ?>,
         serviceData: <?= json_encode($service_data) ?>,
         companyName: <?= json_encode($company_name) ?>,
         googleApiKey: <?= json_encode(config('google_api_key')) ?>,

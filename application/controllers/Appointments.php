@@ -32,7 +32,8 @@ class Appointments extends EA_Controller {
         $this->load->model('admins_model');
         $this->load->model('secretaries_model');
         $this->load->model('services_model');
-        $this->load->model('customers_model');
+//        $this->load->model('customers_model');
+        $this->load->model('visitors_model');
         $this->load->model('settings_model');
         $this->load->library('timezones');
         $this->load->library('synchronization');
@@ -273,7 +274,9 @@ class Appointments extends EA_Controller {
         $appointment = $appointments[0];
         unset($appointment['notes']);
 
-        $customer = $this->customers_model->get_row($appointment['id_users_customer']);
+        // Don't save the visitors as customers / users any more
+        //$customer = $this->customers_model->get_row($appointment['id_users_customer']);
+        $visitors = $this->visitors_model->get_appointment_visitors($appointment['id']);
 
         $provider = $this->providers_model->get_row($appointment['id_users_provider']);
 
@@ -293,12 +296,11 @@ class Appointments extends EA_Controller {
                 'email' => $provider['email'],
                 'timezone' => $provider['timezone'],
             ],
-            'customer_data' => [
-                'id' => $customer['id'],
-                'first_name' => $customer['first_name'],
-                'last_name' => $customer['last_name'],
-                'email' => $customer['email'],
-                'timezone' => $customer['timezone'],
+            'visitor_data' => [
+                'id' => $visitor['id'],
+                'first_name' => $visitor['first_name'],
+                'last_name' => $visitor['last_name'],
+                'email' => $visitor['email']
             ],
             'service_data' => $service,
             'company_name' => $company_name,
@@ -436,7 +438,12 @@ class Appointments extends EA_Controller {
             $captcha = $this->input->post('captcha');
             $manage_mode = filter_var($post_data['manage_mode'], FILTER_VALIDATE_BOOLEAN);
             $appointment = $post_data['appointment'];
-            $customer = $post_data['customer'];
+            $visitor = $post_data['visitor1'];
+            $visitors = array($visitor);
+            $visitor2 = isset($post_data['visitor2']) ? $post_data['visitor2'] : NULL;
+            if ($visitor2 != NULL) $visitors[] = $visitor2;
+            $visitor3 = isset($post_data['visitor3']) ? $post_data['visitor3'] : NULL;
+            if ($visitor3 != NULL) $visitors[] = $visitor3;
 
             // Check appointment availability before registering it to the database.
             $appointment['id_users_provider'] = $this->check_datetime_availability();
@@ -464,10 +471,11 @@ class Appointments extends EA_Controller {
                 return;
             }
 
-            if ($this->customers_model->exists($customer))
-            {
-                $customer['id'] = $this->customers_model->find_record_id($customer);
-            }
+            // TODO: Add some checks for existing visitor
+//            if ($this->visitors_model->exists($visitor1))
+//            {
+//                $visitor1['id'] = $this->visitors_model->find_record_id($visitor);
+//            }
 
             if (empty($appointment['location']) && ! empty($service['location']))
             {
@@ -475,13 +483,41 @@ class Appointments extends EA_Controller {
             }
 
             // Save customer language (the language which is used to render the booking page).
-            $customer['language'] = config('language');
-            $customer_id = $this->customers_model->add($customer);
+            //$customer['language'] = config('language');
+            //$customer_id = $this->customers_model->add($customer);
 
-            $appointment['id_users_customer'] = $customer_id;
+//            $appointment['id_users_customer'] = $customer_id;
             $appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
             $appointment['id'] = $this->appointments_model->add($appointment);
             $appointment['hash'] = $this->appointments_model->get_value('hash', $appointment['id']);
+            
+            // Add the visitor(s)
+            $v1id = $this->visitors_model->insert($visitor);
+            $v2id = -1;
+            $v2id = isset($visitor2['first_name']) ? $this->visitors_model->insert($visitor2) : -1;
+            $v3id = isset($visitor3['first_name']) ? $this->visitors_model->insert($visitor3) : -1;
+
+            // Load the appointment visitor records
+            $appointment_visitor = [
+                'appointment_id' => $appointment['id'],
+                'visitor_id' => $v1id,
+                'visitor_order' => 1
+            ];
+            $v1avid = $this->visitors_model->insert_appointment_visitor($appointment_visitor);
+            $v2avid = -1;
+            if ($v2id !== -1)
+            {
+                $appointment_visitor['visitor_id'] = $v2id;
+                $appointment_visitor['visitor_order'] = 2;
+                $v2avid = $this->visitors_model->insert_appointment_visitor($appointment_visitor);
+            }
+            $v3avid = -1;
+            if ($v3id !== -1)
+            {
+                $appointment_visitor['visitor_id'] = $v3id;
+                $appointment_visitor['visitor_order'] = 3;
+                $v3avid = $this->visitors_model->insert_appointment_visitor($appointment_visitor);
+            }
 
             $settings = [
                 'company_name' => $this->settings_model->get_setting('company_name'),
@@ -491,8 +527,8 @@ class Appointments extends EA_Controller {
                 'time_format' => $this->settings_model->get_setting('time_format')
             ];
 
-            $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode);
-            $this->notifications->notify_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode);
+            $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $visitors, $settings, $manage_mode);
+            $this->notifications->notify_appointment_saved($appointment, $service, $provider, $visitors, $settings, $manage_mode);
 
             $response = [
                 'appointment_id' => $appointment['id'],

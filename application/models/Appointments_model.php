@@ -114,6 +114,7 @@ class Appointments_model extends EA_Model {
 
         if ($appointment['is_unavailable'] == FALSE)
         {
+            /*   IGNORE current customer check in favor of Visitor rules
             // Check if the customer's id is valid.
             $num_rows = $this->db
                 ->select('*')
@@ -127,6 +128,7 @@ class Appointments_model extends EA_Model {
             {
                 throw new Exception('Appointment customer id is invalid.');
             }
+            */
 
             // Check if the service id is valid.
             $num_rows = $this->db->get_where('services', ['id' => $appointment['id_services']])->num_rows();

@@ -43,8 +43,9 @@ class Synchronization {
      * @param array $settings Required settings for the notification content.
      * @param bool|false $manage_mode True if the appointment is being edited.
      */
-    public function sync_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode = FALSE)
+    public function sync_appointment_saved($appointment, $service, $provider, $visitors, $settings, $manage_mode = FALSE)
     {
+        $customer = $visitors[0];
         try
         {
             $google_sync = filter_var(

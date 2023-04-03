@@ -263,11 +263,14 @@
             $('#visitor-2-dl-file-name').val("");
             $('#visitor-2-dl-number').val("");
             $('#visitor-2-dl-state').val("");
+            $('#button-add-visitor-3').hide();
+            $('#button-remove-visitor-3').hide();
           });
         }
 
         var addVisitor3 = function () {
           $('#button-add-visitor-3').click(function () {
+            $('#button-remove-visitor-2').hide();
             $('#visitor-3-info').show();
             $('#button-add-visitor-3').hide();
             $('#button-remove-visitor-3').show();
@@ -278,6 +281,7 @@
 
         var removeVisitor3 = function () {
           $('#button-remove-visitor-3').click(function () {
+            $('#button-remove-visitor-2').show();
             $('#visitor-3-info').hide();
             $('#button-add-visitor-3').show();
             $('#button-remove-visitor-3').hide();
@@ -685,11 +689,11 @@
                         <div class="col-12 col-md-6">
                             <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
-                                <label for="birth-date-v1" class="control-label">
+                                <label for="visitor-1-birth-date" class="control-label">
                                     <?= lang('birth_date') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="birth-date-v1" maxlength="10" class="required form-control"/>
+                                <input type="text" id="visitor-1-birth-date" maxlength="10" class="required form-control"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -719,7 +723,7 @@
                                 </label>
                                 
                                 <select id="visitor-1-dl-state" class="form-control">
-                                            <option value="Select">Select</option>
+                                            <option value="">Select</option>
                                             <option value="Alabama">Alabama</option>
                                             <option value="Alaska">Alaska</option>
                                             <option value="Arizona">Arizona</option>
@@ -804,24 +808,30 @@
                     <div class="row frame-content" id="visitor-2-info" style="display:none;">
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="visitor-2-name" class="control-label">
-                                    <?= lang('visitor_2_name') ?>
+                                <label for="visitor-2-first-name" class="control-label">
+                                    <?= lang('visitor_2_first_name') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-2-name" class="form-control" maxlength="100"/>
+                                <input type="text" id="visitor-2-first-name" class="form-control" maxlength="100"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <br/>
+                            <div class="form-group">
+                                <label for="visitor-2-last-name" class="control-label">
+                                    <?= lang('visitor_2_last_name') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-last-name" class="form-control" maxlength="100"/>
+                            </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
-                                <label for="birth-date-v2" class="control-label">
+                                <label for="visitor-2-birth-date" class="control-label">
                                     <?= lang('birth_date') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="birth-date-v2" maxlength="10" class="form-control"/>
+                                <input type="text" id="visitor-2-birth-date" maxlength="10" class="form-control"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -851,7 +861,7 @@
                                 </label>
                                 
                                 <select id="visitor-2-dl-state" class="form-control">
-                                            <option value="Select">Select</option>
+                                            <option value="">Select</option>
                                             <option value="Alabama">Alabama</option>
                                             <option value="Alaska">Alaska</option>
                                             <option value="Arizona">Arizona</option>
@@ -922,24 +932,30 @@
                     <div class="row frame-content" id="visitor-3-info" style="display:none;">
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="visitor-3-name" class="control-label">
-                                    <?= lang('visitor_3_name') ?>
+                                <label for="visitor-3-first-name" class="control-label">
+                                    <?= lang('visitor_3_first_name') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-3-name" class="form-control" maxlength="100"/>
+                                <input type="text" id="visitor-3-first-name" class="form-control" maxlength="100"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <br/>
+                            <div class="form-group">
+                                <label for="visitor-3-last-name" class="control-label">
+                                    <?= lang('visitor_3_last_name') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-last-name" class="form-control" maxlength="100"/>
+                            </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
-                                <label for="birth-date-v3" class="control-label">
+                                <label for="visitor-3-birth-date" class="control-label">
                                     <?= lang('birth_date') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="birth-date-v3" maxlength="10" class="form-control"/>
+                                <input type="text" id="visitor-3-birth-date" maxlength="10" class="form-control"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -969,7 +985,7 @@
                                 </label>
                                 
                                 <select id="visitor-3-dl-state" class="form-control">
-                                            <option value="Select">Select</option>
+                                            <option value="">Select</option>
                                             <option value="Alabama">Alabama</option>
                                             <option value="Alaska">Alaska</option>
                                             <option value="Arizona">Arizona</option>

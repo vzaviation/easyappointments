@@ -598,31 +598,38 @@ window.FrontendBook = window.FrontendBook || {};
         
         var selectedDate = $('#select-date').datepicker('getDate');
 
-        // Customer Details
-        var firstName = GeneralFunctions.escapeHtml($('#first-name').val());
-        var lastName = GeneralFunctions.escapeHtml($('#last-name').val());
-        var phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
-        var email = GeneralFunctions.escapeHtml($('#email').val());
-        var address = GeneralFunctions.escapeHtml($('#address').val());
-        var city = GeneralFunctions.escapeHtml($('#city').val());
-        var zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
-        
-        var visitor2name = GeneralFunctions.escapeHtml($('#visitor-2-name').val());
-        var visitor3name = GeneralFunctions.escapeHtml($('#visitor-3-name').val());
-        var visitor4name = GeneralFunctions.escapeHtml($('#visitor-4-name').val());
-        var visitor1dlnumber = GeneralFunctions.escapeHtml($('#visitor-1-dl-number').val());
-        var visitor2dlnumber = GeneralFunctions.escapeHtml($('#visitor-2-dl-number').val());
-        var visitor3dlnumber = GeneralFunctions.escapeHtml($('#visitor-3-dl-number').val());
-        var visitor4dlnumber = GeneralFunctions.escapeHtml($('#visitor-4-dl-number').val());
-        var visitor1dlstate = GeneralFunctions.escapeHtml($('#visitor-1-dl-state').val());
-        var visitor2dlstate = GeneralFunctions.escapeHtml($('#visitor-2-dl-state').val());
-        var visitor3dlstate = GeneralFunctions.escapeHtml($('#visitor-3-dl-state').val());
-        var visitor4dlstate = GeneralFunctions.escapeHtml($('#visitor-4-dl-state').val());
-        var visitor1dl = GeneralFunctions.escapeHtml($('#visitor-1-dl-file-name').val());
-        var visitor2dl = GeneralFunctions.escapeHtml($('#visitor-2-dl-file-name').val());
-        var visitor3dl = GeneralFunctions.escapeHtml($('#visitor-3-dl').val());
-        var visitor4dl = GeneralFunctions.escapeHtml($('#visitor-4-dl').val());
-        
+        // Visitor 1 Details
+        var v1firstName = GeneralFunctions.escapeHtml($('#first-name').val());
+        var v1lastName = GeneralFunctions.escapeHtml($('#last-name').val());
+        var v1phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
+        var v1email = GeneralFunctions.escapeHtml($('#email').val());
+        var v1address = GeneralFunctions.escapeHtml($('#address').val());
+        var v1city = GeneralFunctions.escapeHtml($('#city').val());
+        var v1zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
+        var v1notes = GeneralFunctions.escapeHtml($('#notes').val());
+        var v1birthdate = GeneralFunctions.escapeHtml($('#visitor-1-birth-date').val());
+        v1birthdate = GeneralFunctions.dateToDBFormat(v1birthdate);
+        var v1idfilename = GeneralFunctions.escapeHtml($('#visitor-1-dl-file-name').val());
+        var v1idnumber = GeneralFunctions.escapeHtml($('#visitor-1-dl-number').val());
+        var v1idstate = GeneralFunctions.escapeHtml($('#visitor-1-dl-state').find(":selected").val());
+
+        // Visitor 2 Details
+        var v2firstName = GeneralFunctions.escapeHtml($('#visitor-2-first-name').val());
+        var v2lastName = GeneralFunctions.escapeHtml($('#visitor-2-last-name').val());
+        var v2birthdate = GeneralFunctions.escapeHtml($('#visitor-2-birth-date').val());
+        v2birthdate = GeneralFunctions.dateToDBFormat(v2birthdate);
+        var v2idfilename = GeneralFunctions.escapeHtml($('#visitor-2-dl-file-name').val());
+        var v2idnumber = GeneralFunctions.escapeHtml($('#visitor-2-dl-number').val());
+        var v2idstate = GeneralFunctions.escapeHtml($('#visitor-2-dl-state').find(":selected").val());
+
+        // Visitor 3 Details       
+        var v3firstName = GeneralFunctions.escapeHtml($('#visitor-3-first-name').val());
+        var v3lastName = GeneralFunctions.escapeHtml($('#visitor-3-last-name').val());
+        var v3birthdate = GeneralFunctions.escapeHtml($('#visitor-3-birth-date').val());
+        v3birthdate = GeneralFunctions.dateToDBFormat(v3birthdate);
+        var v3idfilename = GeneralFunctions.escapeHtml($('#visitor-3-dl-file-name').val());
+        var v3idnumber = GeneralFunctions.escapeHtml($('#visitor-3-dl-number').val());
+        var v3idstate = GeneralFunctions.escapeHtml($('#visitor-3-dl-state').find(":selected").val());
 
         if (selectedDate !== null) {
             selectedDate = GeneralFunctions.formatDate(selectedDate, GlobalVariables.dateFormat);
@@ -688,94 +695,83 @@ window.FrontendBook = window.FrontendBook || {};
         $('<div/>', {
             'html': [
                 $('<h4/>)', {
-                    'text': EALang.customer
+                    'text': EALang.customers
                 }),
                 $('<p/>', {
                     'html': [
                         $('<span/>', {
-                            'text': EALang.customer + ': ' + firstName + ' ' + lastName
+                            'text': EALang.visitor_1_name + ': ' + v1firstName + ' ' + v1lastName
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': EALang.phone_number + ': ' + phoneNumber
+                            'text': EALang.phone_number + ': ' + v1phoneNumber
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': EALang.email + ': ' + email
+                            'text': EALang.email + ': ' + v1email
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': address ? EALang.address + ': ' + address : ''
+                            'text': v1address ? EALang.address + ': ' + v1address : EALang.address + ': '
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': city ? EALang.city + ': ' + city : ''
+                            'text': v1city ? EALang.city + ': ' + v1city : EALang.city + ': '
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': zipCode ? EALang.zip_code + ': ' + zipCode : ''
+                            'text': v1zipCode ? EALang.zip_code + ': ' + v1zipCode : EALang.zip_code + ': '
                         }),
                         $('<br/>'),
 						$('<span/>', {
-                            'text': EALang.visitor_1_dl_state + ': ' + visitor1dlstate
+                            'text': EALang.birth_date_ymd + ': ' + v1birthdate
                         }),
                         $('<br/>'),
 						$('<span/>', {
-                            'text': EALang.visitor_1_dl_number + ': ' + visitor1dlnumber
+                            'text': v1idstate ? EALang.visitor_1_dl_state + ': ' + v1idstate : EALang.visitor_1_dl_state + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v1idnumber ? EALang.visitor_1_dl_number + ': ' + v1idnumber : EALang.visitor_1_dl_number + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v1notes ? EALang.notes + ': ' + v1notes : EALang.notes + ': '
                         }),
                         $('<br/>'),
                         $('<br/>'),
 						$('<span/>', {
-                            'text': EALang.visitor_2_name + ': ' + visitor2name 
-                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_3_name + ': ' + visitor3name
-//                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_4_name + ': ' + visitor4name
-//                        }),
-                        $('<br/>'),
-                        $('<span/>', {
-                            'text': EALang.visitor_2_dl_state + ': ' + visitor2dlstate
+                            'text': v2firstName ? EALang.visitor_2_name + ': ' + v2firstName + ' ' + v2lastName : EALang.visitor_2_name + ': N/A'
                         }),
                         $('<br/>'),
 						$('<span/>', {
-                            'text': EALang.visitor_2_dl_number + ': ' + visitor2dlnumber
+                            'text': v2birthdate ? EALang.birth_date_ymd + ': ' + v2birthdate : EALang.birth_date_ymd + ': N/A'
                         }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_3_dl_number + ': ' + visitor3dlnumber
-//                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_4_dl_number + ': ' + visitor4dlnumber
-//                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_3_dl_state + ': ' + visitor3dlstate
-//                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                           'text': EALang.visitor_4_dl_state + ': ' + visitor4dlstate
-//                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_1_dl + ': ' + visitor1dl
-//                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_2_dl + ': ' + visitor2dl
-//                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_3_dl + ': ' + visitor3dl
-//                        }),
-//                        $('<br/>'),
-//						$('<span/>', {
-//                            'text': EALang.visitor_4_dl + ': ' + visitor4dl
-//                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v2idstate ? EALang.visitor_2_dl_state + ': ' + v2idstate : EALang.visitor_2_dl_state + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v2idnumber ? EALang.visitor_2_dl_number + ': ' + v2idnumber : EALang.visitor_2_dl_number + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3firstName ? EALang.visitor_3_name + ': ' + v3firstName + ' ' + v3lastName : EALang.visitor_3_name + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3birthdate ? EALang.birth_date_ymd + ': ' + v3birthdate : EALang.birth_date_ymd + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3idstate ? EALang.visitor_3_dl_state + ': ' + v3idstate : EALang.visitor_3_dl_state + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3idnumber ? EALang.visitor_3_dl_number + ': ' + v3idnumber : EALang.visitor_3_dl_number + ': N/A'
+                        })
                     ]
                 })
             ]
@@ -786,19 +782,42 @@ window.FrontendBook = window.FrontendBook || {};
         // Update appointment form data for submission to server when the user confirms the appointment.
         var data = {};
 
-        data.customer = {
-            last_name: $('#last-name').val(),
-            first_name: $('#first-name').val(),
-            email: $('#email').val(),
-            phone_number: $('#phone-number').val(),
-            address: $('#address').val(),
-            city: $('#city').val(),
-            zip_code: $('#zip-code').val(),
-            timezone: $('#select-timezone').val(),
-            
-
-            
+        data.visitor1 = {
+            last_name: v1lastName,
+            first_name: v1firstName,
+            email: v1email,
+            phone_number: v1phoneNumber,
+            address: v1address,
+            city: v1city,
+            zip_code: v1zipCode,
+            notes: v1notes,
+            birthdate: v1birthdate,
+            id_image_filename: v1idfilename,
+            id_number: v1idnumber,
+            id_state: v1idstate
         };
+
+        if (v2firstName != null) {
+            data.visitor2 = {
+                last_name: v2lastName,
+                first_name: v2firstName,
+                birthdate: v2birthdate,
+                id_image_filename: v2idfilename,
+                id_number: v2idnumber,
+                id_state: v2idstate
+            };
+        }
+
+        if (v3firstName != null) {
+            data.visitor3 = {
+                last_name: v3lastName,
+                first_name: v3firstName,
+                birthdate: v3birthdate,
+                id_image_filename: v3idfilename,
+                id_number: v3idnumber,
+                id_state: v3idstate
+            };
+        }
 
         // Remove number from inmate name for database
         var inmateName = $('#select-inmate option:selected').text();
@@ -815,21 +834,6 @@ window.FrontendBook = window.FrontendBook || {};
             id_users_provider: $('#select-provider').val(),
             id_services: $('#select-service').val(),
             id_inmate: $('#select-inmate').val(),
-            visitor_2_name: $('#visitor-2-name').val(),
-            visitor_3_name: $('#visitor-3-name').val(),
-            visitor_4_name: $('#visitor-4-name').val(),
-            visitor_1_dl_number: $('#visitor-1-dl-number').val(),
-            visitor_2_dl_number: $('#visitor-2-dl-number').val(),
-            visitor_3_dl_number: $('#visitor-3-dl-number').val(),
-            visitor_4_dl_number: $('#visitor-4-dl-number').val(),
-            visitor_1_dl_state: $('#visitor-1-dl-state').val(),
-            visitor_2_dl_state: $('#visitor-2-dl-state').val(),
-            visitor_3_dl_state: $('#visitor-3-dl-state').val(),
-            visitor_4_dl_state: $('#visitor-4-dl-state').val(),
-            visitor_1_dl: $('#visitor-1-dl-file-name').val(),
-            visitor_2_dl: $('#visitor-2-dl-file-name').val(),
-            visitor_3_dl: $('#visitor-3-dl-file-name').val(),
-            visitor_4_dl: $('#visitor-4-dl-file-name').val(),
             inmate_name: inmateName
         };
 

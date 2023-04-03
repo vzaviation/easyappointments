@@ -53,7 +53,6 @@ class Inmates_model extends EA_Model {
         return $inmates;
     }
 
-
     public function get_providers_by_inmates($id, $service_id){
         $this->db
             ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
