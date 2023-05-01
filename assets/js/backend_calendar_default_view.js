@@ -59,11 +59,23 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             $(this).parents('.popover').popover('dispose');
         });
 
+        $calendarPage.on('click', '.edit-popover', function () {
+            $(this).parents('.popover').popover('dispose');
+            // Take user to check-in page for date and select appointment
+            const appointment = lastFocusedEventData.data;
+            const aid = appointment.id;
+            const adatetime = new Date(appointment.start_datetime);
+            const amonth = (adatetime.getMonth() + 1).toString().padStart(2, "0");
+            const adom = adatetime.getDate().toString().padStart(2, "0");
+            const adate = adatetime.getFullYear() + "-" + amonth + "-" + adom;
+            window.location="/backend/dashboard?date=" + adate + "&aid=" + aid;
+        });
+
         /**
          * Event: Popover Edit Button "Click"
          *
          * Enables the edit dialog of the selected calendar event.
-         */
+         *
         $calendarPage.on('click', '.edit-popover', function () {
             $(this).parents('.popover').popover('dispose');
 
@@ -170,7 +182,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                    $("#visitor-4-dl-link").hide();
                 }
 
-		$dialog.find('#visitor-2-name').val(appointment.visitor_2_name);
+		        $dialog.find('#visitor-2-name').val(appointment.visitor_2_name);
                 $dialog.find('#visitor-3-name').val(appointment.visitor_3_name);
                 $dialog.find('#visitor-4-name').val(appointment.visitor_4_name);
                 $dialog.find('#inmate-name').val(appointment.inmate_name);
@@ -206,6 +218,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 $dialog.modal('show');
             }
         });
+        */
 
         /**
          * Event: Popover Delete Button "Click"
@@ -512,15 +525,6 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     }),
                     $('<br/>'),
 
-                    $('<strong/>', {
-                        'class': 'd-inline-block mr-2',
-                        'text': EALang.timezone
-                    }),
-                    $('<span/>', {
-                        'text': GlobalVariables.timezones[event.data.provider.timezone]
-                    }),
-                    $('<br/>'),
-
                     $('<hr/>'),
 
                     $('<div/>', {
@@ -591,31 +595,22 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
-                        'text': EALang.timezone
+                        'text': EALang.inmate
                     }),
                     $('<span/>', {
-                        'text': GlobalVariables.timezones[event.data.provider.timezone]
+                        'text': event.data.inmate_name
                     }),
                     $('<br/>'),
 
-                    $('<strong/>', {
-                        'class': 'd-inline-block mr-2',
-                        'text': EALang.service
-                    }),
-                    $('<span/>', {
-                        'text': event.data.service.name
-                    }),
-                    $('<br/>'),
-
-                    $('<strong/>', {
-                        'class': 'd-inline-block mr-2',
-                        'text': EALang.provider
-                    }),
-                    GeneralFunctions.renderMapIcon(event.data.provider),
-                    $('<span/>', {
-                        'text': event.data.provider.first_name + ' ' + event.data.provider.last_name
-                    }),
-                    $('<br/>'),
+//                    $('<strong/>', {
+//                        'class': 'd-inline-block mr-2',
+//                        'text': EALang.provider
+//                    }),
+//                    GeneralFunctions.renderMapIcon(event.data.provider),
+//                    $('<span/>', {
+//                        'text': event.data.provider.first_name + ' ' + event.data.provider.last_name
+//                    }),
+//                   $('<br/>'),
 
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
@@ -674,17 +669,20 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                                     })
                                 ]
                             }),
-                            $('<button/>', {
-                                'class': 'delete-popover btn btn-outline-secondary ' + displayDelete,
-                                'html': [
-                                    $('<i/>', {
-                                        'class': 'fas fa-trash-alt mr-2'
-                                    }),
-                                    $('<span/>', {
-                                        'text': EALang.delete
-                                    })
-                                ]
-                            }),
+                            $('<div/>'), {
+                                'style': 'width=40px;'
+                            },
+//                            $('<button/>', {
+//                                'class': 'delete-popover btn btn-outline-secondary ' + displayDelete,
+//                                'html': [
+//                                    $('<i/>', {
+//                                        'class': 'fas fa-trash-alt mr-2'
+//                                    }),
+//                                    $('<span/>', {
+//                                        'text': EALang.delete
+//                                    })
+//                                ]
+//                            }),
                             $('<button/>', {
                                 'class': 'edit-popover btn btn-primary ' + displayEdit,
                                 'html': [

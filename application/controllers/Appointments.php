@@ -297,10 +297,10 @@ class Appointments extends EA_Controller {
                 'timezone' => $provider['timezone'],
             ],
             'visitor_data' => [
-                'id' => $visitor['id'],
-                'first_name' => $visitor['first_name'],
-                'last_name' => $visitor['last_name'],
-                'email' => $visitor['email']
+                'id' => $visitors[0]['id'],
+                'first_name' => $visitors[0]['first_name'],
+                'last_name' => $visitors[0]['last_name'],
+                'email' => $visitors[0]['email']
             ],
             'service_data' => $service,
             'company_name' => $company_name,
@@ -490,12 +490,12 @@ class Appointments extends EA_Controller {
             $appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
             $appointment['id'] = $this->appointments_model->add($appointment);
             $appointment['hash'] = $this->appointments_model->get_value('hash', $appointment['id']);
-            
+
             // Add the visitor(s)
-            $v1id = $this->visitors_model->insert($visitor);
+            $v1id = $this->visitors_model->add($visitor);
             $v2id = -1;
-            $v2id = isset($visitor2['first_name']) ? $this->visitors_model->insert($visitor2) : -1;
-            $v3id = isset($visitor3['first_name']) ? $this->visitors_model->insert($visitor3) : -1;
+            $v2id = isset($visitor2['first_name']) && ($visitor2['first_name'] !== "") ? $this->visitors_model->add($visitor2) : -1;
+            $v3id = isset($visitor3['first_name']) && ($visitor3['first_name'] !== "")  ? $this->visitors_model->add($visitor3) : -1;
 
             // Load the appointment visitor records
             $appointment_visitor = [

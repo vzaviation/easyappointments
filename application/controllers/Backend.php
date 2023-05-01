@@ -30,6 +30,7 @@ class Backend extends EA_Controller {
         $this->load->model('providers_model');
         $this->load->model('services_model');
         $this->load->model('customers_model');
+        $this->load->model('visitors_model');
         $this->load->model('settings_model');
         $this->load->model('roles_model');
         $this->load->model('user_model');
@@ -173,7 +174,53 @@ class Backend extends EA_Controller {
     }
 
     /**
-     * Display the backend customers page.
+     * Displays the backend dashboard page.
+     *
+     * This will be a more targeted view of a date's appointments, visitor, and inmate data
+     *
+     */
+    public function dashboard()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/dashboard'));
+
+        if ( ! $this->has_privileges(PRIV_DASHBOARD))
+        {
+            return;
+        }
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('dashboard');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
+        $view['active_menu'] = PRIV_DASHBOARD;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
+        $view['require_phone_number'] = $this->settings_model->get_setting('require_phone_number');
+
+        // fetch all the appointments for the given date
+        $today = date('Y-m-d');
+        $appt_date = $this->input->get('date') ? $this->input->get('date') : $today;
+        $view['today'] = $today;
+        $view['appt_date'] = $appt_date;
+        // Grab one day before and one day after too
+        $view['prev_date'] = date('Y-m-d', strtotime('-1 day', strtotime($appt_date)));
+        $view['next_date'] = date('Y-m-d', strtotime('+1 day', strtotime($appt_date)));
+
+        $view['appointments'] = $this->appointments_model->get_by_date($appt_date);
+
+        // Also, check for appointent ID in params and select that appt if there
+        $view['sel_appt'] = $this->input->get('aid') ? $this->input->get('aid') : "";
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/dashboard', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
+    /**
+     * Display the backend customers page ==> changed to visitors page.
      *
      * In this page the user can manage all the customer records of the system.
      */
@@ -187,7 +234,7 @@ class Backend extends EA_Controller {
         }
 
         $view['base_url'] = config('base_url');
-        $view['page_title'] = lang('customers');
+        $view['page_title'] = lang('visitors');
         $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
         $view['active_menu'] = PRIV_CUSTOMERS;
         $view['company_name'] = $this->settings_model->get_setting('company_name');
@@ -195,7 +242,7 @@ class Backend extends EA_Controller {
         $view['time_format'] = $this->settings_model->get_setting('time_format');
         $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
         $view['require_phone_number'] = $this->settings_model->get_setting('require_phone_number');
-        $view['customers'] = $this->customers_model->get_batch();
+        $view['visitors'] = $this->visitors_model->get_all();
         $view['available_providers'] = $this->providers_model->get_available_providers();
         $view['available_services'] = $this->services_model->get_available_services();
         $view['timezones'] = $this->timezones->to_array();
@@ -213,7 +260,7 @@ class Backend extends EA_Controller {
         $this->set_user_data($view);
 
         $this->load->view('backend/header', $view);
-        $this->load->view('backend/customers', $view);
+        $this->load->view('backend/visitors', $view);
         $this->load->view('backend/footer', $view);
     }
 

@@ -343,11 +343,11 @@ class Customers_model extends EA_Model {
     }
 
     /**
-     * Get all, or specific records from appointment's table.
+     * Get all, or specific records from customers table.
      *
      * Example:
      *
-     * $this->appointments_model->get_batch([$id => $record_id]);
+     * $this->customers_model->get_batch([$id => $record_id]);
      *
      * @param mixed|null $where
      * @param int|null $limit

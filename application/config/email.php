@@ -5,12 +5,12 @@
 // @link https://codeigniter.com/user_guide/libraries/email.html
 
 $config['useragent'] = 'VisitationLink';
-$config['protocol'] = 'smtp'; // 'mail' or 'smtp'
-$config['mailtype'] = 'html'; // 'html' or 'text'
-$config['smtp_debug'] = 2;
-$config['smtp_auth'] = true;
-$config['smtp_host'] = 'email-smtp.us-east-1.amazonaws.com';
-$config['smtp_user'] = 'AKIAYK5KWZXUKKSHT5F2';
-$config['smtp_pass'] = 'BPpFTkCb9hcTc8LAn4ylnEXcbrsVZbO3xuQPFtNWI5vx';
-$config['smtp_crypto'] = 'tls'; // 'ssl' or 'tls'
-$config['smtp_port'] = 587;  // for authenticated TLS
+$config['protocol'] = Config::MAIL_PROTOCOL;
+$config['mailtype'] = Config::MAIL_TYPE;
+$config['smtp_debug'] = Config::SMTP_DEBUG;
+$config['smtp_auth'] = Config::SMTP_AUTH;
+$config['smtp_host'] = Config::SMTP_HOST;
+$config['smtp_user'] = Config::SMTP_USER;
+$config['smtp_pass'] = Config::SMTP_PASS;
+$config['smtp_crypto'] = Config::SMTP_CRYPTO;
+$config['smtp_port'] = Config::SMTP_PORT;

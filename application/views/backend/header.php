@@ -49,6 +49,16 @@
 
     <div id="header-menu" class="collapse navbar-collapse flex-row-reverse">
         <ul class="navbar-nav">
+            <?php $hidden = ($privileges[PRIV_DASHBOARD]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_DASHBOARD) ? 'active' : '' ?>
+            <li class="nav-item <?= $active . $hidden ?>">
+                <a href="<?= site_url('backend/dashboard') ?>" class="nav-link"
+                   data-tippy-content="<?= lang('manage_dashboard_record_hint') ?>">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    <?= lang('dashboard') ?>
+                </a>
+            </li>
+
             <?php $hidden = ($privileges[PRIV_APPOINTMENTS]['view'] == TRUE) ? '' : 'd-none' ?>
             <?php $active = ($active_menu == PRIV_APPOINTMENTS) ? 'active' : '' ?>
             <li class="nav-item <?= $active . $hidden ?>">
@@ -89,14 +99,13 @@
                 </a>
             </li>
 
-            <?php $hidden = ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE
-                || $privileges[PRIV_USER_SETTINGS]['view'] == TRUE) ? '' : 'd-none' ?>
-            <?php $active = ($active_menu == PRIV_SYSTEM_SETTINGS) ? 'active' : '' ?>
+            <?php $hidden = ($privileges[PRIV_REPORTING]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_REPORTING) ? 'active' : '' ?>
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/b2a98bc7-0ce2-4303-8443-b5974b6c58a3?directory_alias=tarmactech" class="nav-link"
                    data-tippy-content="Reporting" target="_blank">
                     <i class="fas fa-cogs mr-2"></i>
-                    Reporting
+                    <?= lang('reporting') ?>
                 </a>
             </li>
 

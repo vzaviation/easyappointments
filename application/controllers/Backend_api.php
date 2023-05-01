@@ -39,6 +39,7 @@ class Backend_api extends EA_Controller {
         $this->load->model('appointments_model');
         $this->load->model('consents_model');
         $this->load->model('customers_model');
+        $this->load->model('visitors_model');
         $this->load->model('providers_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
@@ -86,7 +87,9 @@ class Backend_api extends EA_Controller {
             {
                 $appointment['provider'] = $this->providers_model->get_row($appointment['id_users_provider']);
                 $appointment['service'] = $this->services_model->get_row($appointment['id_services']);
-                $appointment['customer'] = $this->customers_model->get_row($appointment['id_users_customer']);
+                //$appointment['customer'] = $this->customers_model->get_row($appointment['id_users_customer']);
+                $appointment['visitors'] = $this->visitors_model->get_appointment_visitors($appointment['id']);
+                $appointment['customer'] = $appointment['visitors'][0];
             }
 
             $user_id = $this->session->userdata('user_id');
@@ -200,7 +203,9 @@ class Backend_api extends EA_Controller {
             {
                 $appointment['provider'] = $this->providers_model->get_row($appointment['id_users_provider']);
                 $appointment['service'] = $this->services_model->get_row($appointment['id_services']);
-                $appointment['customer'] = $this->customers_model->get_row($appointment['id_users_customer']);
+                //$appointment['customer'] = $this->customers_model->get_row($appointment['id_users_customer']);
+                $appointment['visitors'] = $this->visitors_model->get_appointment_visitors($appointment['id']);
+                $appointment['customer'] = $appointment['visitors'][0];
             }
 
             // Get unavailable periods (only for provider).
@@ -587,7 +592,7 @@ class Backend_api extends EA_Controller {
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
     }
-
+   
     /**
      * Insert of update unavailable time period to database.
      */
@@ -1678,4 +1683,374 @@ class Backend_api extends EA_Controller {
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
     }
+
+    /**
+     * Visitor handling functionality
+     */
+
+     /**
+     * Filter the visitor records with the given key string.
+     *
+     * Outputs the search results.
+     */
+    public function ajax_filter_visitors()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_CUSTOMERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $key = $this->db->escape_str($this->input->post('key'));
+            $key = strtoupper($key);
+
+            $where =
+                '(first_name LIKE upper("%' . $key . '%") OR ' .
+                'last_name  LIKE upper("%' . $key . '%") OR ' .
+                'email LIKE upper("%' . $key . '%") OR ' .
+                'phone_number LIKE upper("%' . $key . '%") OR ' .
+                'address LIKE upper("%' . $key . '%") OR ' .
+                'city LIKE upper("%' . $key . '%") OR ' .
+                'zip_code LIKE upper("%' . $key . '%") OR ' .
+                'notes LIKE upper("%' . $key . '%"))';
+
+            $order_by = 'first_name ASC, last_name ASC';
+
+            $limit = $this->input->post('limit');
+
+            if ($limit === NULL)
+            {
+                $limit = 1000;
+            }
+
+            $visitors = $this->visitors_model->get_batch($where, $limit, NULL, $order_by);
+
+            foreach ($visitors as &$visitor)
+            {
+                $appointments = $this->visitors_model->get_appointments_visitor($visitor['id']);
+                $visitor['appointments'] = $appointments;
+            }
+
+            $response = $visitors;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_get_visitor_details()
+    {
+        try
+        {
+            $visitor_id = json_decode($this->input->post('visitor_id'), TRUE);
+
+            if ($this->privileges[PRIV_CUSTOMERS]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+            
+            // Get the existing visitor record
+            $visitor = $this->visitors_model->get_row($visitor_id);
+
+            $response = $visitor;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
+    public function ajax_get_appointment_visitors()
+    {
+        try
+        {
+            $appointment_id = json_decode($this->input->post('appointment_id'), TRUE);
+            if ($this->privileges[PRIV_DASHBOARD]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $visitors = $this->visitors_model->get_appointment_visitors($appointment_id);
+
+            $this->output->set_output(json_encode($visitors));
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($visitors));
+    }
+
+    public function ajax_set_visitor_arrived()
+    {
+        try
+        {
+            $appointment_id = json_decode($this->input->post('appointment_id'), TRUE);
+            $visitor_id = json_decode($this->input->post('visitor_id'), TRUE);
+            $checked = json_decode($this->input->post('checked'), TRUE);
+
+            if ($this->privileges[PRIV_DASHBOARD]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+            
+            // Get the existing av
+            $appointment_visitor = $this->visitors_model->get_appointment_visitor($appointment_id, $visitor_id);
+
+            // Update the appointment_visitor record
+            $appointment_visitor['visitor_arrived'] = $checked;
+            $this->visitors_model->update_appointment_visitor($appointment_visitor);
+
+            $response = AJAX_SUCCESS;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
+    public function ajax_set_visitor_flag()
+    {
+        try
+        {
+            $appointment_id = json_decode($this->input->post('appointment_id'), TRUE);
+            $visitor_id = json_decode($this->input->post('visitor_id'), TRUE);
+            $checked = json_decode($this->input->post('checked'), TRUE);
+            $flag_notes = $this->input->post('flag_notes');
+            $flag_date = date('Y-m-d');
+
+            if ($this->privileges[PRIV_DASHBOARD]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            // Get the existing visitor record
+            $visitor = $this->visitors_model->get_row($visitor_id);
+
+            // First - if checked is false, we will remove the flag, date, and notes
+            if (!$checked) {
+                $visitor['flag'] = 0;
+                $visitor['flag_notes'] = "";
+                $visitor['flag_date'] = null;
+            } else {
+                $visitor['flag'] = 1;
+                $visitor['flag_notes'] = $flag_notes;
+                $visitor['flag_date'] = $flag_date;
+            }
+            // Update the visitor record
+            $this->visitors_model->update($visitor);
+
+            // Return the updated visitors data
+            $visitors = $this->visitors_model->get_appointment_visitors($appointment_id);
+
+            $this->output->set_output(json_encode($visitors));
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($visitors));
+    }
+    
+    public function ajax_save_visitor_flag_notes()
+    {
+        try
+        {
+            $appointment_id = json_decode($this->input->post('appointment_id'), TRUE);
+            $visitor_id = json_decode($this->input->post('visitor_id'), TRUE);
+            $flag_notes = $this->input->post('flag_notes');
+            $flag_date = date('Y-m-d');
+
+            if ($this->privileges[PRIV_DASHBOARD]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            // Get the existing visitor record
+            $visitor = $this->visitors_model->get_row($visitor_id);
+
+            $visitor['flag'] = 1;
+            $visitor['flag_notes'] = $flag_notes;
+            if ($visitor['flag_date'] == null) {
+                $visitor['flag_date'] = $flag_date;
+            }
+
+            // Update the visitor record
+            $this->visitors_model->update($visitor);
+
+            // Return the updated visitors data
+            $visitors = $this->visitors_model->get_appointment_visitors($appointment_id);
+
+            $this->output->set_output(json_encode($visitors));
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($visitors));
+    }
+
+    public function ajax_set_visitor_flag_visitors()
+    {
+        try
+        {
+            $visitor_id = json_decode($this->input->post('visitor_id'), TRUE);
+            $checked = json_decode($this->input->post('checked'), TRUE);
+            $flag_notes = $this->input->post('flag_notes');
+            $flag_date = date('Y-m-d');
+
+            if ($this->privileges[PRIV_CUSTOMERS]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            // Get the existing visitor record
+            $visitor = $this->visitors_model->get_row($visitor_id);
+
+            // First - if checked is false, we will remove the flag, date, and notes
+            if (!$checked) {
+                $visitor['flag'] = 0;
+                $visitor['flag_notes'] = "";
+                $visitor['flag_date'] = null;
+            } else {
+                $visitor['flag'] = 1;
+                $visitor['flag_notes'] = $flag_notes;
+                $visitor['flag_date'] = $flag_date;
+            }
+            // Update the visitor record
+            $this->visitors_model->update($visitor);
+
+            $this->output->set_output(json_encode($visitor));
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($visitor));
+    }
+    
+    public function ajax_save_visitor_flag_notes_visitors()
+    {
+        try
+        {
+            $visitor_id = json_decode($this->input->post('visitor_id'), TRUE);
+            $flag_notes = $this->input->post('flag_notes');
+            $flag_date = date('Y-m-d');
+
+            if ($this->privileges[PRIV_CUSTOMERS]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            // Get the existing visitor record
+            $visitor = $this->visitors_model->get_row($visitor_id);
+
+            $visitor['flag'] = 1;
+            $visitor['flag_notes'] = $flag_notes;
+            if ($visitor['flag_date'] == null) {
+                $visitor['flag_date'] = $flag_date;
+            }
+
+            // Update the visitor record
+            $this->visitors_model->update($visitor);
+
+            $this->output->set_output(json_encode($visitor));
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($visitor));
+    }
+
+    public function ajax_save_visitor()
+    {
+        try
+        {
+            $response = AJAX_SUCCESS;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
 }

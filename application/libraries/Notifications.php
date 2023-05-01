@@ -36,7 +36,7 @@ class Notifications {
 
         $this->CI->load->model('providers_model');
         $this->CI->load->model('secretaries_model');
-        $this->CI->load->model('secretaries_model');
+        $this->CI->load->model('visitors_model');
         $this->CI->load->model('admins_model');
         $this->CI->load->model('appointments_model');
         $this->CI->load->model('settings_model');
@@ -53,7 +53,7 @@ class Notifications {
      * @param array $appointment Appointment record.
      * @param array $service Service record.
      * @param array $provider Provider record.
-     * @param array $customer Customer record.
+     * @param array $vistors Visitors record.
      * @param array $settings Required settings for the notification content.
      * @param bool|false $manage_mode
      */
@@ -79,8 +79,10 @@ class Notifications {
                 $provider_message = new Text(lang('appointment_link_description'));
             }
 
-            $customer_link = new Url(site_url('appointments/index/' . $appointment['hash']));
-            $provider_link = new Url(site_url('backend/index/' . $appointment['hash']));
+            //$customer_link = new Url(site_url('appointments/index/' . $appointment['hash']));
+            $customer_link = '';
+            $appt_date = date('Y-m-d',strtotime($appointment['start_datetime']));
+            $provider_link = new Url(site_url('backend/dashboard?date=' . $appt_date . '&aid=' . $appointment['id']));
 
             $ics_stream = $this->CI->ics_file->get_stream($appointment, $service, $provider, $customer);
 
@@ -91,8 +93,8 @@ class Notifications {
             if ($send_customer === TRUE)
             {
                 $email->send_appointment_details($appointment, $provider,
-                    $service, $customer, $settings, $customer_title,
-                    $customer_message, $customer_link, new Email($customer['email']), new Text($ics_stream), $customer['timezone']);
+                    $service, $visitors, $settings, $customer_title,
+                    $customer_message, $customer_link, new Email($customer['email']), new Text($ics_stream), 'America/Chicago');
             }
 
             $send_provider = filter_var(
@@ -102,7 +104,7 @@ class Notifications {
             if ($send_provider === TRUE)
             {
                 $email->send_appointment_details($appointment, $provider,
-                    $service, $customer, $settings, $provider_title,
+                    $service, $visitors, $settings, $provider_title,
                     $provider_message, $provider_link, new Email($provider['email']), new Text($ics_stream), $provider['timezone']);
             }
 
@@ -117,7 +119,7 @@ class Notifications {
                 }
 
                 $email->send_appointment_details($appointment, $provider,
-                    $service, $customer, $settings, $provider_title,
+                    $service, $visitors, $settings, $provider_title,
                     $provider_message, $provider_link, new Email($admin['email']), new Text($ics_stream), $admin['timezone']);
             }
 
@@ -137,7 +139,7 @@ class Notifications {
                 }
 
                 $email->send_appointment_details($appointment, $provider,
-                    $service, $customer, $settings, $provider_title,
+                    $service, $visitors, $settings, $provider_title,
                     $provider_message, $provider_link, new Email($secretary['email']), new Text($ics_stream), $secretary['timezone']);
             }
         }

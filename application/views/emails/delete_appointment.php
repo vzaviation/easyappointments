@@ -40,21 +40,33 @@
 
         <h2><?= lang('customer_details_title') ?></h2>
         <table id="customer-details">
-            <tr>
+        <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('name') ?></td>
-                <td style="padding: 3px;"><?= $customer_name ?></td>
+                <td style="padding: 3px;"><?= $visitor_1_name ?></td>
             </tr>
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('email') ?></td>
-                <td style="padding: 3px;"><?= $customer_email ?></td>
+                <td style="padding: 3px;"><?= $visitor_1_email ?></td>
             </tr>
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('phone_number') ?></td>
-                <td style="padding: 3px;"><?= $customer_phone ?></td>
+                <td style="padding: 3px;"><?= $visitor_1_phone ?></td>
             </tr>
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('address') ?></td>
-                <td style="padding: 3px;"><?= $customer_address ?></td>
+                <td style="padding: 3px;"><?= $visitor_1_address ?></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;">Additional Visitors</td>
+                <td style="padding: 3px;"></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('name') ?></td>
+                <td style="padding: 3px;"><?= $visitor_2_name ?></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('name') ?></td>
+                <td style="padding: 3px;"><?= $visitor_3_name ?></td>
             </tr>
         </table>
 

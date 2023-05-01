@@ -605,6 +605,7 @@ window.FrontendBook = window.FrontendBook || {};
         var v1email = GeneralFunctions.escapeHtml($('#email').val());
         var v1address = GeneralFunctions.escapeHtml($('#address').val());
         var v1city = GeneralFunctions.escapeHtml($('#city').val());
+        var v1state = GeneralFunctions.escapeHtml($('#visitor-1-state').find(":selected").val());
         var v1zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
         var v1notes = GeneralFunctions.escapeHtml($('#notes').val());
         var v1birthdate = GeneralFunctions.escapeHtml($('#visitor-1-birth-date').val());
@@ -720,6 +721,10 @@ window.FrontendBook = window.FrontendBook || {};
                         }),
                         $('<br/>'),
                         $('<span/>', {
+                            'text': v1state ? EALang.state + ': ' + v1state : EALang.state + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
                             'text': v1zipCode ? EALang.zip_code + ': ' + v1zipCode : EALang.zip_code + ': '
                         }),
                         $('<br/>'),
@@ -789,6 +794,7 @@ window.FrontendBook = window.FrontendBook || {};
             phone_number: v1phoneNumber,
             address: v1address,
             city: v1city,
+            state: v1state,
             zip_code: v1zipCode,
             notes: v1notes,
             birthdate: v1birthdate,

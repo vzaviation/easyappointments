@@ -87,7 +87,7 @@ class Email {
         array $appointment,
         array $provider,
         array $service,
-        array $customer,
+        array $visitors,
         array $settings,
         Text $title,
         Text $message,
@@ -148,10 +148,12 @@ class Email {
             'appointment_link' => $appointment_link_address->get(),
             'company_link' => $settings['company_link'],
             'company_name' => $settings['company_name'],
-            'customer_name' => $customer['first_name'] . ' ' . $customer['last_name'],
-            'customer_email' => $customer['email'],
-            'customer_phone' => $customer['phone_number'],
-            'customer_address' => $customer['address'],
+            'visitor_1_name' => $visitors[0]['first_name'] . ' ' . $visitors[0]['last_name'],
+            'visitor_1_email' => $visitors[0]['email'],
+            'visitor_1_phone' => $visitors[0]['phone_number'],
+            'visitor_1_address' => $visitors[0]['address'] . ' ' . $visitors[0]['city'] . ' ' . $visitors[0]['zip_code'],
+            'visitor_2_name' => $visitors[1]['first_name'] ? $visitors[1]['first_name'] . ' ' . $visitors[1]['last_name'] : 'N/A',
+            'visitor_3_name' => $visitors[2]['first_name'] ? $visitors[2]['first_name'] . ' ' . $visitors[2]['last_name'] : 'N/A',
         ], TRUE);
 
         $mailer = $this->create_mailer();

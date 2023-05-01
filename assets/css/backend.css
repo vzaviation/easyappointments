@@ -19,7 +19,6 @@
     --dark-tan: #4D4232;    
 }
 
-
 root {
     display: block;
 }
@@ -878,4 +877,99 @@ body .form-horizontal .controls {
 
 #settings-page #update-ea {
     margin-left: 12px;
+}
+
+/* BACKEND VISITORS PAGE
+   -------------------------------------------------------------------- */
+
+#visitors-page .visitor-details {
+    max-width: 800px;
+    margin-bottom: 20px;
+    background-color: var(--medium-tan);
+}
+
+#visitors-page #visitor-appointments {
+    min-height: 400px;
+    max-height: 800px;
+    max-width: 330px;
+    width: 100%;
+    margin-bottom: 20px;
+    overflow-y: auto;
+    outline: none;
+}
+
+#visitors-page .visitor-row.selected {
+    background-color: var(--light-tan);
+}
+
+#visitors-page #visitor-appointments .appointment-row {
+    padding: 7px;
+    border-bottom: 1px solid var(--dark-tan);
+    border-right: none;
+}
+
+#visitors-page #visitor-appointments .appointment-row:last-child {
+    border-bottom: none;
+}
+
+/* BACKEND APPOINTMENTS CHECK-IN PAGE
+   -------------------------------------------------------------------- */
+
+body {
+    position: relative;
+    min-height: 100vh;
+}
+
+#visitors-page {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.appointments-title {
+    padding-bottom: 8px;
+    border-bottom: var(--medium-tan) 4px solid;
+}
+
+.appointment-row {
+    background-color: none;
+}
+
+.appointment-row.selected {
+    background-color: var(--light-tan);
+}
+
+#appointment-visitor-row {
+    border: var(--medium-tan) 2px solid;
+}
+
+.visitor-info {
+    float: left;
+    padding-bottom: 8px;
+    border-bottom: var(--dark-tan) 2px solid;
+}
+
+.visitor-id {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.visitor-notes {
+    float: left;
+    min-height: 50px;
+}
+
+.visitor-flag {
+    margin-left: 8px;
+    float: left;
+    white-space: nowrap;
+}
+
+.visitor-flag-notes {
+    float: left;
+}
+
+.visitor-flag-check {
+    font-weight: bolder;
+    color: #541414;
+    white-space: nowrap;
 }

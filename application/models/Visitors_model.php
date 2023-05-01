@@ -32,8 +32,9 @@ class Visitors_model extends EA_Model {
     /**
      * Add a visitor record to the database.
      *
-     * This method adds a visitor to the database. If the visitor doesn't exists it is going to be inserted, otherwise
-     * the record is going to be updated.
+     * This method adds a visitor to the database.
+     * 
+     * At the moment, we can only key on visitor email - if there is a match, re-use and update that visitor record
      *
      * @param array $visitor Associative array with the visitor's data. Each key has the same name with the database
      * fields.
@@ -46,21 +47,18 @@ class Visitors_model extends EA_Model {
         // Validate the visitor data before doing anything.
         $this->validate($visitor);
 
-        // Check if a visitor already exists (by email).
-        if ($this->exists($visitor) && ! isset($visitor['id']))
-        {
-            // Find the visitor id from the database.
-            $visitor['id'] = $this->find_record_id($visitor);
-        }
-
-        // Insert or update the visitor record.
-        if ( ! isset($visitor['id']))
-        {
-            $visitor['id'] = $this->insert($visitor);
-        }
-        else
-        {
+        // If there is an id, just update the record
+        if (isset($visitor['id'])) {
             $this->update($visitor);
+        } else {
+            // Check if a visitor already exists (by email).
+            $visitorExistsId = $this->exists($visitor);
+            if ($visitorExistsId !== -1) {
+                $visitor['id'] = $visitorExistsId;
+                $this->updateSave($visitor);  // Update, but save a record of any changes from past values
+            } else {
+                $visitor['id'] = $this->insert($visitor);
+            }
         }
 
         return $visitor['id'];
@@ -84,8 +82,9 @@ class Visitors_model extends EA_Model {
 
             if ($num_rows === 0)
             {
-                throw new Exception('Provided visitor id does not '
-                    . 'exist in the database.');
+                //throw new Exception('Provided visitor id does not '
+                //    . 'exist in the database.');
+                return FALSE;
             }
         }
 
@@ -96,32 +95,18 @@ class Visitors_model extends EA_Model {
                 $visitor['birthdate']
             ) )
         {
-            throw new Exception('Not all required fields are provided: ' . print_r($visitor, TRUE));
+            //throw new Exception('Not all required fields are provided: ' . print_r($visitor, TRUE));
+            return FALSE;
         }
 
         // Validate email address
+        /*  IGNORE - only visitor 1 is required to give email
         if ( ! filter_var($visitor['email'], FILTER_VALIDATE_EMAIL))
         {
-            throw new Exception('Invalid email address provided: ' . $visitor['email']);
+            //throw new Exception('Invalid email address provided: ' . $visitor['email']);
+            return FALSE;
         }
-
-        // When inserting a record the email address must be unique.
-        // TODO: 2023-03-24 - KPB - For now, remove this restriction and save all records
-        $visitor_id = isset($visitor['id']) ? $visitor['id'] : '';
-
-        $num_rows = $this->db
-            ->select('*')
-            ->from('visitors')
-            ->where('email', $visitor['email'])
-            ->where('id !=', $visitor_id)
-            ->get()
-            ->num_rows();
-
-        if ($num_rows > 0)
-        {
-//            throw new Exception('Given email address belongs to another visitor record. '
-//                . 'Please use a different email.');
-        }
+        */
 
         return TRUE;
     }
@@ -135,7 +120,7 @@ class Visitors_model extends EA_Model {
      * @param array $visitor Associative array with the visitor's data. Each key has the same name with the database
      * fields.
      *
-     * @return bool Returns whether the record exists or not.
+     * @return int Returns the id of the existing record, or -1 if none found
      *
      * @throws Exception If visitor email property is missing.
      */
@@ -143,17 +128,23 @@ class Visitors_model extends EA_Model {
     {
         if (empty($visitor['email']))
         {
-            throw new Exception('Visitor\'s email is not provided.');
+            //throw new Exception('Visitor\'s email is not provided.');
+            //  just return -1
+            return -1;
         }
 
         // This method shouldn't depend on another method of this class.
-        $num_rows = $this->db
+        $result = $this->db
             ->select('*')
             ->from('visitors')
             ->where('email', $visitor['email'])
-            ->get()->num_rows();
+            ->get();
 
-        return $num_rows > 0;
+        if ($result->num_rows() > 0) {
+            return $result->row()->id;
+        } else {
+            return -1;
+        }
     }
 
     /**
@@ -237,6 +228,34 @@ class Visitors_model extends EA_Model {
     }
 
     /**
+     * Update an existing visitor record in the database, but save previous info
+     *
+     * If this is a returning visitor with the same email, they may have entered different info for name, phone, ID, etc
+     *  update the record to their latest info, but save the rest
+     *
+     * @param array $visitor Associative array with the visitor's data. Each key has the same name with the database
+     * fields.
+     *
+     * @return int Returns the updated record ID.
+     *
+     * @throws Exception If visitor record could not be updated.
+     */
+    public function updateSave($visitor)
+    {
+        /*   FUTURE EXPANSION
+        $this->db->where('id', $visitor['id']);
+
+        if ( ! $this->db->update('visitors', $visitor))
+        {
+            throw new Exception('Could not update visitor to the database.');
+        }
+
+        return (int)$visitor['id'];
+        */
+        return $this->update($visitor);
+    }
+
+    /**
      * Delete an existing visitor record from the database.
      *
      * @param int $visitor_id The record id to be deleted.
@@ -262,7 +281,22 @@ class Visitors_model extends EA_Model {
     }
 
     /**
-     * Get a specific row from the appointments table.
+     * Get all visitors
+     */
+    public function get_all()
+    {
+        // Get visitor's id
+        $result = $this->db
+            ->select('*')
+            ->from('visitors')
+            ->order_by('visitors.last_name','ASC')
+            ->get();
+
+        return $result->result_array();
+    }
+
+    /**
+     * Get a specific row from the visitors table.
      *
      * @param int $visitor_id The record's id to be returned.
      *
@@ -324,6 +358,35 @@ class Visitors_model extends EA_Model {
         $visitor = $this->db->get_where('visitors', ['id' => $visitor_id])->row_array();
 
         return $visitor[$field_name];
+    }
+
+    /**
+     * Get all, or specific records from visitors table.
+     *
+     * Example:
+     *
+     * $this->visitors_model->get_batch([$id => $record_id]);
+     *
+     * @param mixed|null $where
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param mixed|null $order_by
+     *
+     * @return array Returns the rows from the database.
+     */
+    public function get_batch($where = NULL, $limit = NULL, $offset = NULL, $order_by = NULL)
+    {
+        if ($where !== NULL)
+        {
+            $this->db->where($where);
+        }
+
+        if ($order_by !== NULL)
+        {
+            $this->db->order_by($order_by);
+        }
+
+        return $this->db->get_where('visitors', ['last_name !=' => NULL], $limit, $offset)->result_array();
     }
 
     /** ********************************************************
@@ -401,6 +464,36 @@ class Visitors_model extends EA_Model {
         }
     }
 
+    public function get_appointment_visitor($appointment_id, $visitor_id)
+    {
+        if ((! isset($appointment_id)) || ( ! is_numeric($appointment_id)))
+        {
+            throw new Exception('Invalid argument type $appointment_id: ' . $appointment_id);
+        }
+
+        if ((! isset($visitor_id)) || ( ! is_numeric($visitor_id)))
+        {
+            throw new Exception('Invalid argument type $visitor_id: ' . $visitor_id);
+        }
+
+        $whereArray = array('appointment_id' => $appointment_id, 'visitor_id' => $visitor_id);
+        $result = $this->db
+            ->select('*')
+            ->from('appointment_visitor')
+            ->where($whereArray)
+            ->get();
+
+        if ($result->num_rows() == 0)
+        {
+            // Record does not exist
+            throw new Exception('No record found for $appointment_id / $visitor_id: ' . $appointment__id . " / " . $visitor_id);
+        }
+        else
+        {
+            return $result->row_array();
+        }
+    }
+
     public function get_appointment_visitors($appointment_id)
     {
         if ( ! is_numeric($appointment_id) )
@@ -408,11 +501,12 @@ class Visitors_model extends EA_Model {
             throw new Exception('Invalid argument type $appointment_id: ' . $appointment_id);
         }
 
-        // Fetch the id, if it exists
         $result = $this->db
-            ->select('*')
+            ->select('visitors.*, appointment_visitor.*')
             ->from('appointment_visitor')
-            ->where('appointment_id', $appointment_visitor['appointment_id'])
+            ->join('visitors', 'visitors.id = appointment_visitor.visitor_id')
+            ->where('appointment_visitor.appointment_id', $appointment_id)
+            ->order_by('appointment_visitor.visitor_order','ASC')
             ->get();
 
         if ($result->num_rows() == 0)
@@ -421,7 +515,33 @@ class Visitors_model extends EA_Model {
         }
         else
         {
-            return $result->row_array();
+            return $result->result_array();
+        }
+    }
+
+    public function get_appointments_visitor($visitor_id)
+    {
+        if ( ! is_numeric($visitor_id) )
+        {
+            throw new Exception('Invalid argument type $visitor_id: ' . $visitor_id);
+        }
+
+        $result = $this->db
+            ->select('appointments.*, appointment_visitor.*, services.name as service_name')
+            ->from('appointment_visitor')
+            ->join('appointments', 'appointments.id = appointment_visitor.appointment_id')
+            ->join('services', 'services.id = appointments.id_services')
+            ->where('appointment_visitor.visitor_id', $visitor_id)
+            ->order_by('appointments.start_datetime','DESC')
+            ->get();
+
+        if ($result->num_rows() == 0)
+        {
+            // Record does not exist - ignore
+        }
+        else
+        {
+            return $result->result_array();
         }
     }
 }

@@ -365,6 +365,26 @@ class Appointments_model extends EA_Model {
     }
 
     /**
+     * Get by date - get all appointments for the given date
+     */
+    public function get_by_date($date = NULL) {
+        if ($date == NULL) {
+            $date = date('Y-m-d');
+        }
+
+        $results = $this->db
+            ->select('appointments.*,services.name AS "service_name",users.first_name AS "provider_first_name",users.last_name as "provider_last_name"')
+            ->from('appointments')
+            ->join('services', 'services.id = appointments.id_services')
+            ->join('users', 'users.id = appointments.id_users_provider')
+            ->where("DATE_FORMAT(start_datetime,'%Y-%m-%d')", $date)
+            ->order_by('appointments.start_datetime','ASC')
+            ->get();
+
+        return $results->result_array();
+    }
+
+    /**
      * Get all, or specific records from appointment's table.
      *
      * Example:
