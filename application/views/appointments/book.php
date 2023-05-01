@@ -838,7 +838,6 @@
                                         </select>
                             </div>
                         </div>
-                        <!--
                         <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label for="notes" class="control-label">
@@ -846,10 +845,6 @@
                                 </label>
                                 <textarea id="notes" maxlength="500" class="form-control" rows="1"></textarea>
                             </div>                        
-                        </div>
-                            -->
-                        <div class="col-12 col-md-6">
-                            <br/>
                         </div>
                         <div class="col-12 col-md-6">
                             <br/>
