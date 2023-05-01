@@ -136,6 +136,10 @@ class Email {
             $appointment_start->setTimezone($appointment_timezone);
             $appointment_end->setTimezone($appointment_timezone);
         }
+        $email_link = $appointment_link_address->get();
+        if (str_contains($appointment_link_address->get(), "donotuse")) {
+            $email_link = "";
+        }
 
         $html = $this->CI->load->view('emails/appointment_details', [
             'email_title' => $title->get(),
@@ -145,7 +149,7 @@ class Email {
             'appointment_start_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_end_date' => $appointment_end->format($date_format . ' ' . $time_format),
             'appointment_timezone' => $timezones[empty($timezone) ? $provider['timezone'] : $timezone],
-            'appointment_link' => $appointment_link_address->get(),
+            'appointment_link' => $email_link,
             'company_link' => $settings['company_link'],
             'company_name' => $settings['company_name'],
             'visitor_1_name' => $visitors[0]['first_name'] . ' ' . $visitors[0]['last_name'],

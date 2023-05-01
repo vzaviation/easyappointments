@@ -79,8 +79,7 @@ class Notifications {
                 $provider_message = new Text(lang('appointment_link_description'));
             }
 
-            //$customer_link = new Url(site_url('appointments/index/' . $appointment['hash']));
-            $customer_link = '';
+            $customer_link = new Url(site_url('/donotuse'));
             $appt_date = date('Y-m-d',strtotime($appointment['start_datetime']));
             $provider_link = new Url(site_url('backend/dashboard?date=' . $appt_date . '&aid=' . $appointment['id']));
 
