@@ -68,7 +68,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             const amonth = (adatetime.getMonth() + 1).toString().padStart(2, "0");
             const adom = adatetime.getDate().toString().padStart(2, "0");
             const adate = adatetime.getFullYear() + "-" + amonth + "-" + adom;
-            window.location="/backend/dashboard?date=" + adate + "&aid=" + aid;
+            window.location="/index.php/backend/dashboard?date=" + adate + "&aid=" + aid;
         });
 
         /**
