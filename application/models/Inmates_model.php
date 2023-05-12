@@ -53,7 +53,7 @@ class Inmates_model extends EA_Model {
         return $inmates;
     }
 
-    public function get_providers_by_inmates($id, $service_id){
+    public function get_providers_by_inmates($id, $service_id) {
         $this->db
             ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
             ->from('ea_inmates')
@@ -75,5 +75,15 @@ class Inmates_model extends EA_Model {
 
         // Return provider records.
         return $providers;
+    }
+
+    public function get_inmate_appointments($inmate_id) {
+
+        $this->db
+            ->select('ea_appointments.id')
+            ->from('ea_appointments')
+            ->where('ea_appointments.id_inmate='.$inmate_id);
+
+        $inmates = $this->db->get()->result_array();
     }
 }

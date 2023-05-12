@@ -145,6 +145,7 @@ class Email {
             'email_title' => $title->get(),
             'email_message' => $message->get(),
             'appointment_service' => $service['name'],
+            'appointment_inmate' => $appointment['inmate_name'],
             'appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
             'appointment_start_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_end_date' => $appointment_end->format($date_format . ' ' . $time_format),
