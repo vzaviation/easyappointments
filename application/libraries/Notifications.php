@@ -81,7 +81,7 @@ class Notifications {
 
             $customer_link = new Url(site_url('/donotuse'));
             $appt_date = date('Y-m-d',strtotime($appointment['start_datetime']));
-            $provider_link = new Url(site_url('index.php/backend/dashboard?date=' . $appt_date . '&aid=' . $appointment['id']));
+            $provider_link = new Url(site_url('backend/dashboard?date=' . $appt_date . '&aid=' . $appointment['id']));
 
             $ics_stream = $this->CI->ics_file->get_stream($appointment, $service, $provider, $customer);
 
