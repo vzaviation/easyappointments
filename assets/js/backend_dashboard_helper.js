@@ -35,7 +35,7 @@
          * Event: Click on an appointment to display the visitor details
          */
         $('#appointments').on('click', '.appointment-row', function () {
-            $('#appointments.appointment-row').removeClass('selected');
+            $('#appointments .appointment-row').removeClass('selected');
             $(this).addClass('selected');
 
             const appointment_id = $(this).data('id');
