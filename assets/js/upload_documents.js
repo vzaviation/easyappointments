@@ -19,7 +19,7 @@ function uploadDocument(id) {
         console.log("uploading document...");
       },
       success: (response) => {
-      	console.log(response);
+      	console.log(JSON.stringify(response));
       	if(response.error){
       		alert("Error while uploading the file, please try again");
       	} else{

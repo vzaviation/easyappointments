@@ -51,7 +51,8 @@ class Visitors_model extends EA_Model {
         if (isset($visitor['id'])) {
             $this->update($visitor);
         } else {
-            // Check if a visitor already exists (by email).
+            // Check if a visitor already exists (by email)
+            // If no email - such as for visitors other than 1, use first and last name as key
             $visitorExistsId = $this->exists($visitor);
             if ($visitorExistsId !== -1) {
                 $visitor['id'] = $visitorExistsId;
@@ -128,9 +129,18 @@ class Visitors_model extends EA_Model {
     {
         if (empty($visitor['email']))
         {
-            //throw new Exception('Visitor\'s email is not provided.');
-            //  just return -1
-            return -1;
+            // Try to match on First and Last Name
+            $result = $this->db
+            ->select('*')
+            ->from('visitors')
+            ->where(array('first_name' => $visitor['first_name'],'last_name' => $visitor['last_name']))
+            ->get();
+
+            if ($result->num_rows() > 0) {
+                return $result->row()->id;
+            } else {
+                return -1;
+            }
         }
 
         // This method shouldn't depend on another method of this class.

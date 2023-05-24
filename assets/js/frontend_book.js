@@ -617,6 +617,10 @@ window.FrontendBook = window.FrontendBook || {};
         // Visitor 2 Details
         var v2firstName = GeneralFunctions.escapeHtml($('#visitor-2-first-name').val());
         var v2lastName = GeneralFunctions.escapeHtml($('#visitor-2-last-name').val());
+        var v2address = GeneralFunctions.escapeHtml($('#visitor-2-address').val());
+        var v2city = GeneralFunctions.escapeHtml($('#visitor-2-city').val());
+        var v2state = GeneralFunctions.escapeHtml($('#visitor-2-state').find(":selected").val());
+        var v2zipCode = GeneralFunctions.escapeHtml($('#visitor-2-zip-code').val());
         var v2birthdate = GeneralFunctions.escapeHtml($('#visitor-2-birth-date').val());
         v2birthdate = GeneralFunctions.dateToDBFormat(v2birthdate);
         var v2idfilename = GeneralFunctions.escapeHtml($('#visitor-2-dl-file-name').val());
@@ -626,6 +630,10 @@ window.FrontendBook = window.FrontendBook || {};
         // Visitor 3 Details       
         var v3firstName = GeneralFunctions.escapeHtml($('#visitor-3-first-name').val());
         var v3lastName = GeneralFunctions.escapeHtml($('#visitor-3-last-name').val());
+        var v3address = GeneralFunctions.escapeHtml($('#visitor-3-address').val());
+        var v3city = GeneralFunctions.escapeHtml($('#visitor-3-city').val());
+        var v3state = GeneralFunctions.escapeHtml($('#visitor-3-state').find(":selected").val());
+        var v3zipCode = GeneralFunctions.escapeHtml($('#visitor-3-zip-code').val());
         var v3birthdate = GeneralFunctions.escapeHtml($('#visitor-3-birth-date').val());
         v3birthdate = GeneralFunctions.dateToDBFormat(v3birthdate);
         var v3idfilename = GeneralFunctions.escapeHtml($('#visitor-3-dl-file-name').val());
@@ -753,6 +761,22 @@ window.FrontendBook = window.FrontendBook || {};
                             'text': v2birthdate ? EALang.birth_date_ymd + ': ' + v2birthdate : EALang.birth_date_ymd + ': N/A'
                         }),
                         $('<br/>'),
+                        $('<span/>', {
+                            'text': v2address ? EALang.address + ': ' + v2address : EALang.address + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2city ? EALang.city + ': ' + v2city : EALang.city + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2state ? EALang.state + ': ' + v2state : EALang.state + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2zipCode ? EALang.zip_code + ': ' + v2zipCode : EALang.zip_code + ': '
+                        }),
+                        $('<br/>'),
 						$('<span/>', {
                             'text': v2idstate ? EALang.visitor_2_dl_state + ': ' + v2idstate : EALang.visitor_2_dl_state + ': N/A'
                         }),
@@ -768,6 +792,22 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<br/>'),
 						$('<span/>', {
                             'text': v3birthdate ? EALang.birth_date_ymd + ': ' + v3birthdate : EALang.birth_date_ymd + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3address ? EALang.address + ': ' + v3address : EALang.address + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3city ? EALang.city + ': ' + v3city : EALang.city + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3state ? EALang.state + ': ' + v3state : EALang.state + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3zipCode ? EALang.zip_code + ': ' + v3zipCode : EALang.zip_code + ': '
                         }),
                         $('<br/>'),
 						$('<span/>', {
@@ -807,6 +847,10 @@ window.FrontendBook = window.FrontendBook || {};
             data.visitor2 = {
                 last_name: v2lastName,
                 first_name: v2firstName,
+                address: v2address,
+                city: v2city,
+                state: v2state,
+                zip_code: v2zipCode,
                 birthdate: v2birthdate,
                 id_image_filename: v2idfilename,
                 id_number: v2idnumber,
@@ -818,6 +862,10 @@ window.FrontendBook = window.FrontendBook || {};
             data.visitor3 = {
                 last_name: v3lastName,
                 first_name: v3firstName,
+                address: v3address,
+                city: v3city,
+                state: v3state,
+                zip_code: v3zipCode,
                 birthdate: v3birthdate,
                 id_image_filename: v3idfilename,
                 id_number: v3idnumber,

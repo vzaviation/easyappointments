@@ -235,6 +235,42 @@
           });
         };
 
+        var useSameAddressV2 = function () {
+          $('#visitor-2-use-same-address').change(function () {
+            let isChecked = $(this).prop('checked');
+            // if checked, copy the values from vis 1 address into vis 2
+            if (isChecked) {
+                $('#visitor-2-address').val($('#address').val());
+                $('#visitor-2-city').val($('#city').val());
+                $('#visitor-2-state').val($('#visitor-1-state').find(":selected").val());
+                $('#visitor-2-zip-code').val($('#zip-code').val());
+            } else {  // if not checked, erase the values
+                $('#visitor-2-address').val("");
+                $('#visitor-2-city').val("");
+                $('#visitor-2-state').val("");
+                $('#visitor-2-zip-code').val("");
+            }
+          });
+        };
+
+        var useSameAddressV3 = function () {
+          $('#visitor-3-use-same-address').change(function () {
+            let isChecked = $(this).prop('checked');
+            // if checked, copy the values from vis 1 address into vis 2
+            if (isChecked) {
+                $('#visitor-3-address').val($('#address').val());
+                $('#visitor-3-city').val($('#city').val());
+                $('#visitor-3-state').val($('#visitor-1-state').find(":selected").val());
+                $('#visitor-3-zip-code').val($('#zip-code').val());
+            } else {  // if not checked, erase the values
+                $('#visitor-3-address').val("");
+                $('#visitor-3-city').val("");
+                $('#visitor-3-state').val("");
+                $('#visitor-3-zip-code').val("");
+            }
+          });
+        };
+
         var addVisitor2 = function () {
           $('#button-add-visitor-2').click(function () {
             $('#visitor-2-info').show();
@@ -323,7 +359,7 @@
    </style>
 </head>
 
-<body onload="inactivityTime();inmateFilter();birthDateV1();birthDateV2();birthDateV3();addVisitor2();removeVisitor2();addVisitor3();removeVisitor3();">
+<body onload="inactivityTime();inmateFilter();birthDateV1();birthDateV2();birthDateV3();useSameAddressV2();useSameAddressV3();addVisitor2();removeVisitor2();addVisitor3();removeVisitor3();">
 
 <div id="loading" style="display: none;">
   <img id="loading-image" src="<?= asset_url('assets/img/loading.gif') ?>" alt="Loading..." />
@@ -762,6 +798,7 @@
                                 <label for="visitor-1-dl" class="control-label">
                                     <?= lang('visitor_1_dl') ?>
                                     <span class="text-danger">*</span>
+                                    <br/><span class="text-danger">NOTE: Maximum allowed file size is 2 MB</span>
                                 </label>
                                 <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
                                 <input type="hidden" id="visitor-1-dl-file-name" value="" />
@@ -856,7 +893,7 @@
                         <div class="col-12 col-md-6">
                             <div class="command-buttons">
                                 <button type="button" id="button-add-visitor-2" class="btn btn-dark">
-                                    Add Visitor
+                                    Add Another Visitor
                                 </button>
                                 <button type="button" id="button-remove-visitor-2" class="btn btn-outline-secondary" style="display:none;">
                                     Remove Visitor
@@ -886,6 +923,103 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <span>Use same address as Visitor 1 &nbsp;&nbsp</span>
+                                <input type="checkbox" id="visitor-2-use-same-address"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-address" class="control-label">
+                                    Visitor 2 <?= lang('address') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-address" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-city" class="control-label">
+                                    Visitor 2 <?= lang('city') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-city" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-state-box">
+                                <label for="visitor-2-state" class="control-label">
+                                    Visitor 2 <?= lang('state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-2-state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-zip-code" class="control-label">
+                                    Visitor 2 <?= lang('zip_code') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-zip-code" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
                                 <label for="visitor-2-birth-date" class="control-label">
@@ -900,6 +1034,7 @@
                                 <label for="visitor-2-dl" class="control-label">
                                     <?= lang('visitor_2_dl') ?>
                                     <span class="text-danger">*</span>
+                                    <br/><span class="text-danger">NOTE: Maximum allowed file size is 2 MB</span>
                                 </label>
                                 <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
                                 <input type="hidden" id="visitor-2-dl-file-name" value="" />
@@ -980,7 +1115,7 @@
                         <div class="col-12 col-md-6">
                             <div class="command-buttons">
                                 <button type="button" id="button-add-visitor-3" class="btn btn-dark">
-                                    Add Visitor
+                                    Add Another Visitor
                                 </button>
                                 <button type="button" id="button-remove-visitor-3" class="btn btn-outline-secondary" style="display:none;">
                                     Remove Visitor
@@ -1010,6 +1145,103 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <span>Use same address as Visitor 1 &nbsp;&nbsp</span>
+                                <input type="checkbox" id="visitor-3-use-same-address"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-address" class="control-label">
+                                    Visitor 3 <?= lang('address') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-address" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-city" class="control-label">
+                                    Visitor 3 <?= lang('city') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-city" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-state-box">
+                                <label for="visitor-3-state" class="control-label">
+                                    Visitor 3 <?= lang('state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-3-state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-zip-code" class="control-label">
+                                    Visitor 3 <?= lang('zip_code') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-zip-code" class="required form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
                                 <label for="visitor-3-birth-date" class="control-label">
@@ -1024,6 +1256,7 @@
                                 <label for="visitor-3-dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
                                     <span class="text-danger">*</span>
+                                    <br/><span class="text-danger">NOTE: Maximum allowed file size is 2 MB</span>
                                 </label>
                                 <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
                                 <input type="hidden" id="visitor-3-dl-file-name" value="" />
