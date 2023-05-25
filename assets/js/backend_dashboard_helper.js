@@ -243,6 +243,11 @@
                     $('<div/>', {
                         'style': 'padding-left:14px;font-weight:bold;',
                         'text': 'Inmate: ' + appointment.inmate_name
+                    }),
+                    // Provider
+                    $('<div/>', {
+                        'style': 'padding-left:14px;font-weight:bold;',
+                        'text': 'Phone: ' + appointment.provider_first_name + " " + appointment.provider_last_name
                     })
                 ]
             })

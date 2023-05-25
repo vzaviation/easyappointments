@@ -25,6 +25,10 @@
                 <td style="padding: 3px;"><?= $appointment_inmate ?></td>
             </tr>
             <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('provider') ?></td>
+                <td style="padding: 3px;"><?= $appointment_provider ?></td>
+            </tr>
+            <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('start') ?></td>
                 <td style="padding: 3px;"><?= $appointment_start_date ?></td>
             </tr>

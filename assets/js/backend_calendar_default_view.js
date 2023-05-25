@@ -601,17 +601,15 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                         'text': event.data.inmate_name
                     }),
                     $('<br/>'),
-
-//                    $('<strong/>', {
-//                        'class': 'd-inline-block mr-2',
-//                        'text': EALang.provider
-//                    }),
-//                    GeneralFunctions.renderMapIcon(event.data.provider),
-//                    $('<span/>', {
-//                        'text': event.data.provider.first_name + ' ' + event.data.provider.last_name
-//                    }),
-//                   $('<br/>'),
-
+                    $('<strong/>', {
+                        'class': 'd-inline-block mr-2',
+                        'text': EALang.provider
+                    }),
+                    GeneralFunctions.renderMapIcon(event.data.provider),
+                    $('<span/>', {
+                        'text': event.data.provider.first_name + ' ' + event.data.provider.last_name
+                    }),
+                    $('<br/>'),
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
                         'text': EALang.customer

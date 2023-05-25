@@ -617,6 +617,8 @@ window.FrontendBook = window.FrontendBook || {};
         // Visitor 2 Details
         var v2firstName = GeneralFunctions.escapeHtml($('#visitor-2-first-name').val());
         var v2lastName = GeneralFunctions.escapeHtml($('#visitor-2-last-name').val());
+        var v2phoneNumber = GeneralFunctions.escapeHtml($('#visitor-2-phone-number').val());
+        var v2email = GeneralFunctions.escapeHtml($('#visitor-2-email').val());
         var v2address = GeneralFunctions.escapeHtml($('#visitor-2-address').val());
         var v2city = GeneralFunctions.escapeHtml($('#visitor-2-city').val());
         var v2state = GeneralFunctions.escapeHtml($('#visitor-2-state').find(":selected").val());
@@ -630,6 +632,8 @@ window.FrontendBook = window.FrontendBook || {};
         // Visitor 3 Details       
         var v3firstName = GeneralFunctions.escapeHtml($('#visitor-3-first-name').val());
         var v3lastName = GeneralFunctions.escapeHtml($('#visitor-3-last-name').val());
+        var v3phoneNumber = GeneralFunctions.escapeHtml($('#visitor-3-phone-number').val());
+        var v3email = GeneralFunctions.escapeHtml($('#visitor-3-email').val());
         var v3address = GeneralFunctions.escapeHtml($('#visitor-3-address').val());
         var v3city = GeneralFunctions.escapeHtml($('#visitor-3-city').val());
         var v3state = GeneralFunctions.escapeHtml($('#visitor-3-state').find(":selected").val());
@@ -757,8 +761,12 @@ window.FrontendBook = window.FrontendBook || {};
                             'text': v2firstName ? EALang.visitor_2_name + ': ' + v2firstName + ' ' + v2lastName : EALang.visitor_2_name + ': N/A'
                         }),
                         $('<br/>'),
-						$('<span/>', {
-                            'text': v2birthdate ? EALang.birth_date_ymd + ': ' + v2birthdate : EALang.birth_date_ymd + ': N/A'
+                        $('<span/>', {
+                            'text': v2phoneNumber ? EALang.phone_number + ': ' + v2phoneNumber : EALang.phone_number + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2email ? EALang.email + ': ' + v2email : EALang.email + ': N/A'
                         }),
                         $('<br/>'),
                         $('<span/>', {
@@ -778,6 +786,10 @@ window.FrontendBook = window.FrontendBook || {};
                         }),
                         $('<br/>'),
 						$('<span/>', {
+                            'text': v2birthdate ? EALang.birth_date_ymd + ': ' + v2birthdate : EALang.birth_date_ymd + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
                             'text': v2idstate ? EALang.visitor_2_dl_state + ': ' + v2idstate : EALang.visitor_2_dl_state + ': N/A'
                         }),
                         $('<br/>'),
@@ -788,10 +800,6 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<br/>'),
 						$('<span/>', {
                             'text': v3firstName ? EALang.visitor_3_name + ': ' + v3firstName + ' ' + v3lastName : EALang.visitor_3_name + ': N/A'
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': v3birthdate ? EALang.birth_date_ymd + ': ' + v3birthdate : EALang.birth_date_ymd + ': N/A'
                         }),
                         $('<br/>'),
                         $('<span/>', {
@@ -808,6 +816,18 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<br/>'),
                         $('<span/>', {
                             'text': v3zipCode ? EALang.zip_code + ': ' + v3zipCode : EALang.zip_code + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3phoneNumber ? EALang.phone_number + ': ' + v3phoneNumber : EALang.phone_number + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3email ? EALang.email + ': ' + v3email : EALang.email + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3birthdate ? EALang.birth_date_ymd + ': ' + v3birthdate : EALang.birth_date_ymd + ': N/A'
                         }),
                         $('<br/>'),
 						$('<span/>', {
@@ -847,6 +867,8 @@ window.FrontendBook = window.FrontendBook || {};
             data.visitor2 = {
                 last_name: v2lastName,
                 first_name: v2firstName,
+                email: v2email,
+                phone_number: v2phoneNumber,
                 address: v2address,
                 city: v2city,
                 state: v2state,
@@ -862,6 +884,8 @@ window.FrontendBook = window.FrontendBook || {};
             data.visitor3 = {
                 last_name: v3lastName,
                 first_name: v3firstName,
+                email: v3email,
+                phone_number: v3phoneNumber,
                 address: v3address,
                 city: v3city,
                 state: v3state,

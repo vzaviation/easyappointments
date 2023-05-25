@@ -941,21 +941,23 @@ class Appointments extends EA_Controller {
 
         return $provider_list;
     }
-    public function ajax_upload_document(){
+
+    public function ajax_upload_document() {
     
-	$target_dir = $_SERVER['DOCUMENT_ROOT']."/storage/uploads/user_doc/";
+    	$target_dir = $_SERVER['DOCUMENT_ROOT']."/storage/uploads/user_doc/";
+    
         // create file name
         $temp = explode(".", $_FILES["user_document"]["name"]);
         $newfilename = time() . '.' . end($temp);
         $target_file = $target_dir.$newfilename;
-        if(move_uploaded_file($_FILES["user_document"]["tmp_name"],$target_file)){
+        if (move_uploaded_file($_FILES["user_document"]["tmp_name"],$target_file)) {
             $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode(["message" => "file uploaded successfully", 'fileName' => $newfilename, 'error' => false]));
-        } else{
+        } else {
             $this->output
             ->set_content_type('application/json')
-            ->set_output(json_encode(["message" => "file upload failed",  'error' => false]));
+            ->set_output(json_encode(["message" => "file upload failed",  'error' => true]));
         }
     }
 

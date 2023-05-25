@@ -537,10 +537,11 @@ class Visitors_model extends EA_Model {
         }
 
         $result = $this->db
-            ->select('appointments.*, appointment_visitor.*, services.name as service_name')
+            ->select('appointments.*, appointment_visitor.*, services.name AS "service_name", users.first_name AS "provider_first_name",users.last_name as "provider_last_name"')
             ->from('appointment_visitor')
             ->join('appointments', 'appointments.id = appointment_visitor.appointment_id')
             ->join('services', 'services.id = appointments.id_services')
+            ->join('users', 'users.id = appointments.id_users_provider')
             ->where('appointment_visitor.visitor_id', $visitor_id)
             ->order_by('appointments.start_datetime','DESC')
             ->get();

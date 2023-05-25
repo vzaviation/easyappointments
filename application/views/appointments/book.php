@@ -83,7 +83,7 @@
                         if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
                             age--;
                         }
-                        if (age <= 0) {
+                        if (age < 0) {
                             alert("Please enter a valid bithdate in the format mm/dd/yyyy");
                             $(this).val("");
                         } else {
@@ -140,7 +140,7 @@
                         if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
                             age--;
                         }
-                        if (age <= 0) {
+                        if (age < 0) {
                             alert("Please enter a valid bithdate in the format mm/dd/yyyy");
                             $(this).val("");
                         } else {
@@ -151,13 +151,35 @@
                                 $('#visitor-2-dl-number').removeClass("required");
                                 $('#visitor-2-dl-state-box').hide();
                                 $('#visitor-2-dl-state').removeClass("required");
-                            } else if (age >= 17) {
+                                // Make email and phone not required
+                                $('#visitor-2-show-required-email').hide();
+                                $('#visitor-2-show-required-phone').hide();
+                                $('#visitor-2-email').removeClass("required");
+                                $('#visitor-2-phone-number').removeClass("required");
+                            } else if (age == 17) {
                                 $('#visitor-2-dl-box').show();
                                 $('#visitor-2-dl-file-name').addClass("required");
                                 $('#visitor-2-dl-number-box').show();
                                 $('#visitor-2-dl-number').addClass("required");
                                 $('#visitor-2-dl-state-box').show();
                                 $('#visitor-2-dl-state').addClass("required");
+                                // Make email and phone not required
+                                $('#visitor-2-show-required-email').hide();
+                                $('#visitor-2-show-required-phone').hide();
+                                $('#visitor-2-email').removeClass("required");
+                                $('#visitor-2-phone-number').removeClass("required");
+                            } else if (age >= 18) {
+                                $('#visitor-2-dl-box').show();
+                                $('#visitor-2-dl-file-name').addClass("required");
+                                $('#visitor-2-dl-number-box').show();
+                                $('#visitor-2-dl-number').addClass("required");
+                                $('#visitor-2-dl-state-box').show();
+                                $('#visitor-2-dl-state').addClass("required");
+                                // Make email and phone required
+                                $('#visitor-2-show-required-email').show();
+                                $('#visitor-2-show-required-phone').show();
+                                $('#visitor-2-email').addClass("required");
+                                $('#visitor-2-phone-number').addClass("required");
                             } else {
                                 $('#visitor-2-dl-box').hide();
                                 $('#visitor-2-dl-file-name').removeClass("required");
@@ -165,6 +187,11 @@
                                 $('#visitor-2-dl-number').removeClass("required");
                                 $('#visitor-2-dl-state-box').hide();
                                 $('#visitor-2-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-2-show-required-email').hide();
+                                $('#visitor-2-show-required-phone').hide();
+                                $('#visitor-2-email').removeClass("required");
+                                $('#visitor-2-phone-number').removeClass("required");
                             }
                         }
                     } catch (err) {
@@ -197,7 +224,7 @@
                         if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
                             age--;
                         }
-                        if (age <= 0) {
+                        if (age < 0) {
                             alert("Please enter a valid bithdate in the format mm/dd/yyyy");
                             $(this).val("");
                         } else {
@@ -208,13 +235,35 @@
                                 $('#visitor-3-dl-number').removeClass("required");
                                 $('#visitor-3-dl-state-box').hide();
                                 $('#visitor-3-dl-state').removeClass("required");
-                            } else if (age >= 17) {
+                                // Make email and phone not required
+                                $('#visitor-3-show-required-email').hide();
+                                $('#visitor-3-show-required-phone').hide();
+                                $('#visitor-3-email').removeClass("required");
+                                $('#visitor-3-phone-number').removeClass("required");
+                            } else if (age == 17) {
                                 $('#visitor-3-dl-box').show();
                                 $('#visitor-3-dl-file-name').addClass("required");
                                 $('#visitor-3-dl-number-box').show();
                                 $('#visitor-3-dl-number').addClass("required");
                                 $('#visitor-3-dl-state-box').show();
                                 $('#visitor-3-dl-state').addClass("required");
+                                // Make email and phone not required
+                                $('#visitor-3-show-required-email').hide();
+                                $('#visitor-3-show-required-phone').hide();
+                                $('#visitor-3-email').removeClass("required");
+                                $('#visitor-3-phone-number').removeClass("required");
+                            } else if (age >= 18) {
+                                $('#visitor-3-dl-box').show();
+                                $('#visitor-3-dl-file-name').addClass("required");
+                                $('#visitor-3-dl-number-box').show();
+                                $('#visitor-3-dl-number').addClass("required");
+                                $('#visitor-3-dl-state-box').show();
+                                $('#visitor-3-dl-state').addClass("required");
+                                // Make email and phone required
+                                $('#visitor-3-show-required-email').show();
+                                $('#visitor-3-show-required-phone').show();
+                                $('#visitor-3-email').addClass("required");
+                                $('#visitor-3-phone-number').addClass("required");
                             } else {
                                 $('#visitor-3-dl-box').hide();
                                 $('#visitor-3-dl-file-name').removeClass("required");
@@ -222,6 +271,11 @@
                                 $('#visitor-3-dl-number').removeClass("required");
                                 $('#visitor-3-dl-state-box').hide();
                                 $('#visitor-3-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-3-show-required-email').hide();
+                                $('#visitor-3-show-required-phone').hide();
+                                $('#visitor-3-email').removeClass("required");
+                                $('#visitor-3-phone-number').removeClass("required");
                             }
                         }
                     } catch (err) {
@@ -299,6 +353,11 @@
             $('#visitor-2-dl-file-name').val("");
             $('#visitor-2-dl-number').val("");
             $('#visitor-2-dl-state').val("");
+            $('#visitor-2-show-required-email').hide();
+            $('#visitor-2-show-required-phone').hide();
+            $('#visitor-2-email').removeClass("required");
+            $('#visitor-2-phone-number').removeClass("required");
+
             $('#button-add-visitor-3').hide();
             $('#button-remove-visitor-3').hide();
           });
@@ -334,6 +393,10 @@
             $('#visitor-3-dl-file-name').val("");
             $('#visitor-3-dl-number').val("");
             $('#visitor-3-dl-state').val("");
+            $('#visitor-3-show-required-email').hide();
+            $('#visitor-3-show-required-phone').hide();
+            $('#visitor-3-email').removeClass("required");
+            $('#visitor-3-phone-number').removeClass("required");
           });
         }
     </script>
@@ -798,7 +861,6 @@
                                 <label for="visitor-1-dl" class="control-label">
                                     <?= lang('visitor_1_dl') ?>
                                     <span class="text-danger">*</span>
-                                    <br/><span class="text-danger">NOTE: Maximum allowed file size is 2 MB</span>
                                 </label>
                                 <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
                                 <input type="hidden" id="visitor-1-dl-file-name" value="" />
@@ -1020,6 +1082,24 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-email" class="control-label">
+                                    Visitor 2 <?= lang('email') ?>
+                                    <span id="visitor-2-show-required-email" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-email" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-phone-number" class="control-label">
+                                    Visitor 2 <?= lang('phone_number') ?>
+                                    <span id="visitor-2-show-required-phone" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-phone-number" maxlength="60" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
                                 <label for="visitor-2-birth-date" class="control-label">
@@ -1034,7 +1114,6 @@
                                 <label for="visitor-2-dl" class="control-label">
                                     <?= lang('visitor_2_dl') ?>
                                     <span class="text-danger">*</span>
-                                    <br/><span class="text-danger">NOTE: Maximum allowed file size is 2 MB</span>
                                 </label>
                                 <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
                                 <input type="hidden" id="visitor-2-dl-file-name" value="" />
@@ -1242,6 +1321,24 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-email" class="control-label">
+                                    Visitor 3 <?= lang('email') ?>
+                                    <span id="visitor-3-show-required-email" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-email" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-phone-number" class="control-label">
+                                    Visitor 3 <?= lang('phone_number') ?>
+                                    <span id="visitor-3-show-required-phone" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-phone-number" maxlength="60" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
                                 <label for="visitor-3-birth-date" class="control-label">
@@ -1256,7 +1353,6 @@
                                 <label for="visitor-3-dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
                                     <span class="text-danger">*</span>
-                                    <br/><span class="text-danger">NOTE: Maximum allowed file size is 2 MB</span>
                                 </label>
                                 <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
                                 <input type="hidden" id="visitor-3-dl-file-name" value="" />

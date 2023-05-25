@@ -5,8 +5,8 @@ function uploadDocument(id) {
 	var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_upload_document';
 
 	var form = new FormData();
-    form.append('user_document', files[0]);
-    form.append('csrfToken', GlobalVariables.csrfToken);
+  form.append('user_document', files[0]);
+  form.append('csrfToken', GlobalVariables.csrfToken);
 
     $.ajax({
       type:'POST',
@@ -20,7 +20,7 @@ function uploadDocument(id) {
       },
       success: (response) => {
       	console.log(JSON.stringify(response));
-      	if(response.error){
+      	if (response.error) {
       		alert("Error while uploading the file, please try again");
       	} else{
       		var fileName = response.fileName;
