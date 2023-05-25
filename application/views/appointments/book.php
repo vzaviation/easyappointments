@@ -330,8 +330,13 @@
             $('#visitor-2-info').show();
             $('#button-add-visitor-2').hide();
             $('#button-remove-visitor-2').show();
-            $('#visitor-2-name').addClass('required');
-            $('#birth-date-v2').addClass('required');
+            $('#visitor-2-first-name').addClass('required');
+            $('#visitor-2-last-name').addClass('required');
+            $('#visitor-2-address').addClass('required');
+            $('#visitor-2-city').addClass('required');
+            $('#visitor-2-state').addClass('required');
+            $('#visitor-2-zip-code').addClass('required');
+            $('#visitor-2-birth-date').addClass('required');
           });
         }
 
@@ -340,16 +345,26 @@
             $('#visitor-2-info').hide();
             $('#button-add-visitor-2').show();
             $('#button-remove-visitor-2').hide();
-            $('#visitor-2-name').removeClass('required');
-            $('#birth-date-v2').removeClass('required');
+            $('#visitor-2-first-name').removeClass('required');
+            $('#visitor-2-last-name').removeClass('required');
+            $('#visitor-2-address').removeClass('required');
+            $('#visitor-2-city').removeClass('required');
+            $('#visitor-2-state').removeClass('required');
+            $('#visitor-2-zip-code').removeClass('required');
+            $('#visitor-2-birth-date').removeClass('required');
             $('#visitor-2-dl-box').hide();
             $('#visitor-2-dl-file-name').removeClass("required");
             $('#visitor-2-dl-number-box').hide();
             $('#visitor-2-dl-number').removeClass("required");
             $('#visitor-2-dl-state-box').hide();
             $('#visitor-2-dl-state').removeClass("required");
-            $('#visitor-2-name').val("");
-            $('#birth-date-v2').val("");
+            $('#visitor-2-first-name').val("");
+            $('#visitor-2-last-name').val("");
+            $('#visitor-2-address').val("");
+            $('#visitor-2-city').val("");
+            $('#visitor-2-state').val("");
+            $('#visitor-2-zip-code').val("");
+            $('#visitor-2-birth-date').val("");
             $('#visitor-2-dl-file-name').val("");
             $('#visitor-2-dl-number').val("");
             $('#visitor-2-dl-state').val("");
@@ -357,6 +372,8 @@
             $('#visitor-2-show-required-phone').hide();
             $('#visitor-2-email').removeClass("required");
             $('#visitor-2-phone-number').removeClass("required");
+            $('#visitor-2-email').val("");
+            $('#visitor-2-phone-number').val("");
 
             $('#button-add-visitor-3').hide();
             $('#button-remove-visitor-3').hide();
@@ -369,8 +386,13 @@
             $('#visitor-3-info').show();
             $('#button-add-visitor-3').hide();
             $('#button-remove-visitor-3').show();
-            $('#visitor-3-name').addClass('required');
-            $('#birth-date-v3').addClass('required');
+            $('#visitor-3-first-name').addClass('required');
+            $('#visitor-3-last-name').addClass('required');
+            $('#visitor-3-address').addClass('required');
+            $('#visitor-3-city').addClass('required');
+            $('#visitor-3-state').addClass('required');
+            $('#visitor-3-zip-code').addClass('required');
+            $('#visitor-3-birth-date').addClass('required');
           });
         }
 
@@ -380,16 +402,26 @@
             $('#visitor-3-info').hide();
             $('#button-add-visitor-3').show();
             $('#button-remove-visitor-3').hide();
-            $('#visitor-3-name').removeClass('required');
-            $('#birth-date-v3').removeClass('required');
+            $('#visitor-3-first-name').removeClass('required');
+            $('#visitor-3-last-name').removeClass('required');
+            $('#visitor-3-address').removeClass('required');
+            $('#visitor-3-city').removeClass('required');
+            $('#visitor-3-state').removeClass('required');
+            $('#visitor-3-zip-code').removeClass('required');
+            $('#visitor-3-birth-date').removeClass('required');
+            $('#visitor-3-first-name').val("");
+            $('#visitor-3-last-name').val("");
+            $('#visitor-3-address').val("");
+            $('#visitor-3-city').val("");
+            $('#visitor-3-state').val("");
+            $('#visitor-3-zip-code').val("");
+            $('#visitor-3-birth-date').val("");
             $('#visitor-3-dl-box').hide();
             $('#visitor-3-dl-file-name').removeClass("required");
             $('#visitor-3-dl-number-box').hide();
             $('#visitor-3-dl-number').removeClass("required");
             $('#visitor-3-dl-state-box').hide();
             $('#visitor-3-dl-state').removeClass("required");
-            $('#visitor-3-name').val("");
-            $('#birth-date-v3').val("");
             $('#visitor-3-dl-file-name').val("");
             $('#visitor-3-dl-number').val("");
             $('#visitor-3-dl-state').val("");
@@ -397,6 +429,8 @@
             $('#visitor-3-show-required-phone').hide();
             $('#visitor-3-email').removeClass("required");
             $('#visitor-3-phone-number').removeClass("required");
+            $('#visitor-3-email').val("");
+            $('#visitor-3-phone-number').val("");
           });
         }
     </script>
@@ -998,7 +1032,7 @@
                                     Visitor 2 <?= lang('address') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-2-address" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-2-address" class="form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1007,7 +1041,7 @@
                                     Visitor 2 <?= lang('city') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-2-city" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-2-city" class="form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1078,7 +1112,7 @@
                                     Visitor 2 <?= lang('zip_code') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-2-zip-code" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-2-zip-code" class="form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1237,7 +1271,7 @@
                                     Visitor 3 <?= lang('address') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-3-address" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-3-address" class="form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1246,7 +1280,7 @@
                                     Visitor 3 <?= lang('city') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-3-city" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-3-city" class="form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1317,7 +1351,7 @@
                                     Visitor 3 <?= lang('zip_code') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-3-zip-code" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-3-zip-code" class="form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">

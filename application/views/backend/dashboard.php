@@ -30,6 +30,15 @@
 <div class="container-fluid backend-page" id="visitors-page">
     <div class="row" id="visitors-date">
         <div class="col-8 col-md-6" style="text-align: center">
+<!--            <div class="dashboard-button-group">
+                <button type="button" class="dashboard-prev-button dashboard-button" aria-label="prev">
+                    <span class="dashboard-icon dashboard-icon-left-single-arrow"></span>
+                </button>
+                <button type="button" class="fc-next-button fc-button fc-state-default fc-corner-right" aria-label="next">
+                    <span class="fc-icon fc-icon-right-single-arrow"></span>
+                </button>
+            </div> -->
+
             <a href="<?= site_url('backend/dashboard?date='.$prev_date) ?>">&nbsp;&lt;&nbsp;</a>
             <span style="font-size=1.5rem;">&nbsp;<?= $appt_date ?>&nbsp;</span>
             <a href="<?= site_url('backend/dashboard?date='.$next_date) ?>">&nbsp;&gt;&nbsp;</a>
