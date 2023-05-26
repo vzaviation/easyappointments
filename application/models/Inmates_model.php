@@ -80,10 +80,12 @@ class Inmates_model extends EA_Model {
     public function get_inmate_appointments($inmate_id) {
 
         $this->db
-            ->select('ea_appointments.id')
-            ->from('ea_appointments')
-            ->where('ea_appointments.id_inmate='.$inmate_id);
+            ->select('a.id,a.start_datetime')
+            ->from('ea_appointments a')
+            ->where('a.id_inmate='.$inmate_id);
 
-        $inmates = $this->db->get()->result_array();
+        $appts = $this->db->get()->result_array();
+
+        return $appts;
     }
 }

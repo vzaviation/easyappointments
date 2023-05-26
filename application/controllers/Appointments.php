@@ -612,6 +612,7 @@ class Appointments extends EA_Controller {
             $number_of_days_in_month = (int)$selected_date->format('t');
 	        $inmate_id = $this->input->get_post('selectedInmateId');
             $unavailable_dates = [];
+            $appointment_ids = [];
 
     	    if ($inmate_id) {
                 // Get the valid providers for this inmate
@@ -619,14 +620,19 @@ class Appointments extends EA_Controller {
                     ? $this->search_providers_by_inmates($inmate_id, $service_id)
                     : [$provider_id];
                 
-                // Get the IDs of any existing visits with this inmate
-                $appointment_ids = $this->inmates_model->get_inmate_appointments($inmate_id);
+                // Get the appointment data of any existing visits with this inmate
+                $appointments = $this->inmates_model->get_inmate_appointments($inmate_id);
+                foreach ($appointments as $appt) {
+                    $appointment_ids[] = $appt["id"];
+                }
+                
+                // Do not exclude any appointment IDs
+                //$exclude_appointment_ids = $manage_mode ? $appointment_ids : NULL;
+                $exclude_appointment_ids = [];
             } else {
                 // Skip the call if there is no inmate chosen
                 $provider_ids = [];
             }
-
-            $exclude_appointment_ids = $manage_mode ? $appointment_ids : NULL;
 
             // Get the service record.
             $service = $this->services_model->get_row($service_id);
@@ -666,9 +672,18 @@ class Appointments extends EA_Controller {
                 }
 
                 // No availability amongst all the provider.
-                if (empty($available_hours))
-                {
+                if (empty($available_hours)) {
                     $unavailable_dates[] = $current_date->format('Y-m-d');
+                } else {
+                    // Check if the inmate already has an appointment on the date
+                    // If so, no go
+                    foreach ($appointments as $appt) {
+                        $startDate = new DateTime($appt["start_datetime"]);
+                        if ($startDate->format('Y-m-d') == $current_date->format('Y-m-d')) {
+                            $unavailable_dates[] = $current_date->format('Y-m-d');
+                            break;
+                        }
+                    }
                 }
             }
 

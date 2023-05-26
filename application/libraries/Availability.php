@@ -102,8 +102,11 @@ class Availability {
             foreach ($exclude_appointment_ids as $eid) {
                 $eidStr .= $eid . ",";
             }
-            $eidStr .= ")";
-            $conditions['id NOT IN '] = $eidStr;
+            if ($eidStr != "(") {
+                $eidStr = substr($eidStr, 0, -1);
+                $eidStr .= ")";
+                $conditions['id NOT IN '] = $eidStr;
+            }
         }
 
         $appointments = $this->CI->appointments_model->get_batch($conditions);
