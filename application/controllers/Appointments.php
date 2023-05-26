@@ -28,6 +28,7 @@ class Appointments extends EA_Controller {
         $this->load->helper('google_analytics');
         $this->load->model('appointments_model');
         $this->load->model('providers_model');
+        $this->load->model('visitors_model');
         $this->load->model('inmates_model');
         $this->load->model('admins_model');
         $this->load->model('secretaries_model');
@@ -423,6 +424,79 @@ class Appointments extends EA_Controller {
 
         return $provider_id;
     }
+
+    /**
+     * This method will check for any visitor restrictions 
+     * This method answers to an AJAX request.
+     *
+     * Outputs true if no restrticions, false if a restriction
+     */
+    public function ajax_check_visitor_appointment_restrictions()
+    {
+        try
+        {
+            $post_data = $this->input->post('post_data');
+            $newAppointment = $post_data['appointment'];
+            $visitor = $post_data['visitor1'];
+            $inmate_id = $newAppointment["id_inmate"];
+            $inmate_name = $newAppointment["inmate_name"];
+            $newStartDate = new DateTime($newAppointment["start_datetime"]);
+
+            // Check for existing visitor and get ID
+            // If visitor exists, check for other appointments with inmate
+            // For now, disallow any appointment more than a week out from most recent appointment
+            //  between visitor and inmate
+            // Future restrictions can be handled here as well
+            $visitor_id = $this->visitors_model->exists($visitor);
+            if ($visitor_id != -1) {
+                $appointments = $this->visitors_model->get_appointments_visitor($visitor_id);
+                foreach ($appointments as $appointment) {
+                    if ($appointment["id_inmate"] == $inmate_id) {
+                        // Sorted in most recent to oldest, so first match is most recent
+                        $startDate = new DateTime($appointment["start_datetime"]);
+                        // if existing appointment is in the past, ignore this check
+                        $currentDate = new DateTime();
+                        if ($currentDate->format('Y-m-d') <= $startDate->format('Y-m-d')) {
+                            // Num of days between the dates ...
+                            $days_diff = $newStartDate->diff($startDate)->format("%a");
+                            if ($days_diff > 7) {
+                                $response = [
+                                    'check_visitor_appointment_restrictions' => false,
+                                    'days' => $days_diff
+                                ];
+                            } else {
+                                $response = [
+                                    'check_visitor_appointment_restrictions' => true,
+                                    'days' => $days_diff
+                                ];
+                            }
+                        } else {
+                            $response = [
+                                'check_visitor_appointment_restrictions' => true,
+                                'days' => 0
+                            ];
+                        }
+                    }
+                }
+            } else {
+                $response = [
+                    'check_visitor_appointment_restrictions' => true,
+                    'days' => -1
+                ];
+            }
+        }
+        catch (Exception $exception)
+        {
+            $response = [
+                'check_visitor_appointment_restrictions' => true,
+                'error' => $exception
+            ];
+        }
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
 
     /**
      * Register the appointment to the database.

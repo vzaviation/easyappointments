@@ -131,6 +131,48 @@ window.FrontendBookApi = window.FrontendBookApi || {};
     };
 
     /**
+     * checkVisitorAppointmentRestrictions
+     *
+     * This method will make an ajax call to the appointments controller that will
+     * check for any visitor restrictions
+     * 
+     * If the restrictions pass, move right into registering the appointment
+     * 
+     * If they fail, return the user to the confirmation page with a message
+     * 
+     */
+    exports.checkVisitorAppointmentRestrictions = function () {
+        var formData = JSON.parse($('input[name="post_data"]').val());
+
+        var data = {
+            csrfToken: GlobalVariables.csrfToken,
+            post_data: formData
+        };
+
+        var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_check_visitor_appointment_restrictions';
+
+        $.ajax({
+            url: url,
+            method: 'post',
+            data: data,
+            dataType: 'json',
+        })
+            .done(function (response) {
+                console.log("*** Response from check_visitor_appointment_restrictions: " + JSON.stringify(response));
+                if (response.check_visitor_appointment_restrictions) {
+                    FrontendBookApi.registerAppointment();
+                } else {
+                    $('span.visitor-restriction-message').show();
+                    return false;
+                }
+            })
+            .fail(function (jqxhr, textStatus, errorThrown) {
+                $('span.visitor-restriction-message').show();
+                return false;
+            });
+    }
+
+    /**
      * Register an appointment to the database.
      *
      * This method will make an ajax call to the appointments controller that will register

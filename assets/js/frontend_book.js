@@ -513,7 +513,7 @@ window.FrontendBook = window.FrontendBook || {};
          * @param {jQuery.Event} event
          */
         $('#book-appointment-submit').on('click', function () {
-            FrontendBookApi.registerAppointment();
+            FrontendBookApi.checkVisitorAppointmentRestrictions();
         });
 
         /**

@@ -398,6 +398,18 @@ body {
         margin-bottom: 10px;
         border: 2px solid #FF0000;
     }
+
+    #book-appointment-wizard .visitor-restriction-message {
+        display: inline-block;
+        width: 98%;
+        justify-content: center;
+        align-items: center;
+        text-align: justify;
+        padding: 5px;
+        margin-bottom: 10px;
+        border: 2px solid #FF0000;
+        background: var(--light-tan);
+    }
 }
 
 /* BOOK SUCCESS & MESSAGE
