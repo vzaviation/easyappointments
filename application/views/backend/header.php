@@ -102,8 +102,10 @@
             <?php $hidden = ($privileges[PRIV_REPORTING]['view'] == TRUE) ? '' : 'd-none' ?>
             <?php $active = ($active_menu == PRIV_REPORTING) ? 'active' : '' ?>
             <li class="nav-item <?= $active . $hidden ?>">
-                <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/b2a98bc7-0ce2-4303-8443-b5974b6c58a3?directory_alias=tarmactech" class="nav-link"
-                   data-tippy-content="Reporting" target="_blank">
+<!-- prev changed 2023-05-26 <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/b2a98bc7-0ce2-4303-8443-b5974b6c58a3?directory_alias=tarmactech" class="nav-link"
+                   data-tippy-content="Reporting" target="_blank"> -->
+                   <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/a0a704b4-db61-499c-aa24-4eef1d355953?directory_alias=tarmactech"
+                        class="nav-link" data-tippy-content="Reporting" target="_blank">
                     <i class="fas fa-cogs mr-2"></i>
                     <?= lang('reporting') ?>
                 </a>
