@@ -442,6 +442,12 @@ class Appointments extends EA_Controller {
             $inmate_name = $newAppointment["inmate_name"];
             $newStartDate = new DateTime($newAppointment["start_datetime"]);
 
+            // Set a default response if there is no match
+            $response = [
+                'check_visitor_appointment_restrictions' => true,
+                'days' => -1
+            ];
+
             // Check for existing visitor and get ID
             // If visitor exists, check for other appointments with inmate
             // For now, disallow any appointment more than a week out from most recent appointment
@@ -489,9 +495,11 @@ class Appointments extends EA_Controller {
         {
             $response = [
                 'check_visitor_appointment_restrictions' => true,
-                'error' => $exception
+                'error' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
             ];
         }
+
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
