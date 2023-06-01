@@ -773,6 +773,97 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
+                            <div class="form-group">
+                                <label for="visitor-1-birth-date" class="control-label">
+                                    <?= lang('birth_date') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-1-birth-date" maxlength="10" class="required form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-box" style="display:none;">
+                                <label for="visitor-1-dl" class="control-label">
+                                    <?= lang('visitor_1_dl') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
+                                <input type="hidden" id="visitor-1-dl-file-name" value="" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-number-box" style="display:none;">
+                                <label for="visitor-1-dl-number" class="control-label">
+                                    <?= lang('visitor_1_dl_number') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-1-dl-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-state-box" style="display:none;">
+                                <label for="visitor-1-dl-state" class="control-label">
+                                    <?= lang('visitor_1_dl_state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-1-dl-state" class="form-control">
+                                            <option value="">Select</option>
+                                            <option value="Alabama">Alabama</option>
+                                            <option value="Alaska">Alaska</option>
+                                            <option value="Arizona">Arizona</option>
+                                            <option value="Arkansas">Arkansas</option>
+                                            <option value="California">California</option>
+                                            <option value="Colorado">Colorado</option>
+                                            <option value="Connecticut">Connecticut</option>
+                                            <option value="Delaware">Delaware</option>
+                                            <option value="Florida">Florida</option>
+                                            <option value="Georgia">Georgia</option>
+                                            <option value="Hawaii">Hawaii</option>
+                                            <option value="Idaho">Idaho</option>
+                                            <option value="Illinois">Illinois</option>
+                                            <option value="Indiana">Indiana</option>
+                                            <option value="Iowa">Iowa</option>
+                                            <option value="Kansas">Kansas</option>
+                                            <option value="Kentucky">Kentucky</option>
+                                            <option value="Louisiana">Louisiana</option>
+                                            <option value="Maine">Maine</option>
+                                            <option value="Maryland">Maryland</option>
+                                            <option value="Massachusetts">Massachusetts</option>
+                                            <option value="Michigan">Michigan</option>
+                                            <option value="Minnesota">Minnesota</option>
+                                            <option value="Mississippi">Mississippi</option>
+                                            <option value="Missouri">Missouri</option>
+                                            <option value="Montana">Montana</option>
+                                            <option value="Nebraska">Nebraska</option>
+                                            <option value="Nevada">Nevada</option>
+                                            <option value="New Hampshire">New Hampshire</option>
+                                            <option value="New Jersey">New Jersey</option>
+                                            <option value="New Mexico">New Mexico</option>
+                                            <option value="New York">New York</option>
+                                            <option value="North Carolina">North Carolina</option>
+                                            <option value="North Dakota">North Dakota</option>
+                                            <option value="Ohio">Ohio</option>
+                                            <option value="Oklahoma">Oklahoma</option>
+                                            <option value="Oregon">Oregon</option>
+                                            <option value="Pennsylvania">Pennsylvania</option>
+                                            <option value="Rhode Island">Rhode Island</option>
+                                            <option value="South Carolina">South Carolina</option>
+                                            <option value="South Dakota">South Dakota</option>
+                                            <option value="Tennessee">Tennessee</option>
+                                            <option value="Texas">Texas</option>
+                                            <option value="Utah">Utah</option>
+                                            <option value="Vermont">Vermont</option>
+                                            <option value="Virginia">Virginia</option>
+                                            <option value="Washington">Washington</option>
+                                            <option value="West Virginia">West Virginia</option>
+                                            <option value="Wisconsin">Wisconsin</option>
+                                            <option value="Wyoming">Wyoming</option>
+                                        </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label for="address" class="control-label">
                                     <?= lang('address') ?>
@@ -881,97 +972,6 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <!-- Display birth date box - if age is certain values, require further information -->
-                            <div class="form-group">
-                                <label for="visitor-1-birth-date" class="control-label">
-                                    <?= lang('birth_date') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="visitor-1-birth-date" maxlength="10" class="required form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-1-dl-box" style="display:none;">
-                                <label for="visitor-1-dl" class="control-label">
-                                    <?= lang('visitor_1_dl') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
-                                <input type="hidden" id="visitor-1-dl-file-name" value="" />
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-1-dl-number-box" style="display:none;">
-                                <label for="visitor-1-dl-number" class="control-label">
-                                    <?= lang('visitor_1_dl_number') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="visitor-1-dl-number" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-1-dl-state-box" style="display:none;">
-                                <label for="visitor-1-dl-state" class="control-label">
-                                    <?= lang('visitor_1_dl_state') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                
-                                <select id="visitor-1-dl-state" class="form-control">
-                                            <option value="">Select</option>
-                                            <option value="Alabama">Alabama</option>
-                                            <option value="Alaska">Alaska</option>
-                                            <option value="Arizona">Arizona</option>
-                                            <option value="Arkansas">Arkansas</option>
-                                            <option value="California">California</option>
-                                            <option value="Colorado">Colorado</option>
-                                            <option value="Connecticut">Connecticut</option>
-                                            <option value="Delaware">Delaware</option>
-                                            <option value="Florida">Florida</option>
-                                            <option value="Georgia">Georgia</option>
-                                            <option value="Hawaii">Hawaii</option>
-                                            <option value="Idaho">Idaho</option>
-                                            <option value="Illinois">Illinois</option>
-                                            <option value="Indiana">Indiana</option>
-                                            <option value="Iowa">Iowa</option>
-                                            <option value="Kansas">Kansas</option>
-                                            <option value="Kentucky">Kentucky</option>
-                                            <option value="Louisiana">Louisiana</option>
-                                            <option value="Maine">Maine</option>
-                                            <option value="Maryland">Maryland</option>
-                                            <option value="Massachusetts">Massachusetts</option>
-                                            <option value="Michigan">Michigan</option>
-                                            <option value="Minnesota">Minnesota</option>
-                                            <option value="Mississippi">Mississippi</option>
-                                            <option value="Missouri">Missouri</option>
-                                            <option value="Montana">Montana</option>
-                                            <option value="Nebraska">Nebraska</option>
-                                            <option value="Nevada">Nevada</option>
-                                            <option value="New Hampshire">New Hampshire</option>
-                                            <option value="New Jersey">New Jersey</option>
-                                            <option value="New Mexico">New Mexico</option>
-                                            <option value="New York">New York</option>
-                                            <option value="North Carolina">North Carolina</option>
-                                            <option value="North Dakota">North Dakota</option>
-                                            <option value="Ohio">Ohio</option>
-                                            <option value="Oklahoma">Oklahoma</option>
-                                            <option value="Oregon">Oregon</option>
-                                            <option value="Pennsylvania">Pennsylvania</option>
-                                            <option value="Rhode Island">Rhode Island</option>
-                                            <option value="South Carolina">South Carolina</option>
-                                            <option value="South Dakota">South Dakota</option>
-                                            <option value="Tennessee">Tennessee</option>
-                                            <option value="Texas">Texas</option>
-                                            <option value="Utah">Utah</option>
-                                            <option value="Vermont">Vermont</option>
-                                            <option value="Virginia">Virginia</option>
-                                            <option value="Washington">Washington</option>
-                                            <option value="West Virginia">West Virginia</option>
-                                            <option value="Wisconsin">Wisconsin</option>
-                                            <option value="Wyoming">Wyoming</option>
-                                        </select>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
                             <div class="form-group">
                                 <label for="notes" class="control-label">
                                     <?= lang('notes') ?>
@@ -1016,6 +1016,97 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="visitor-2-last-name" class="form-control" maxlength="100"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
+                            <div class="form-group">
+                                <label for="visitor-2-birth-date" class="control-label">
+                                    <?= lang('birth_date') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-birth-date" maxlength="10" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-box" style="display:none;">
+                                <label for="visitor-2-dl" class="control-label">
+                                    <?= lang('visitor_2_dl') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
+                                <input type="hidden" id="visitor-2-dl-file-name" value="" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-number-box" style="display:none;">
+                                <label for="visitor-2-dl-number" class="control-label">
+                                    <?= lang('visitor_2_dl_number') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-dl-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-state-box" style="display:none;">
+                                <label for="visitor-2-dl-state" class="control-label">
+                                    <?= lang('visitor_2_dl_state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-2-dl-state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1133,97 +1224,7 @@
                                 <input type="text" id="visitor-2-phone-number" maxlength="60" class="form-control"/>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <!-- Display birth date box - if age is certain values, require further information -->
-                            <div class="form-group">
-                                <label for="visitor-2-birth-date" class="control-label">
-                                    <?= lang('birth_date') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="visitor-2-birth-date" maxlength="10" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-2-dl-box" style="display:none;">
-                                <label for="visitor-2-dl" class="control-label">
-                                    <?= lang('visitor_2_dl') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
-                                <input type="hidden" id="visitor-2-dl-file-name" value="" />
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-2-dl-number-box" style="display:none;">
-                                <label for="visitor-2-dl-number" class="control-label">
-                                    <?= lang('visitor_2_dl_number') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="visitor-2-dl-number" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-2-dl-state-box" style="display:none;">
-                                <label for="visitor-2-dl-state" class="control-label">
-                                    <?= lang('visitor_2_dl_state') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                
-                                <select id="visitor-2-dl-state" class="form-control">
-                                            <option value="">Select</option>
-                                            <option value="Alabama">Alabama</option>
-                                            <option value="Alaska">Alaska</option>
-                                            <option value="Arizona">Arizona</option>
-                                            <option value="Arkansas">Arkansas</option>
-                                            <option value="California">California</option>
-                                            <option value="Colorado">Colorado</option>
-                                            <option value="Connecticut">Connecticut</option>
-                                            <option value="Delaware">Delaware</option>
-                                            <option value="Florida">Florida</option>
-                                            <option value="Georgia">Georgia</option>
-                                            <option value="Hawaii">Hawaii</option>
-                                            <option value="Idaho">Idaho</option>
-                                            <option value="Illinois">Illinois</option>
-                                            <option value="Indiana">Indiana</option>
-                                            <option value="Iowa">Iowa</option>
-                                            <option value="Kansas">Kansas</option>
-                                            <option value="Kentucky">Kentucky</option>
-                                            <option value="Louisiana">Louisiana</option>
-                                            <option value="Maine">Maine</option>
-                                            <option value="Maryland">Maryland</option>
-                                            <option value="Massachusetts">Massachusetts</option>
-                                            <option value="Michigan">Michigan</option>
-                                            <option value="Minnesota">Minnesota</option>
-                                            <option value="Mississippi">Mississippi</option>
-                                            <option value="Missouri">Missouri</option>
-                                            <option value="Montana">Montana</option>
-                                            <option value="Nebraska">Nebraska</option>
-                                            <option value="Nevada">Nevada</option>
-                                            <option value="New Hampshire">New Hampshire</option>
-                                            <option value="New Jersey">New Jersey</option>
-                                            <option value="New Mexico">New Mexico</option>
-                                            <option value="New York">New York</option>
-                                            <option value="North Carolina">North Carolina</option>
-                                            <option value="North Dakota">North Dakota</option>
-                                            <option value="Ohio">Ohio</option>
-                                            <option value="Oklahoma">Oklahoma</option>
-                                            <option value="Oregon">Oregon</option>
-                                            <option value="Pennsylvania">Pennsylvania</option>
-                                            <option value="Rhode Island">Rhode Island</option>
-                                            <option value="South Carolina">South Carolina</option>
-                                            <option value="South Dakota">South Dakota</option>
-                                            <option value="Tennessee">Tennessee</option>
-                                            <option value="Texas">Texas</option>
-                                            <option value="Utah">Utah</option>
-                                            <option value="Vermont">Vermont</option>
-                                            <option value="Virginia">Virginia</option>
-                                            <option value="Washington">Washington</option>
-                                            <option value="West Virginia">West Virginia</option>
-                                            <option value="Wisconsin">Wisconsin</option>
-                                            <option value="Wyoming">Wyoming</option>
-                                        </select>
-                            </div>
-                        </div>
+
                         <hr style="width:95%;" />
                         <div class="col-12 col-md-6">
                             <div class="command-buttons">
@@ -1255,6 +1256,97 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="visitor-3-last-name" class="form-control" maxlength="100"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
+                            <div class="form-group">
+                                <label for="visitor-3-birth-date" class="control-label">
+                                    <?= lang('birth_date') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-birth-date" maxlength="10" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-box" style="display:none;">
+                                <label for="visitor-3-dl" class="control-label">
+                                    <?= lang('visitor_3_dl') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
+                                <input type="hidden" id="visitor-3-dl-file-name" value="" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-number-box" style="display:none;">
+                                <label for="visitor-3-dl-number" class="control-label">
+                                    <?= lang('visitor_3_dl_number') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-dl-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-state-box" style="display:none;">
+                                <label for="visitor-3-dl-state" class="control-label">
+                                    <?= lang('visitor_3_dl_state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-3-dl-state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1370,97 +1462,6 @@
                                     <span id="visitor-3-show-required-phone" class="text-danger" style="display:none;">*</span>
                                 </label>
                                 <input type="text" id="visitor-3-phone-number" maxlength="60" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <!-- Display birth date box - if age is certain values, require further information -->
-                            <div class="form-group">
-                                <label for="visitor-3-birth-date" class="control-label">
-                                    <?= lang('birth_date') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="visitor-3-birth-date" maxlength="10" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-3-dl-box" style="display:none;">
-                                <label for="visitor-3-dl" class="control-label">
-                                    <?= lang('visitor_3_dl') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
-                                <input type="hidden" id="visitor-3-dl-file-name" value="" />
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-3-dl-number-box" style="display:none;">
-                                <label for="visitor-3-dl-number" class="control-label">
-                                    <?= lang('visitor_3_dl_number') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="visitor-3-dl-number" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group" id="visitor-3-dl-state-box" style="display:none;">
-                                <label for="visitor-3-dl-state" class="control-label">
-                                    <?= lang('visitor_3_dl_state') ?>
-                                    <span class="text-danger">*</span>
-                                </label>
-                                
-                                <select id="visitor-3-dl-state" class="form-control">
-                                            <option value="">Select</option>
-                                            <option value="Alabama">Alabama</option>
-                                            <option value="Alaska">Alaska</option>
-                                            <option value="Arizona">Arizona</option>
-                                            <option value="Arkansas">Arkansas</option>
-                                            <option value="California">California</option>
-                                            <option value="Colorado">Colorado</option>
-                                            <option value="Connecticut">Connecticut</option>
-                                            <option value="Delaware">Delaware</option>
-                                            <option value="Florida">Florida</option>
-                                            <option value="Georgia">Georgia</option>
-                                            <option value="Hawaii">Hawaii</option>
-                                            <option value="Idaho">Idaho</option>
-                                            <option value="Illinois">Illinois</option>
-                                            <option value="Indiana">Indiana</option>
-                                            <option value="Iowa">Iowa</option>
-                                            <option value="Kansas">Kansas</option>
-                                            <option value="Kentucky">Kentucky</option>
-                                            <option value="Louisiana">Louisiana</option>
-                                            <option value="Maine">Maine</option>
-                                            <option value="Maryland">Maryland</option>
-                                            <option value="Massachusetts">Massachusetts</option>
-                                            <option value="Michigan">Michigan</option>
-                                            <option value="Minnesota">Minnesota</option>
-                                            <option value="Mississippi">Mississippi</option>
-                                            <option value="Missouri">Missouri</option>
-                                            <option value="Montana">Montana</option>
-                                            <option value="Nebraska">Nebraska</option>
-                                            <option value="Nevada">Nevada</option>
-                                            <option value="New Hampshire">New Hampshire</option>
-                                            <option value="New Jersey">New Jersey</option>
-                                            <option value="New Mexico">New Mexico</option>
-                                            <option value="New York">New York</option>
-                                            <option value="North Carolina">North Carolina</option>
-                                            <option value="North Dakota">North Dakota</option>
-                                            <option value="Ohio">Ohio</option>
-                                            <option value="Oklahoma">Oklahoma</option>
-                                            <option value="Oregon">Oregon</option>
-                                            <option value="Pennsylvania">Pennsylvania</option>
-                                            <option value="Rhode Island">Rhode Island</option>
-                                            <option value="South Carolina">South Carolina</option>
-                                            <option value="South Dakota">South Dakota</option>
-                                            <option value="Tennessee">Tennessee</option>
-                                            <option value="Texas">Texas</option>
-                                            <option value="Utah">Utah</option>
-                                            <option value="Vermont">Vermont</option>
-                                            <option value="Virginia">Virginia</option>
-                                            <option value="Washington">Washington</option>
-                                            <option value="West Virginia">West Virginia</option>
-                                            <option value="Wisconsin">Wisconsin</option>
-                                            <option value="Wyoming">Wyoming</option>
-                                        </select>
                             </div>
                         </div>
                     </div>
