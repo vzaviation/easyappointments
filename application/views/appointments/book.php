@@ -1521,7 +1521,8 @@
                         <span class="vl_information_red">
                         *REMINDER* BEFORE CONFIRMING YOUR VISIT, YOU MUST HAVE PROPER VALID GOVERNMENT IDENTIFICATION UPON ARRIVAL FOR YOUR VISIT.
                         </span>
-                        <span class="visitor-restriction-message" style="display:none;">
+                        <br/><br/>
+                        <span class="visitor-restriction-message" style="font-weight:bold;color:red;display:none;">
                             NOTE: You cannot schedule an appointment with an inmate more than a week out from an existing appointment.
                             <br/><br/>
                             Please use the back buttons to pick a new date.
