@@ -445,7 +445,7 @@ class Appointments extends EA_Controller {
             // Set a default response if there is no match
             $response = [
                 'check_visitor_appointment_restrictions' => true,
-                'days' => -1
+                'days' => -2
             ];
 
             // Check for existing visitor and get ID
