@@ -399,7 +399,7 @@ body {
         border: 2px solid #FF0000;
     }
 
-    #book-appointment-wizard .visitor-restriction-message {
+    #book-appointment-wizard .visitor-restriction-message .visitor-restriction-message-dates {
         display: inline-block;
         width: 98%;
         justify-content: center;
