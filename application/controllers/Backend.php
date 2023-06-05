@@ -31,6 +31,7 @@ class Backend extends EA_Controller {
         $this->load->model('services_model');
         $this->load->model('customers_model');
         $this->load->model('visitors_model');
+        $this->load->model('inmates_model');
         $this->load->model('settings_model');
         $this->load->model('roles_model');
         $this->load->model('user_model');
@@ -261,6 +262,39 @@ class Backend extends EA_Controller {
 
         $this->load->view('backend/header', $view);
         $this->load->view('backend/visitors', $view);
+        $this->load->view('backend/footer', $view);
+    }
+    /**
+     * Displays the backend inmates page.
+     *
+     * Allows viewing and flagging of inmates
+     *
+     */
+    public function inmates()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/dashboard'));
+
+        if ( ! $this->has_privileges(PRIV_INMATES))
+        {
+            return;
+        }
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('inmates');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
+        $view['active_menu'] = PRIV_INMATES;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
+        $view['require_phone_number'] = $this->settings_model->get_setting('require_phone_number');
+        $view['timezones'] = $this->timezones->to_array();
+        $view['inmates'] = $this->inmates_model->get_all();
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/inmates', $view);
         $this->load->view('backend/footer', $view);
     }
 

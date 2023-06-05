@@ -79,6 +79,16 @@
                 </a>
             </li>
 
+            <?php $hidden = ($privileges[PRIV_INMATES]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_INMATES) ? 'active' : '' ?>
+            <li class="nav-item <?= $active . $hidden ?>">
+                <a href="<?= site_url('backend/inmates') ?>" class="nav-link"
+                   data-tippy-content="Manage Inmate Information">
+                    <i class="fas fa-user-friends mr-2"></i>
+                    <?= lang('inmates') ?>
+                </a>
+            </li>
+
             <?php $hidden = ($privileges[PRIV_SERVICES]['view'] == TRUE) ? '' : 'd-none' ?>
             <?php $active = ($active_menu == PRIV_SERVICES) ? 'active' : '' ?>
             <li class="nav-item <?= $active . $hidden ?>">

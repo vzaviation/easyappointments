@@ -61,6 +61,7 @@ window.Backend = window.Backend || {};
     exports.PRIV_APPOINTMENTS = 'appointments';
     exports.PRIV_DASHBOARD = 'dashboard';
     exports.PRIV_CUSTOMERS = 'customers';
+    exports.PRIV_INMATES = 'inmates';
     exports.PRIV_SERVICES = 'services';
     exports.PRIV_USERS = 'users';
     exports.PRIV_REPORTING = 'reporting';

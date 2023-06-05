@@ -40,6 +40,7 @@ class Backend_api extends EA_Controller {
         $this->load->model('consents_model');
         $this->load->model('customers_model');
         $this->load->model('visitors_model');
+        $this->load->model('inmates_model');
         $this->load->model('providers_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
@@ -892,6 +893,182 @@ class Backend_api extends EA_Controller {
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
+    }
+
+    /**
+     * Filter the inmate records with the given key string.
+     *
+     * Outputs the search results.
+     */
+    public function ajax_filter_inmates()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_INMATES]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $key = $this->db->escape_str($this->input->post('key'));
+            $key = strtoupper($key);
+
+            $where =
+                '(inmate_name LIKE upper("%' . $key . '%") OR ' .
+                'inmate_classification_level LIKE upper("%' . $key . '%"))';
+
+            $order_by = 'inmate_name ASC';
+
+            $limit = $this->input->post('limit');
+
+            if ($limit === NULL)
+            {
+                $limit = 1000;
+            }
+
+            $inmates = $this->inmates_model->get_batch($where, $limit, NULL, $order_by);
+            $response = $inmates;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+   
+    /**
+     * Save (insert or update) an inmate record.
+     */
+    public function ajax_save_inmate()
+    {
+        try
+        {
+            $inmate = json_decode($this->input->post('inmate'), TRUE);
+
+            $required_privileges = ( ! isset($inmate['id']))
+                ? $this->privileges[PRIV_INMATES]['add']
+                : $this->privileges[PRIV_INMATES]['edit'];
+            if ($required_privileges == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $inmate_id = $this->inmates_model->add($inmate);
+
+            $response = [
+                'status' => AJAX_SUCCESS,
+                'id' => $inmate_id
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_set_inmate_flag_inmates()
+    {
+        try
+        {
+            $inmate_id = json_decode($this->input->post('inmate_id'), TRUE);
+            $checked = json_decode($this->input->post('checked'), TRUE);
+            $flag_notes = $this->input->post('flag_notes');
+            $flag_date = date('Y-m-d');
+
+            if ($this->privileges[PRIV_INMATES]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            // Get the existing inmate record
+            $inmate = $this->inmates_model->get_row($inmate_id);
+
+            // First - if checked is false, we will remove the flag, date, and notes
+            if (!$checked) {
+                $inmate['inmate_flag'] = 0;
+                $inmate['inmate_flag_notes'] = "";
+                $inmate['inmate_flag_date'] = null;
+            } else {
+                $inmate['inmate_flag'] = 1;
+                $inmate['inmate_flag_notes'] = $flag_notes;
+                $inmate['inmate_flag_date'] = $flag_date;
+            }
+            // Update the inmate record
+            $this->inmates_model->update($inmate);
+
+            $this->output->set_output(json_encode($inmate));
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($inmate));
+    }
+    
+    public function ajax_save_inmate_flag_notes_inmates()
+    {
+        try
+        {
+            $inmate_id = json_decode($this->input->post('inmate_id'), TRUE);
+            $flag_notes = $this->input->post('flag_notes');
+            $flag_date = date('Y-m-d');
+
+            if ($this->privileges[PRIV_INMATES]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            // Get the existing inmate record
+            $inmate = $this->inmates_model->get_row($inmate_id);
+
+            $inmate['inmate_flag'] = 1;
+            $inmate['inmate_flag_notes'] = $flag_notes;
+            if ($inmate['inmate_flag_date'] == null) {
+                $inmate['inmate_flag_date'] = $flag_date;
+            }
+
+            // Update the inmate record
+            $this->inmates_model->update($inmate);
+
+            $this->output->set_output(json_encode($inmate));
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($inmate));
     }
 
     /**

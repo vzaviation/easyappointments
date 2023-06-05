@@ -29,6 +29,31 @@ class Inmates_model extends EA_Model {
         $this->load->helper('general');
     }
 
+    /**
+     * Get all inmates
+     */
+    public function get_all()
+    {
+        $result = $this->db
+            ->select('*')
+            ->from('inmates')
+            ->order_by('inmates.inmate_name','ASC')
+            ->get();
+
+        return $result->result_array();
+    }
+
+    public function update($inmate)
+    {
+        $this->db->where('ID', $inmate['ID']);
+
+        if ( ! $this->db->update('inmates', $inmate))
+        {
+            throw new Exception('Could not update inmate to the database.');
+        }
+
+        return (int)$inmate['ID'];
+    }
 
     /**
      * Get the available inmates.
@@ -41,7 +66,7 @@ class Inmates_model extends EA_Model {
     {
         // Get provider records from database.
         $this->db
-            ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
+            ->select('ea_inmates.ID, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
             ->from('ea_inmates')
             ->where('ea_inmates.booking_status= "1"');
             
@@ -55,9 +80,9 @@ class Inmates_model extends EA_Model {
 
     public function get_providers_by_inmates($id, $service_id) {
         $this->db
-            ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
+            ->select('ea_inmates.ID, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
             ->from('ea_inmates')
-            ->where('ea_inmates.id='.$id);
+            ->where('ea_inmates.ID='.$id);
 
 
 
@@ -87,5 +112,53 @@ class Inmates_model extends EA_Model {
         $appts = $this->db->get()->result_array();
 
         return $appts;
+    }
+
+    /**
+     * Get all, or specific records from inmates table.
+     *
+     * Example:
+     *
+     * $this->inmates_model->get_batch([$id => $record_id]);
+     *
+     * @param mixed|null $where
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param mixed|null $order_by
+     *
+     * @return array Returns the rows from the database.
+     */
+    public function get_batch($where = NULL, $limit = NULL, $offset = NULL, $order_by = NULL)
+    {
+        if ($where !== NULL)
+        {
+            $this->db->where($where);
+        }
+
+        if ($order_by !== NULL)
+        {
+            $this->db->order_by($order_by);
+        }
+
+        return $this->db->get_where('inmates', ['inmate_name !=' => NULL], $limit, $offset)->result_array();
+    }
+
+    /**
+     * Get a specific row from the inmates table.
+     *
+     * @param int $inmate_id The record's id to be returned.
+     *
+     * @return array Returns an associative array with the selected record's data. Each key has the same name as the
+     * database field names.
+     *
+     * @throws Exception If $inmate_id argument is invalid.
+     */
+    public function get_row($inmate_id)
+    {
+        if ( ! is_numeric($inmate_id))
+        {
+            throw new Exception('Invalid argument provided as $inmate_id : ' . $inmate_id);
+        }
+        return $this->db->get_where('inmates', ['ID' => $inmate_id])->row_array();
     }
 }
