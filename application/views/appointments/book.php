@@ -1528,7 +1528,7 @@
                             Please contact the jurisdiction for information.
                         </span>
                         <span class="visitor-restriction-message-dates" style="font-weight:bold;color:red;display:none;">
-                            NOTE: You cannot schedule an appointment with an inmate more than a week out from an existing appointment.
+                            NOTE: You cannot schedule an appointment with an inmate more than a week out from the current date.
                             <br/><br/>
                             Please use the back buttons to pick a new date.
                         </span>
