@@ -162,7 +162,11 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 if (response.check_visitor_appointment_restrictions) {
                     FrontendBookApi.registerAppointment();
                 } else {
-                    $('span.visitor-restriction-message').show();
+                    if (response.restricted) {
+                        $('span.visitor-restriction-message').show();
+                    } else {
+                        $('span.visitor-restriction-message-dates').show();
+                    }
                     return false;
                 }
             })

@@ -1523,6 +1523,11 @@
                         </span>
                         <br/><br/>
                         <span class="visitor-restriction-message" style="font-weight:bold;color:red;display:none;">
+                            NOTE: You cannot schedule an appointment at this time.
+                            <br/><br/>
+                            Please contact the jurisdiction for information.
+                        </span>
+                        <span class="visitor-restriction-message-dates" style="font-weight:bold;color:red;display:none;">
                             NOTE: You cannot schedule an appointment with an inmate more than a week out from an existing appointment.
                             <br/><br/>
                             Please use the back buttons to pick a new date.

@@ -454,6 +454,20 @@ class Appointments extends EA_Controller {
             // TODO: Future restrictions can be handled here as well
             $visitor_id = $this->visitors_model->exists($visitor);
             if ($visitor_id != -1) {
+                // First check if visitor is restricted / flagged
+                $checkVisitor = $this->visitors_model->get_row($visitor_id);
+                if (($checkVisitor["flag"]) && ($checkVisitor["flag"] == "1")) {
+                    $response = [
+                        'check_visitor_appointment_restrictions' => false,
+                        'restricted' => true
+                    ];
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode($response));
+
+                    return;
+                }
+
                 $today = new DateTime();
                 // Num of days between the dates ...
                 $days_diff = $newStartDate->diff($today)->format("%a");
