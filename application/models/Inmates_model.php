@@ -66,7 +66,7 @@ class Inmates_model extends EA_Model {
     {
         // Get provider records from database.
         $this->db
-            ->select('ea_inmates.ID, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
+            ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
             ->from('ea_inmates')
             ->where('ea_inmates.booking_status= "1"');
             
@@ -80,9 +80,9 @@ class Inmates_model extends EA_Model {
 
     public function get_providers_by_inmates($id, $service_id) {
         $this->db
-            ->select('ea_inmates.ID, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
+            ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')
             ->from('ea_inmates')
-            ->where('ea_inmates.ID='.$id);
+            ->where('ea_inmates.id='.$id);
 
 
 

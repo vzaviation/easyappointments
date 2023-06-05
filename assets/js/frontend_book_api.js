@@ -306,15 +306,40 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             },
         })
             .done(function (response) {
-                unavailableDatesBackup = response;
-                selectedDateStringBackup = selectedDateString;
-                applyUnavailableDates(response, selectedDateString, true);
+                // Check for restricted and handle
+                if ((response.length === 1) && (response[0] == "restricted")) {
+                    showRestriction(selectedDateString);
+                } else {
+                    unavailableDatesBackup = response;
+                    selectedDateStringBackup = selectedDateString;
+                    applyUnavailableDates(response, selectedDateString, true);
+                }
             });
     };
 
     exports.applyPreviousUnavailableDates = function () {
         applyUnavailableDates(unavailableDatesBackup, selectedDateStringBackup);
     };
+
+    function showRestriction(selectedDateString) {
+        processingUnavailabilities = true;
+
+        // Grey out unavailable dates.
+        var selectedDate = Date.parse(selectedDateString);
+        var numberOfDays = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate();
+        $('#select-date .ui-datepicker-calendar td:not(.ui-datepicker-other-month)').each(function (index, td) {
+            selectedDate.set({ day: index + 1 });
+            $(td).addClass('ui-datepicker-unselectable ui-state-disabled');
+        });
+
+        // Show restricted message
+        $('#available-hours').text("You cannot schedule a visitation with this inmate at this time.  Please contact the jurisdiction for information.");
+
+        // Disable the Next button
+        $('#button-next-2').hide();
+
+        processingUnavailabilities = false;
+    }
 
     function applyUnavailableDates(unavailableDates, selectedDateString, setDate) {
         setDate = setDate || false;
@@ -348,6 +373,10 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 $(td).addClass('ui-datepicker-unselectable ui-state-disabled');
             }
         });
+
+        // Enable the Next button in case it had been hidden previously
+        $('#button-next-2').show();
+
 
         processingUnavailabilities = false;
     }

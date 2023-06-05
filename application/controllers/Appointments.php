@@ -450,11 +450,25 @@ class Appointments extends EA_Controller {
 
             // Check for existing visitor and get ID
             // If visitor exists, check for other appointments with inmate
-            // For now, disallow any appointment more than a week out from most recent appointment
-            //  between visitor and inmate
-            // Future restrictions can be handled here as well
+            // For now, disallow any appointment more than a week out from the current day
+            // TODO: Future restrictions can be handled here as well
             $visitor_id = $this->visitors_model->exists($visitor);
             if ($visitor_id != -1) {
+                $today = new DateTime();
+                // Num of days between the dates ...
+                $days_diff = $newStartDate->diff($today)->format("%a");
+                if ($days_diff > 7) {
+                    $response = [
+                        'check_visitor_appointment_restrictions' => false,
+                        'days' => $days_diff
+                    ];
+                } else {
+                    $response = [
+                        'check_visitor_appointment_restrictions' => true,
+                        'days' => $days_diff
+                    ];
+                }
+                /*  KPB - comment out for now, but leave in case appointment based restrictions are needed
                 $appointments = $this->visitors_model->get_appointments_visitor($visitor_id);
                 foreach ($appointments as $appointment) {
                     if ($appointment["id_inmate"] == $inmate_id) {
@@ -484,6 +498,7 @@ class Appointments extends EA_Controller {
                         }
                     }
                 }
+                */
             } else {
                 $response = [
                     'check_visitor_appointment_restrictions' => true,
@@ -697,6 +712,17 @@ class Appointments extends EA_Controller {
             $appointment_ids = [];
 
     	    if ($inmate_id) {
+                // First check for inmate_flag - if exists, this inmate cannot take visitors
+                //  return and display a message
+                $inmate = $this->inmates_model->get_row($inmate_id);
+                if (($inmate["inmate_flag"]) && ($inmate["inmate_flag"] === "1")) {
+                    $response[] = "restricted";
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode($response));
+                    return;
+                }
+
                 // Get the valid providers for this inmate
                 $provider_ids = $provider_id === ANY_PROVIDER
                     ? $this->search_providers_by_inmates($inmate_id, $service_id)
