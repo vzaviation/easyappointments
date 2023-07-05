@@ -213,6 +213,10 @@ class Backend extends EA_Controller {
         // Also, check for appointent ID in params and select that appt if there
         $view['sel_appt'] = $this->input->get('aid') ? $this->input->get('aid') : "";
 
+        // Pass in lists of the services and providers
+        $view['providers'] = $this->appointments_model->get_providers();
+        $view['services'] = $this->appointments_model->get_services();
+
         $this->set_user_data($view);
 
         $this->load->view('backend/header', $view);

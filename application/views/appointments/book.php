@@ -94,13 +94,35 @@
                                 $('#visitor-1-dl-number').removeClass("required");
                                 $('#visitor-1-dl-state-box').hide();
                                 $('#visitor-1-dl-state').removeClass("required");
-                            } else if (age >= 17) {
+                                // Make email and phone not required
+                                $('#visitor-1-show-required-email').hide();
+                                $('#visitor-1-show-required-phone').hide();
+                                $('#visitor-1-email').removeClass("required");
+                                $('#visitor-1-phone-number').removeClass("required");
+                            } else if (age == 17) {
                                 $('#visitor-1-dl-box').show();
                                 $('#visitor-1-dl-file-name').addClass("required");
                                 $('#visitor-1-dl-number-box').show();
                                 $('#visitor-1-dl-number').addClass("required");
                                 $('#visitor-1-dl-state-box').show();
                                 $('#visitor-1-dl-state').addClass("required");
+                                // Make email and phone not required
+                                $('#visitor-1-show-required-email').hide();
+                                $('#visitor-1-show-required-phone').hide();
+                                $('#visitor-1-email').removeClass("required");
+                                $('#visitor-1-phone-number').removeClass("required");
+                            } else if (age >= 18) {
+                                $('#visitor-1-dl-box').show();
+                                $('#visitor-1-dl-file-name').addClass("required");
+                                $('#visitor-1-dl-number-box').show();
+                                $('#visitor-1-dl-number').addClass("required");
+                                $('#visitor-1-dl-state-box').show();
+                                $('#visitor-1-dl-state').addClass("required");
+                                // Make email and phone required
+                                $('#visitor-1-show-required-email').show();
+                                $('#visitor-1-show-required-phone').show();
+                                $('#visitor-1-email').addClass("required");
+                                $('#visitor-1-phone-number').addClass("required");
                             } else {
                                 $('#visitor-1-dl-box').hide();
                                 $('#visitor-1-dl-file-name').removeClass("required");
@@ -108,6 +130,11 @@
                                 $('#visitor-1-dl-number').removeClass("required");
                                 $('#visitor-1-dl-state-box').hide();
                                 $('#visitor-1-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-1-show-required-email').hide();
+                                $('#visitor-1-show-required-phone').hide();
+                                $('#visitor-1-email').removeClass("required");
+                                $('#visitor-1-phone-number').removeClass("required");
                             }
                         }
                     } catch (err) {
@@ -332,6 +359,7 @@
             $('#button-remove-visitor-2').show();
             $('#visitor-2-first-name').addClass('required');
             $('#visitor-2-last-name').addClass('required');
+            $('#visitor-2-email').addClass('required');
             $('#visitor-2-address').addClass('required');
             $('#visitor-2-city').addClass('required');
             $('#visitor-2-state').addClass('required');
@@ -347,6 +375,7 @@
             $('#button-remove-visitor-2').hide();
             $('#visitor-2-first-name').removeClass('required');
             $('#visitor-2-last-name').removeClass('required');
+            $('#visitor-2-email').removeClass('required');
             $('#visitor-2-address').removeClass('required');
             $('#visitor-2-city').removeClass('required');
             $('#visitor-2-state').removeClass('required');
@@ -360,6 +389,7 @@
             $('#visitor-2-dl-state').removeClass("required");
             $('#visitor-2-first-name').val("");
             $('#visitor-2-last-name').val("");
+            $('#visitor-2-email').val("");
             $('#visitor-2-address').val("");
             $('#visitor-2-city').val("");
             $('#visitor-2-state').val("");
@@ -375,6 +405,8 @@
             $('#visitor-2-email').val("");
             $('#visitor-2-phone-number').val("");
 
+            $('.visitor-2-information').hide();
+
             $('#button-add-visitor-3').hide();
             $('#button-remove-visitor-3').hide();
           });
@@ -388,6 +420,7 @@
             $('#button-remove-visitor-3').show();
             $('#visitor-3-first-name').addClass('required');
             $('#visitor-3-last-name').addClass('required');
+            $('#visitor-3-email').addClass('required');
             $('#visitor-3-address').addClass('required');
             $('#visitor-3-city').addClass('required');
             $('#visitor-3-state').addClass('required');
@@ -404,6 +437,7 @@
             $('#button-remove-visitor-3').hide();
             $('#visitor-3-first-name').removeClass('required');
             $('#visitor-3-last-name').removeClass('required');
+            $('#visitor-3-email').removeClass('required');
             $('#visitor-3-address').removeClass('required');
             $('#visitor-3-city').removeClass('required');
             $('#visitor-3-state').removeClass('required');
@@ -411,6 +445,7 @@
             $('#visitor-3-birth-date').removeClass('required');
             $('#visitor-3-first-name').val("");
             $('#visitor-3-last-name').val("");
+            $('#visitor-3-email').val("");
             $('#visitor-3-address').val("");
             $('#visitor-3-city').val("");
             $('#visitor-3-state').val("");
@@ -431,6 +466,8 @@
             $('#visitor-3-phone-number').removeClass("required");
             $('#visitor-3-email').val("");
             $('#visitor-3-phone-number').val("");
+
+            $('.visitor-3-information').hide();
           });
         }
     </script>
@@ -482,7 +519,6 @@
                          data-tippy-content="<?= lang('service_and_provider') ?>">
                         <strong>1</strong>
                     </div>
-
                     <div id="step-2" class="book-step" data-toggle="tooltip"
                          data-tippy-content="<?= lang('appointment_date_and_time') ?>">
                         <strong>2</strong>
@@ -632,15 +668,15 @@
                                     }
                                     ?>
                                 </select>
+                                <div id="service-description"></div>
                             </div>
-
 
           				    <div class="form-group">
                                 <label for="select-inmate">
                                     <strong><?= lang('inmates') ?></strong>
                                 </label>
                                 <br/><span style="padding:10px 10px 10px 10px;">Filter by last name: <input type="text" id="inmate-filter" size="10" /></span>
-                                <select id="select-inmate" size="3" class="form-control">
+                                <select id="select-inmate" size="10" class="form-control">
                                 <?php 
                                 //  First create an array of lastname, first middle
                                 $inmateLFM = array();
@@ -675,7 +711,7 @@
             					?>
             					</select>
                             </div>       
-                                                 
+
                             <div class="form-group" style="display:none;">
                                 <label for="select-provider">
                                     <strong><?= lang('provider') ?></strong>
@@ -684,8 +720,6 @@
                                 <select id="select-provider" class="form-control"></select>
                             </div>
 
-
-                            <div id="service-description"></div>
                         </div>
                     </div>
                 </div>
@@ -753,23 +787,24 @@
                     2. Only three (3) people from the inmate's list may be in the visitation room at any one time.
                     </div>
 
-                    <div class="row frame-content">
+                    <div class="row frame-content" id="visitor-1-basic-info">
+                        <div class="col-12 col-md-12" id="no-visitor-slots" style="font-weight:bold;margin:10px;display:none;">All visitor slots for this inmate and date have been filled. Please use the Back button to choose another date or contact the jurisdiction with any questions.</div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="first-name" class="control-label">
+                                <label for="visitor-1-first-name" class="control-label">
                                     <?= lang('first_name') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="first-name" class="required form-control" maxlength="100"/>
+                                <input type="text" id="visitor-1-first-name" class="required form-control" maxlength="100"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="last-name" class="control-label">
+                                <label for="visitor-1-last-name" class="control-label">
                                     <?= lang('last_name') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="last-name" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-last-name" class="required form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -780,6 +815,24 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="visitor-1-birth-date" maxlength="10" class="required form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Add a button to continue - we need to check the entered name against the inmates authorized list before continuing -->
+                            <div class="form-group" style="text-align:left;padding-top:9px;">
+                                <br/>
+                                <button type="button" class="authorize-visitor btn btn-warning" id="authorize-visitor-1" data-visitor="visitor-1">
+                                    Authorize Visitor
+                                </button>
+                                <br/><br/>
+                                <div id="authorize-visitor-1-message" style="font-weight:bolder;color:darkred;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row frame-content visitor-1-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -865,20 +918,20 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="address" class="control-label">
+                                <label for="visitor-1-address" class="control-label">
                                     <?= lang('address') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="address" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-address" class="required form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="city" class="control-label">
+                                <label for="visitor-1-city" class="control-label">
                                     <?= lang('city') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="city" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-city" class="required form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -945,46 +998,34 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="zip-code" class="control-label">
+                                <label for="visitor-1-zip-code" class="control-label">
                                     <?= lang('zip_code') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="zip-code" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-zip-code" class="required form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="email" class="control-label">
+                                <label for="visitor-1-email" class="control-label">
                                     <?= lang('email') ?>
-                                    <span class="text-danger">*</span>
+                                    <span id="visitor-1-show-required-email" class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="email" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-email" class="required form-control" maxlength="120"/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="phone-number" class="control-label">
+                                <label for="visitor-2-phone-number" class="control-label">
                                     <?= lang('phone_number') ?>
-                                    <?= $require_phone_number === '1' ? '<span class="text-danger">*</span>' : '' ?>
+                                    <span id="visitor-1-show-required-phone" class="text-danger" style="display:none;">*</span>
                                 </label>
-                                <input type="text" id="phone-number" maxlength="60"
-                                       class="<?= $require_phone_number === '1' ? 'required' : '' ?> form-control"/>
+                                <input type="text" id="visitor-1-phone-number" class="required form-control" maxlength="60"/>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-group">
-                                <label for="notes" class="control-label">
-                                    <?= lang('notes') ?>
-                                </label>
-                                <textarea id="notes" maxlength="500" class="form-control" rows="1"></textarea>
-                            </div>                        
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <br/>
-                        </div>
-                    </div>
+                    </div> 
 
-                    <div class="row frame-content">
+                    <div class="row frame-content visitor-1-information" style="display:none;">
                         <hr style="width:95%;" />
                         <div class="col-12 col-md-6">
                             <div class="command-buttons">
@@ -995,6 +1036,9 @@
                                     Remove Visitor
                                 </button>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-12" id="no-visitor-slots-2" style="font-weight:bold;margin:10px;display:none;">No further visitor slots are available for this inmate and date.</div>
                         </div>
                     </div>
 
@@ -1026,6 +1070,25 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="visitor-2-birth-date" maxlength="10" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Add a button to continue - we need to check the entered name against the inmates authorized list before continuing -->
+                            <div class="form-group" style="text-align:left;padding-top:9px;">
+                                <br/>
+                                <button type="button" class="authorize-visitor btn btn-warning" id="authorize-visitor-2" data-visitor="visitor-2">
+                                    Authorize Visitor
+                                </button>
+                                <br/><br/>
+                                <div id="authorize-visitor-2-message" style="font-weight:bolder;color:darkred;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row frame-content visitor-2-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <br/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1116,6 +1179,9 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <br/>
+                            </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
@@ -1210,7 +1276,7 @@
                             <div class="form-group">
                                 <label for="visitor-2-email" class="control-label">
                                     Visitor 2 <?= lang('email') ?>
-                                    <span id="visitor-2-show-required-email" class="text-danger" style="display:none;">*</span>
+                                    <span id="visitor-2-show-required-email" class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="visitor-2-email" class="form-control" maxlength="120"/>
                             </div>
@@ -1224,7 +1290,9 @@
                                 <input type="text" id="visitor-2-phone-number" maxlength="60" class="form-control"/>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="row frame-content visitor-2-information" style="display:none;">
                         <hr style="width:95%;" />
                         <div class="col-12 col-md-6">
                             <div class="command-buttons">
@@ -1234,6 +1302,9 @@
                                 <button type="button" id="button-remove-visitor-3" class="btn btn-outline-secondary" style="display:none;">
                                     Remove Visitor
                                 </button>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="col-12 col-md-12" id="no-visitor-slots-3" style="font-weight:bold;margin:10px;display:none;">No further visitor slots are available for this inmate and date.</div>
                             </div>
                         </div>
                     </div>
@@ -1266,6 +1337,25 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="visitor-3-birth-date" maxlength="10" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Add a button to continue - we need to check the entered name against the inmates authorized list before continuing -->
+                            <div class="form-group" style="text-align:left;padding-top:9px;">
+                                <br/>
+                                <button type="button" class="authorize-visitor btn btn-warning" id="authorize-visitor-3" data-visitor="visitor-3">
+                                    Authorize Visitor
+                                </button>
+                                <br/><br/>
+                                <div id="authorize-visitor-3-message" style="font-weight:bolder;color:darkred;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row frame-content visitor-3-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <br/>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
@@ -1356,6 +1446,9 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <br/>
+                            </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
@@ -1450,7 +1543,7 @@
                             <div class="form-group">
                                 <label for="visitor-3-email" class="control-label">
                                     Visitor 3 <?= lang('email') ?>
-                                    <span id="visitor-3-show-required-email" class="text-danger" style="display:none;">*</span>
+                                    <span id="visitor-3-show-required-email" class="text-danger">*</span>
                                 </label>
                                 <input type="text" id="visitor-3-email" class="form-control" maxlength="120"/>
                             </div>
@@ -1503,7 +1596,7 @@
                         <?= lang('back') ?>
                     </button>
                     <button type="button" id="button-next-3" class="btn button-next btn-dark"
-                            data-step_index="3">
+                            data-step_index="3" style="display:none;">
                         <?= lang('next') ?>
                         <i class="fas fa-chevron-right ml-2"></i>
                     </button>
@@ -1579,17 +1672,19 @@
                         <a href="https://easyappointments.org" target="_blank">E!A</a>
                     </span>
 
+                    <!--
                     <span class="footer-options">
                         <span id="select-language" class="badge badge-secondary">
                             <i class="fas fa-language mr-2"></i>
-                            <?= ucfirst(config('language')) ?>
+                            <= ucfirst(config('language')) ?>
                         </span>
 
-                        <a class="backend-link badge badge-primary" href="<?= site_url('backend'); ?>">
+                        <a class="backend-link badge badge-primary" href="<= site_url('backend'); ?>">
                             <i class="fas fa-sign-in-alt mr-2"></i>
-                            <?= $this->session->user_id ? lang('backend_section') : lang('login') ?>
+                            <= $this->session->user_id ? lang('backend_section') : lang('login') ?>
                         </a>
                     </span>
+                    -->
                 </small>
             </div>
         </div>

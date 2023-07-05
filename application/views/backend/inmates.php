@@ -56,15 +56,13 @@
 
             <input id="inmate-id" type="hidden">
 
-            <div id="inmate-details" class="row">
-                <div class="col-md-12">
-                    <form id="inmate-update-form" action="#" method="POST">
-                    <div id="form-message" class="alert" style="display:none;"></div>
-                    <div class="col-8 col-md-12" style="margin-left: 0;">
-                        <h3>Inmate <?= lang('details') ?></h3>
+            <div id="inmate-details">
+                <form id="inmate-update-form" action="#" method="POST">
+                <div id="form-message" class="alert" style="display:none;"></div>
+                <div class="col-8 col-md-12" style="margin-left: 0;">
+                    <h3>Inmate <?= lang('details') ?></h3>
 
-                        <div id="inmate-details-row"></div>
-                    </div>
+                    <div id="inmate-details-row"></div>
                 </div>
             </div>
         </div>

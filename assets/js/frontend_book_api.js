@@ -131,6 +131,211 @@ window.FrontendBookApi = window.FrontendBookApi || {};
     };
 
     /**
+     * Check visitor authorization
+     *
+     * Verify that the named visitor is on the inmates allowed list
+     *
+     * @param {String} visitor
+     * @param {String} inmate_id
+     * @param {String} first_name
+     * @param {String} last_name
+     * @param {String} birthdate (format mm/dd/yyyy)
+     */
+    exports.checkVisitorAuthorization = function (visitor, inmate_id, first_name, last_name, birthdate) {
+        // Make ajax post request and get the available hours.
+        const url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_check_visitor_authorization';
+
+        const data = {
+            csrfToken: GlobalVariables.csrfToken,
+            inmate_id: inmate_id,
+            first_name: first_name,
+            last_name: last_name
+        };
+        $.post(url, data)
+            .done(function (response) {
+                const authResult = response.check_visitor_authorization;
+                //console.log("*** Response from check_visitor_authorization: " + authResult);
+//                if (authResult) {   -- Comment out until inmate approved visitor lists are ready - for now, always true
+                if (true) {
+                        // visitor is on inmates list of allowed visitors - yay
+                    // Using the name and email, check for the visitor record in the DB
+                    const visitorUrl = GlobalVariables.baseUrl + '/index.php/appointments/ajax_fetch_visitor_information';
+
+                    // Change birthdate to YYYY-MM-DD format
+                    let ymdDate = new Date()
+                    const dateregex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+                    const matches = birthdate.match(dateregex);
+                    if ((matches == null) || (matches.length == 0)) {
+                        // This is weird and should not happen - use with today's date
+                        // Which will fail the check, but that's okay for now
+                    } else {
+                        ymdDate = new Date(matches[3], matches[1] - 1, matches[2])
+                    }
+
+                    // If this is Visitor 1, require age to be 16 or over
+                    let visitorOk = true;
+                    if (visitor == 'visitor-1') {
+                        const today = new Date();
+                        let age = today.getFullYear() - ymdDate.getFullYear();
+                        var m = today.getMonth() - ymdDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < ymdDate.getDate())) {
+                            age--;
+                        }
+                        if (age < 16) {
+                            $('#authorize-' + visitor + '-message').text("The first visitor must be at least 16 years old. Please contact the jurisdiction with any questions.");
+                            visitorOk = false;
+                        }
+                    }
+
+                    if (visitorOk) {
+                        const ymdBirthdate = ymdDate.toString('yyyy-MM-dd');
+                        const selected_date = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd');
+                        
+                        var vData = {
+                            csrfToken: GlobalVariables.csrfToken,
+                            inmate_id: inmate_id,
+                            appt_date: selected_date,
+                            first_name: first_name,
+                            last_name: last_name,
+                            birthdate: ymdBirthdate
+                        };
+                        $.post(visitorUrl, vData)
+                            .done(function (response) {
+                                //console.log("*** AUTH: " + inmate_id + " / " + selected_date + " / BDATE " + ymdBirthdate + " RESP=" + JSON.stringify(response));
+                                $('#authorize-' + visitor).hide();
+                                if (response.visitor) {
+                                    //Make sure that the visitor is not flagged
+                                    if (response.visitor.flag && response.visitor.flag == 1) {
+                                        $('#authorize-' + visitor + '-message').text("This visitor is currently restricted from visitation. Please contact the jurisdiction with any questions.");
+                                    } else {
+                                        // make sure the visitor does not already have an appointment for the date
+                                        let curApptVisitor = false;
+                                        if (response.appointment_visitors) {
+                                            response.appointment_visitors.forEach( (visitor) => {
+                                                if (visitor.visitor_id == response.visitor.id) {
+                                                    curApptVisitor = true;
+                                                }
+                                            });
+                                        }
+
+                                        if (curApptVisitor) {
+                                                $('#authorize-' + visitor + '-message').text("This visitor already has a visit scheduled with this inmate on this date. Please contact the jurisdiction with any questions.");
+                                        } else {
+                                            // All good, display the info
+                                            $('#authorize-' + visitor + '-message').text("Please enter / edit your information below");        
+
+                                            const vbdate = new Date(response.visitor.birthdate);
+                                            const vbmonth = (vbdate.getMonth() + 1).toString().padStart(2, "0");
+                                            const vbdom = vbdate.getDate().toString().padStart(2, "0");
+                                            const bdate = vbmonth + "/" + vbdom + "/" + vbdate.getFullYear();
+                                            $('#' + visitor + '-birth-date').val(bdate);
+                //                            $('#' + visitor + '-dl-box').show();
+                                            $('#' + visitor + '-dl-number-box').show();
+                                            $('#' + visitor + '-dl-state-box').show();
+                                            $('#' + visitor + '-dl-number').val(response.visitor.id_number);
+                                            $('#' + visitor + '-dl-state').val(response.visitor.id_state);
+                                            $('#' + visitor + '-dl-file-name').val(response.visitor.id_image_filename);
+                                            $('#' + visitor + '-email').val(response.visitor.email);
+                                            $('#' + visitor + '-phone-number').val(response.visitor.phone_number);
+                                            $('#' + visitor + '-address').val(response.visitor.address);
+                                            $('#' + visitor + '-city').val(response.visitor.city);
+                                            $('#' + visitor + '-state').val(response.visitor.state);
+                                            $('#' + visitor + '-zip-code').val(response.visitor.zip_code);
+
+                                            // Trigger the birthdate focusout event to properly handle that
+                                            $('#' + visitor + '-birth-date').trigger("focusout");
+
+                                            // Make the rest of the visitor form visible
+                                            $('.' + visitor + '-information').show();
+                                            $('#button-add-visitor-3').show();
+                                            $('#button-next-3').show();
+                                        }
+                                    }
+                                } else {
+                                    // Let them enter new information
+                                    $('#authorize-' + visitor + '-message').text("Please enter your information below");        
+                                    $('.' + visitor + '-information').show();
+                                    $('#button-add-visitor-3').show();
+                                    $('#button-next-3').show();
+                                }
+                            })
+                            .fail(function (jqxhr, textStatus, errorThrown) {
+                                //console.log('Visitor not matched: ' + first_name + " " + last_name + " " + email);
+                                // Make the rest of the visitor form visible
+                                $('.' + visitor + '-information').show();
+                                $('#button-add-visitor-3').show();
+                                $('#button-next-3').show();
+                            });
+                        }   
+                } else {
+                    $('#authorize-' + visitor + '-message').text("This visitor name is not on this inmate's list of authorized visitors. Please contact the jurisdiction with any questions.");
+                }
+            })
+            .fail(function (jqxhr, textStatus, errorThrown) {
+                $('#authorize-' + visitor + '-message').text('There was an error looking up the visitor authorization. Please contact the jurisdiction with any questions.');
+            });
+    };
+
+    exports.appointmentVisitorCountForDate = function (inmate_id, selected_date) {
+
+        var data = {
+            csrfToken: GlobalVariables.csrfToken,
+            inmate_id: inmate_id,
+            selected_date: selected_date
+        };
+
+        var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_inmate_visitor_count';
+
+        $.ajax({
+            url: url,
+            method: 'post',
+            data: data,
+            dataType: 'json',
+            })
+            .done(function (response) {
+//                console.log("*** Response from ajax_inmate_visitor_count: " + JSON.stringify(response));
+                const curVisitorCountForDate = response.visitor_slots_used;
+
+                // Clear / re-hide any info relating to visitor authorization
+                $('#authorize-visitor-1').show();
+                $('.visitor-1-information').hide();
+                $('#authorize-visitor-1-message').text("");
+                $('#authorize-visitor-2').show();
+                $('.visitor-2-information').hide();
+                $('#authorize-visitor-2-message').text("");
+                $('#authorize-visitor-3').show();
+                $('.visitor-3-information').hide();
+                $('#authorize-visitor-3-message').text("");
+
+                if (curVisitorCountForDate >= 3) {
+                    // This should not have happened, but we will not allow any further visits
+                    $('#no-visitor-slots').show();
+                    $('#visitor-1-basic-info').hide();
+                } else if (curVisitorCountForDate == 2) {
+                    // Room for one
+                    $('#button-add-visitor-2').attr('disabled','disabled');
+                    $('#no-visitor-slots-2').show();
+                } else if (curVisitorCountForDate == 1) {
+                    // Room for two
+                    $('#button-add-visitor-3').attr('disabled','disabled');
+                    $('#no-visitor-slots-3').show();
+                } else {
+                    // Room for 3 - normal operations
+                }
+            })
+            .fail(function (jqxhr, textStatus, errorThrown) {
+                // Clear / re-hide any info relating to visitor authorization
+                $('#authorize-visitor-1').show();
+                $('.visitor-1-information').hide();
+                $('#authorize-visitor-1-message').text("");
+                $('.visitor-2-information').hide();
+                $('#authorize-visitor-2-message').text("");
+                $('.visitor-3-information').hide();
+                $('#authorize-visitor-3-message').text("");
+            });
+    };
+
+    /**
      * checkVisitorAppointmentRestrictions
      *
      * This method will make an ajax call to the appointments controller that will
@@ -158,7 +363,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             dataType: 'json',
         })
             .done(function (response) {
-                console.log("*** Response from check_visitor_appointment_restrictions: " + JSON.stringify(response));
+                //console.log("*** Response from check_visitor_appointment_restrictions: " + JSON.stringify(response));
                 if (response.check_visitor_appointment_restrictions) {
                     FrontendBookApi.registerAppointment();
                 } else {

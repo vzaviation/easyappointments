@@ -426,6 +426,92 @@ class Appointments extends EA_Controller {
     }
 
     /**
+     * This method will check if the visitor is on the inmates approved list
+     * This method answers to an AJAX request.
+     *
+     * Outputs true if on list, false if not
+     */
+    public function ajax_check_visitor_authorization()
+    {
+        try
+        {
+            $inmate_id = $this->input->post('inmate_id');
+            $first_name = $this->input->post('first_name');
+            $last_name = $this->input->post('last_name');
+
+            $match = false;
+
+            // Pull the list of visitors given the inmate_id
+            $visitors = $this->inmates_model->get_inmate_visitors($inmate_id);
+            foreach ($visitors as $visitor) {
+                if ( (strtolower($visitor["visitor_first_name"]) == strtolower($first_name)) &&
+                     (strtolower($visitor["visitor_last_name"]) == strtolower($last_name)) ) {
+                        $match = true;
+                        break;
+                }
+            }
+
+            $response = [
+                'check_visitor_authorization' => $match
+            ];
+
+        }
+        catch (Exception $exception)
+        {
+            $response = [
+                'check_visitor_authorization' => $match,
+                'error' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Search for the visitor in the DB and return that info if found
+     * This method answers to an AJAX request.
+     */
+    public function ajax_fetch_visitor_information()
+    {
+        try
+        {
+            $inmate_id = $this->input->post('inmate_id');
+            $appt_date = $this->input->post('appt_date');
+            $first_name = $this->input->post('first_name');
+            $last_name = $this->input->post('last_name');
+            $birthdate = $this->input->post('birthdate');
+
+            // See if this visitor exists in the DB
+            $visitor = $this->visitors_model->get_visitor($first_name,$last_name,$birthdate);
+
+            // pull and return existing appointment visitors for the given date and inmate
+            $appointment_visitors = $this->visitors_model->get_appointment_visitors_by_date_inmate($inmate_id,$appt_date);
+
+            $response = [
+                'visitor' => $visitor,
+                'appointment_visitors' => $appointment_visitors
+            ];
+
+        }
+        catch (Exception $exception)
+        {
+            $response = [
+                'visitor' => array(),
+                'appointment_visitors' => array(),
+                'error' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
+    /**
      * This method will check for any visitor restrictions 
      * This method answers to an AJAX request.
      *
@@ -797,14 +883,17 @@ class Appointments extends EA_Controller {
                 if (empty($available_hours)) {
                     $unavailable_dates[] = $current_date->format('Y-m-d');
                 } else {
-                    // Check if the inmate already has an appointment on the date
+                    // Check if the inmate already has 3 appointment-visitor slots filled up for the day
                     // If so, no go
+                    $visitorSlotsForDate = 0;
                     foreach ($appointments as $appt) {
                         $startDate = new DateTime($appt["start_datetime"]);
                         if ($startDate->format('Y-m-d') == $current_date->format('Y-m-d')) {
-                            $unavailable_dates[] = $current_date->format('Y-m-d');
-                            break;
+                            $visitorSlotsForDate++;
                         }
+                    }
+                    if ($visitorSlotsForDate >= 3) {
+                        $unavailable_dates[] = $current_date->format('Y-m-d');
                     }
                 }
             }
@@ -884,7 +973,45 @@ class Appointments extends EA_Controller {
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
     }
-    
+
+    public function ajax_inmate_visitor_count()
+    {
+        try
+        {
+            $inmate_id = $this->input->post('inmate_id');
+            $sel_date = $this->input->post('selected_date');
+            $selected_date = new DateTime($sel_date);
+
+            $appointments = $this->inmates_model->get_inmate_appointments($inmate_id);
+            $visitorSlotsForDate = 0;
+            foreach ($appointments as $appt) {
+                $startDate = new DateTime($appt["start_datetime"]);
+                if ($startDate->format('Y-m-d') == $selected_date->format('Y-m-d')) {
+                    $visitorSlotsForDate++;
+                } else if ($startDate->format('Y-m-d') > $selected_date->format('Y-m-d')) {
+                    break;
+                }
+            }
+            $response = [
+                'visitor_slots_used' => $visitorSlotsForDate
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'visitor_slots_used' => -1,
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
     /* *****************************************************************
      *  New Appointment scheduling
      * *****************************************************************

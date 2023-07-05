@@ -53,49 +53,60 @@ class Notifications {
      * @param array $appointment Appointment record.
      * @param array $service Service record.
      * @param array $provider Provider record.
-     * @param array $vistors Visitors record.
+     * @param array $vistors Visitors records.
      * @param array $settings Required settings for the notification content.
      * @param bool|false $manage_mode
      */
     public function notify_appointment_saved($appointment, $service, $provider, $visitors, $settings, $manage_mode = FALSE)
     {
-        $customer = $visitors[0];
         try
         {
             $email = new EmailClient($this->CI, $this->CI->config->config);
 
+            foreach ($visitors as $customer) {
+                if (isset($customer['email']) && $customer['email'] != "") {
+
+                    if ($manage_mode)
+                    {
+                        $customer_title = new Text(lang('appointment_details_changed'));
+                        $customer_message = new Text('');
+                    }
+                    else
+                    {
+                        $customer_title = new Text(lang('appointment_booked'));
+                        $customer_message = new Text(lang('thank_you_for_appointment'));
+                    }
+
+                    $customer_link = new Url(site_url('/donotuse'));
+                    $appt_date = date('Y-m-d',strtotime($appointment['start_datetime']));
+
+                    $ics_stream = $this->CI->ics_file->get_stream($appointment, $service, $provider, $customer);
+
+                    $send_customer = filter_var(
+                        $this->CI->settings_model->get_setting('customer_notifications'),
+                        FILTER_VALIDATE_BOOLEAN);
+
+                    if ($send_customer === TRUE)
+                    {
+                        $email->send_appointment_details($appointment, $provider,
+                            $service, $visitors, $settings, $customer_title,
+                            $customer_message, $customer_link, new Email($customer['email']), new Text($ics_stream), 'America/Chicago');
+                    }
+                }
+            }
+
             if ($manage_mode)
             {
-                $customer_title = new Text(lang('appointment_changes_saved'));
-                $customer_message = new Text('');
-                $provider_title = new Text(lang('appointment_details_changed'));
+                $provider_title = new Text(lang('appointment_changes_saved'));
                 $provider_message = new Text('');
             }
             else
             {
-                $customer_title = new Text(lang('appointment_booked'));
-                $customer_message = new Text(lang('thank_you_for_appointment'));
                 $provider_title = new Text(lang('appointment_added_to_your_plan'));
                 $provider_message = new Text(lang('appointment_link_description'));
             }
 
-            $customer_link = new Url(site_url('/donotuse'));
-            $appt_date = date('Y-m-d',strtotime($appointment['start_datetime']));
             $provider_link = new Url(site_url('backend/dashboard?date=' . $appt_date . '&aid=' . $appointment['id']));
-
-            $ics_stream = $this->CI->ics_file->get_stream($appointment, $service, $provider, $customer);
-
-            $send_customer = filter_var(
-                $this->CI->settings_model->get_setting('customer_notifications'),
-                FILTER_VALIDATE_BOOLEAN);
-
-            if ($send_customer === TRUE)
-            {
-                $email->send_appointment_details($appointment, $provider,
-                    $service, $visitors, $settings, $customer_title,
-                    $customer_message, $customer_link, new Email($customer['email']), new Text($ics_stream), 'America/Chicago');
-            }
-
             $send_provider = filter_var(
                 $this->CI->providers_model->get_setting('notifications', $provider['id']),
                 FILTER_VALIDATE_BOOLEAN);
@@ -155,15 +166,17 @@ class Notifications {
      * @param array $appointment Appointment record.
      * @param array $service Service record.
      * @param array $provider Provider record.
-     * @param array $customer Customer record.
+     * @param array $visitors Visitor records.
      * @param array $settings Required settings for the notification content.
      */
-    public function notify_appointment_deleted($appointment, $service, $provider, $customer, $settings)
+    public function notify_appointment_deleted($appointment, $service, $provider, $visitors, $settings)
     {
-        // Send email notification to customer and provider.
+        // Send email notification to visitors and provider.
         try
         {
             $email = new EmailClient($this->CI, $this->CI->config->config);
+
+            $cancel_reason = $this->CI->input->post('cancel_reason') ? $this->CI->input->post('cancel_reason') : "This appointment was canceled by the jurisdiction";
 
             $send_provider = filter_var($this->CI->providers_model->get_setting('notifications', $provider['id']),
                 FILTER_VALIDATE_BOOLEAN);
@@ -171,19 +184,23 @@ class Notifications {
             if ($send_provider === TRUE)
             {
                 $email->send_delete_appointment($appointment, $provider,
-                    $service, $customer, $settings, new Email($provider['email']),
-                    new Text($this->CI->input->post('cancel_reason')));
+                    $service, $visitors, $settings, new Email($provider['email']),
+                    new Text($cancel_reason));
             }
 
-            $send_customer = filter_var(
-                $this->CI->settings_model->get_setting('customer_notifications'),
-                FILTER_VALIDATE_BOOLEAN);
+            foreach ($visitors as $customer) {
+                if (isset($customer['email'])) {
+                    $send_customer = filter_var(
+                        $this->CI->settings_model->get_setting('customer_notifications'),
+                        FILTER_VALIDATE_BOOLEAN);
 
-            if ($send_customer === TRUE)
-            {
-                $email->send_delete_appointment($appointment, $provider,
-                    $service, $customer, $settings, new Email($customer['email']),
-                    new Text($this->CI->input->post('cancel_reason')));
+                    if ($send_customer === TRUE)
+                    {
+                        $email->send_delete_appointment($appointment, $provider,
+                            $service, $visitors, $settings, new Email($customer['email']),
+                            new Text($cancel_reason));
+                    }
+                }
             }
 
             // Notify admins
@@ -197,8 +214,8 @@ class Notifications {
                 }
 
                 $email->send_delete_appointment($appointment, $provider,
-                    $service, $customer, $settings, new Email($admin['email']),
-                    new Text($this->CI->input->post('cancel_reason')));
+                    $service, $visitors, $settings, new Email($admin['email']),
+                    new Text($cancel_reason));
             }
 
             // Notify secretaries
@@ -217,8 +234,8 @@ class Notifications {
                 }
 
                 $email->send_delete_appointment($appointment, $provider,
-                    $service, $customer, $settings, new Email($secretary['email']),
-                    new Text($this->CI->input->post('cancel_reason')));
+                    $service, $visitors, $settings, new Email($secretary['email']),
+                    new Text($cancel_reason));
             }
         }
         catch (Exception $exception)

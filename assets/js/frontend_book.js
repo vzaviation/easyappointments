@@ -355,6 +355,10 @@ window.FrontendBook = window.FrontendBook || {};
                     }
                     return;
                 }
+                // We need to know how many, if any, existing visitor-appointment slots are availble on this day
+                const inmate_id = $('#select-inmate').val();
+                const selected_date = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd');
+                FrontendBookApi.appointmentVisitorCountForDate(inmate_id,selected_date);
             }
 
             // If we are on the 3rd tab then we will need to validate the user's input before proceeding to the next
@@ -368,9 +372,9 @@ window.FrontendBook = window.FrontendBook || {};
                     var $acceptToTermsAndConditions = $('#accept-to-terms-and-conditions');
                     if ($acceptToTermsAndConditions.length && $acceptToTermsAndConditions.prop('checked') === true) {
                         var newTermsAndConditionsConsent = {
-                            first_name: $('#first-name').val(),
-                            last_name: $('#last-name').val(),
-                            email: $('#email').val(),
+                            first_name: $('#visitor-1-first-name').val(),
+                            last_name: $('#visitor-1-last-name').val(),
+                            email: $('#visitor-1-email').val(),
                             type: 'terms-and-conditions'
                         };
 
@@ -383,9 +387,9 @@ window.FrontendBook = window.FrontendBook || {};
                     var $acceptToPrivacyPolicy = $('#accept-to-privacy-policy');
                     if ($acceptToPrivacyPolicy.length && $acceptToPrivacyPolicy.prop('checked') === true) {
                         var newPrivacyPolicyConsent = {
-                            first_name: $('#first-name').val(),
-                            last_name: $('#last-name').val(),
-                            email: $('#email').val(),
+                            first_name: $('#visitor-1-first-name').val(),
+                            last_name: $('#visitor-1-last-name').val(),
+                            email: $('#visitor-1-email').val(),
                             type: 'privacy-policy'
                         };
 
@@ -504,6 +508,27 @@ window.FrontendBook = window.FrontendBook || {};
         }
 
         /**
+         * Event: Authorize Visitor button "Clicked"
+         *
+         * For each visitor (1-3) - check for the button click
+         */
+        $('.authorize-visitor').on('click', function () {
+            const visitor = $(this).data('visitor');
+            const inmate_id = $('#select-inmate').val();
+            const v_first_name = $('#' + visitor + '-first-name').val();
+            const v_last_name = $('#' + visitor + '-last-name').val();
+            const v_birthdate = $('#' + visitor + '-birth-date').val();
+
+            //console.log("** Checking visitor name \"" + v_first_name + " " + v_last_name + "\" against inmate id = " + inmate_id + " authorized list ...");
+
+            if ((v_first_name == "") || (v_last_name == "") || (v_birthdate == "")) {
+                console.log("WARN: No name / birthdate entered - not progressing");
+                return false;
+            }
+            FrontendBookApi.checkVisitorAuthorization(visitor,inmate_id,v_first_name,v_last_name,v_birthdate);
+        });
+
+        /**
          * Event: Book Appointment Form "Submit"
          *
          * Before the form is submitted to the server we need to make sure that
@@ -513,7 +538,9 @@ window.FrontendBook = window.FrontendBook || {};
          * @param {jQuery.Event} event
          */
         $('#book-appointment-submit').on('click', function () {
-            FrontendBookApi.checkVisitorAppointmentRestrictions();
+            // KPB - 2023-06-30 remove restrictions check - this check is done in the authorize step
+            //FrontendBookApi.checkVisitorAppointmentRestrictions();
+            FrontendBookApi.registerAppointment();
         });
 
         /**
@@ -531,6 +558,7 @@ window.FrontendBook = window.FrontendBook || {};
                 FrontendBookApi.applyPreviousUnavailableDates(); // New jQuery UI version will replace the td elements.
             }, 300); // There is no draw event unfortunately.
         })
+
     }
 
     /**
@@ -571,10 +599,9 @@ window.FrontendBook = window.FrontendBook || {};
                 throw new Error(EALang.fields_are_required);
             }
 
-
             // Validate email address.
-            if (!GeneralFunctions.validateEmail($('#email').val())) {
-                $('#email').parents('.form-group').addClass('has-error');
+            if (!GeneralFunctions.validateEmail($('#visitor-1-email').val())) {
+                $('#visitor-1-email').parents('.form-group').addClass('has-error');
                 throw new Error(EALang.invalid_email);
             }
 
@@ -599,15 +626,15 @@ window.FrontendBook = window.FrontendBook || {};
         var selectedDate = $('#select-date').datepicker('getDate');
 
         // Visitor 1 Details
-        var v1firstName = GeneralFunctions.escapeHtml($('#first-name').val());
-        var v1lastName = GeneralFunctions.escapeHtml($('#last-name').val());
-        var v1phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
-        var v1email = GeneralFunctions.escapeHtml($('#email').val());
-        var v1address = GeneralFunctions.escapeHtml($('#address').val());
-        var v1city = GeneralFunctions.escapeHtml($('#city').val());
+        var v1firstName = GeneralFunctions.escapeHtml($('#visitor-1-first-name').val());
+        var v1lastName = GeneralFunctions.escapeHtml($('#visitor-1-last-name').val());
+        var v1phoneNumber = GeneralFunctions.escapeHtml($('#visitor-1-phone-number').val());
+        var v1email = GeneralFunctions.escapeHtml($('#visitor-1-email').val());
+        var v1address = GeneralFunctions.escapeHtml($('#visitor-1-address').val());
+        var v1city = GeneralFunctions.escapeHtml($('#visitor-1-city').val());
         var v1state = GeneralFunctions.escapeHtml($('#visitor-1-state').find(":selected").val());
-        var v1zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
-        var v1notes = GeneralFunctions.escapeHtml($('#notes').val());
+        var v1zipCode = GeneralFunctions.escapeHtml($('#visitor-1-zip-code').val());
+        var v1notes = GeneralFunctions.escapeHtml($('#visitor-1-notes').val());
         var v1birthdate = GeneralFunctions.escapeHtml($('#visitor-1-birth-date').val());
         v1birthdate = GeneralFunctions.dateToDBFormat(v1birthdate);
         var v1idfilename = GeneralFunctions.escapeHtml($('#visitor-1-dl-file-name').val());
@@ -750,10 +777,6 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<br/>'),
 						$('<span/>', {
                             'text': v1idnumber ? EALang.visitor_1_dl_number + ': ' + v1idnumber : EALang.visitor_1_dl_number + ': N/A'
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': v1notes ? EALang.notes + ': ' + v1notes : EALang.notes + ': '
                         }),
                         $('<br/>'),
                         $('<br/>'),
@@ -981,16 +1004,14 @@ window.FrontendBook = window.FrontendBook || {};
             $('#visitor-2-name').val(appointment.visitor_2_name);
 
             // Apply Customer's Data
-            $('#last-name').val(customer.last_name);
-            $('#first-name').val(customer.first_name);
-            $('#email').val(customer.email);
-            $('#phone-number').val(customer.phone_number);
-            $('#address').val(customer.address);
-            $('#city').val(customer.city);
-            $('#zip-code').val(customer.zip_code);
+            $('#visitor-1-last-name').val(customer.last_name);
+            $('#visitor-1-first-name').val(customer.first_name);
+            $('#visitor-1-email').val(customer.email);
+            $('#visitor-1-phone-number').val(customer.phone_number);
+            $('#visitor-1-address').val(customer.address);
+            $('#visitor-1-city').val(customer.city);
+            $('#visitor-1-zip-code').val(customer.zip_code);
            
-
-            
             if (customer.timezone) {
                 $('#select-timezone').val(customer.timezone)
             }

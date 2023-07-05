@@ -190,7 +190,7 @@ class Appointments_model extends EA_Model {
      *
      * @throws Exception If appointment record could not be updated.
      */
-    protected function update($appointment)
+    public function update($appointment)
     {
         $this->db->where('id', $appointment['id']);
         if ( ! $this->db->update('appointments', $appointment))
@@ -424,6 +424,33 @@ class Appointments_model extends EA_Model {
         }
 
         return $appointments;
+    }
+
+    /**
+     * Get list of all providers
+     */
+    public function get_providers() {
+        $results = $this->db
+            ->select('u.id as "provider_id",u.first_name AS "provider_first_name",u.last_name as "provider_last_name",u.inmate_classification_level')
+            ->from('users u')
+            ->where('u.id_roles', 2)
+            ->order_by('u.id','ASC')
+            ->get();
+
+        return $results->result_array();
+    }
+
+    /**
+     * Get list of all services
+     */
+    public function get_services() {
+        $results = $this->db
+            ->select('*')
+            ->from('services')
+            ->order_by('id','ASC')
+            ->get();
+
+        return $results->result_array();
     }
 
     /**

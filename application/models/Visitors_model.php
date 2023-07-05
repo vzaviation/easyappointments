@@ -325,6 +325,17 @@ class Visitors_model extends EA_Model {
     }
 
     /**
+     * Fetch a visitor record based on first, last, birthdate
+     *
+     * @return array Returns an associative array with the selected record's data. Each key has the same name as the
+     * database field names.
+     */
+    public function get_visitor($first_name, $last_name, $birthdate)
+    {
+        return $this->db->get_where('visitors', ['first_name' => $first_name, 'last_name' => $last_name, "DATE_FORMAT(birthdate,'%Y-%m-%d')" => $birthdate])->row_array();
+    }
+
+    /**
      * Get a specific field value from the database.
      *
      * @param string $field_name The field name of the value to be returned.
@@ -555,4 +566,31 @@ class Visitors_model extends EA_Model {
             return $result->result_array();
         }
     }
+
+    /**
+     * Get by date and inmate
+     */
+    public function get_appointment_visitors_by_date_inmate($inmate_id, $date = NULL) {
+        if ($date == NULL) {
+            $date = date('Y-m-d');
+        }
+
+        $whereArray = array('a.id_inmate' => $inmate_id, "DATE_FORMAT(start_datetime,'%Y-%m-%d')" => $date);
+        $result = $this->db
+            ->select('av.visitor_id')
+            ->from('appointments a')
+            ->join('appointment_visitor av','av.appointment_id = a.id')
+            ->where($whereArray)
+            ->get();
+
+        if ($result->num_rows() == 0)
+        {
+            // Record does not exist - ignore
+        }
+        else
+        {
+            return $result->result_array();
+        }
+    }
+
 }

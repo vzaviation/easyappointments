@@ -102,11 +102,13 @@ class Inmates_model extends EA_Model {
         return $providers;
     }
 
+    // Get inmate appointments + visitors
     public function get_inmate_appointments($inmate_id) {
 
         $this->db
-            ->select('a.id,a.start_datetime')
+            ->select('a.id,a.start_datetime,av.visitor_id')
             ->from('ea_appointments a')
+            ->join('ea_appointment_visitor av', 'av.appointment_id = a.id', 'inner')
             ->where('a.id_inmate='.$inmate_id);
 
         $appts = $this->db->get()->result_array();
@@ -160,5 +162,69 @@ class Inmates_model extends EA_Model {
             throw new Exception('Invalid argument provided as $inmate_id : ' . $inmate_id);
         }
         return $this->db->get_where('inmates', ['ID' => $inmate_id])->row_array();
+    }
+
+    /**
+     * inmate visitors functions
+     * 
+     */
+    public function get_inmate_visitors($inmate_id) {
+
+        $this->db
+            ->select('iv.id,iv.visitor_first_name,iv.visitor_last_name,iv.visitor_number')
+            ->from('ea_inmate_visitor iv')
+            ->where('iv.inmate_id='.$inmate_id)
+            ->order_by('iv.visitor_number ASC');
+
+        $visitors = $this->db->get()->result_array();
+
+        return $visitors;
+    }
+    
+    public function add_inmate_visitor($visitor)
+    {
+        // Validate the visitor data before doing anything.
+        if ($this->validate_inmate_visitor($visitor)) {
+            // If there is an id, just update the record
+            if (isset($visitor['id'])) {
+                return $this->update_inmate_visitor($visitor);
+            } else {
+                return $this->insert_inmate_visitor($visitor);
+            }
+        }
+    }
+
+    public function validate_inmate_visitor($visitor)
+    {
+        if ( (!isset($visitor['inmate_id'])) ||
+             (!isset($visitor['visitor_first_name'])) ||
+             (!isset($visitor['visitor_last_name'])) ||
+             (!isset($visitor['visitor_number'])) )
+        {
+            return FALSE;
+        } else {
+            return TRUE;
+        }
+    }
+
+    public function insert_inmate_visitor($visitor)
+    {
+        if ( ! $this->db->insert('ea_inmate_visitor', $visitor))
+        {
+            throw new Exception('Could not insert visitor into the database.');
+        }
+        return (int)$this->db->insert_id();
+    }
+
+    public function update_inmate_visitor($visitor)
+    {
+        $this->db->where('id', $visitor['id']);
+
+        if ( ! $this->db->update('ea_inmate_visitor', $visitor))
+        {
+            throw new Exception('Could not update inmate visitor in the database.');
+        }
+
+        return (int)$visitor['id'];
     }
 }

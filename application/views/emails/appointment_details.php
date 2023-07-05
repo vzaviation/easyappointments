@@ -57,7 +57,7 @@
                 <td style="padding: 3px;"><?= $visitor_1_address ?></td>
             </tr>
             <tr>
-                <td class="label" style="padding: 3px;font-weight: bold;">Additional Visitors</td>
+                <td class="label" style="padding: 3px;font-weight: bold;"></td>
                 <td style="padding: 3px;"></td>
             </tr>
             <tr>
@@ -65,8 +65,36 @@
                 <td style="padding: 3px;"><?= $visitor_2_name ?></td>
             </tr>
             <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('email') ?></td>
+                <td style="padding: 3px;"><?= $visitor_2_email ?></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('phone_number') ?></td>
+                <td style="padding: 3px;"><?= $visitor_2_phone ?></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('address') ?></td>
+                <td style="padding: 3px;"><?= $visitor_2_address ?></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"></td>
+                <td style="padding: 3px;"></td>
+            </tr>
+            <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('name') ?></td>
                 <td style="padding: 3px;"><?= $visitor_3_name ?></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('email') ?></td>
+                <td style="padding: 3px;"><?= $visitor_3_email ?></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('phone_number') ?></td>
+                <td style="padding: 3px;"><?= $visitor_3_phone ?></td>
+            </tr>
+            <tr>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('address') ?></td>
+                <td style="padding: 3px;"><?= $visitor_3_address ?></td>
             </tr>
         </table>
     </div>

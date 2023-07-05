@@ -249,6 +249,167 @@ class Backend_api extends EA_Controller {
     }
 
     /**
+     * Get appointments by date to refresh the dashboard after updates
+     */
+    public function ajax_get_appointments_by_date()
+    {
+        try
+        {
+            $appt_date = $this->input->post('appt_date');
+            
+            $appointments = $this->appointments_model->get_by_date($appt_date);;
+
+            $response = [
+                'appointments' => $appointments
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'appointments' => "",
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Save appointment changes that are made from the backend calendar page.
+     */
+    public function ajax_add_update_appointment()
+    {
+        try
+        {
+            // Save appointment changes to the database.
+            if ($this->input->post('appointment_data'))
+            {
+                $appointment = json_decode($this->input->post('appointment_data'), TRUE);
+
+                $required_privileges = ( ! isset($appointment['id']))
+                    ? $this->privileges[PRIV_APPOINTMENTS]['add']
+                    : $this->privileges[PRIV_APPOINTMENTS]['edit'];
+                if ($required_privileges == FALSE)
+                {
+                    throw new Exception('You do not have the required privileges for this task.');
+                }
+
+                // If this is a new appointment, we may need to save visitor data as well
+                $existingAppt = isset($appointment['id']);
+                if ($existingAppt) {
+                    $this->appointments_model->update($appointment);
+                } else {
+                    $appointment['id'] = $this->appointments_model->insert($appointment);
+                }
+            }
+            
+            $appointment = $this->appointments_model->get_row($appointment['id']);
+            $visitors = $this->visitors_model->get_appointment_visitors($appointment['id']);
+            $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+            $service = $this->services_model->get_row($appointment['id_services']);
+
+            $settings = [
+                'company_name' => $this->settings_model->get_setting('company_name'),
+                'company_link' => $this->settings_model->get_setting('company_link'),
+                'company_email' => $this->settings_model->get_setting('company_email'),
+                'date_format' => $this->settings_model->get_setting('date_format'),
+                'time_format' => $this->settings_model->get_setting('time_format')
+            ];
+
+            $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $visitors, $settings, FALSE);
+            $this->notifications->notify_appointment_saved($appointment, $service, $provider, $visitors, $settings, TRUE);
+
+            $response = AJAX_SUCCESS;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_toggle_appointment_canceled()
+    {
+        try
+        {
+            $appointment_id = json_decode($this->input->post('appointment_id'), TRUE);
+
+            if ($this->privileges[PRIV_APPOINTMENTS]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            // Get the existing appointment record
+            $existingAppt = $this->appointments_model->get_row($appointment_id);
+
+            if (!isset($existingAppt['canceled'])) {
+                $existingAppt['canceled'] = date('Y-m-d');
+            } else {
+                $existingAppt['canceled'] = NULL;
+            }
+
+            // Update the appointment record
+            $this->appointments_model->update($existingAppt);
+
+            // Send out notifications appropriately
+            $appointment = $existingAppt;
+            $visitors = $this->visitors_model->get_appointment_visitors($appointment_id);
+            $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+            $service = $this->services_model->get_row($appointment['id_services']);
+
+            $settings = [
+                'company_name' => $this->settings_model->get_setting('company_name'),
+                'company_link' => $this->settings_model->get_setting('company_link'),
+                'company_email' => $this->settings_model->get_setting('company_email'),
+                'date_format' => $this->settings_model->get_setting('date_format'),
+                'time_format' => $this->settings_model->get_setting('time_format')
+            ];
+
+            if ($appointment['canceled'] != NULL) {
+                $this->synchronization->sync_appointment_deleted($appointment, $provider);
+                $this->notifications->notify_appointment_deleted($appointment, $service, $provider, $visitors, $settings);
+            } else {
+                $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $visitors, $settings, FALSE);
+                $this->notifications->notify_appointment_saved($appointment, $service, $provider, $visitors, $settings, TRUE);
+            }
+
+            $response = AJAX_SUCCESS;
+
+
+            $response = [
+                'appointment' => $existingAppt
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'appointment' => "",
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
      * Save appointment changes that are made from the backend calendar page.
      */
     public function ajax_save_appointment()
@@ -1069,6 +1230,79 @@ class Backend_api extends EA_Controller {
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($inmate));
+    }
+
+    /**
+     * Fetch the list of approved inmate visitors
+     */
+    public function ajax_fetch_inmate_visitors()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_INMATES]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $inmate_id = json_decode($this->input->post('inmate_id'), TRUE);
+
+            // Pull the list of visitors given the inmate_id
+            $visitors = $this->inmates_model->get_inmate_visitors($inmate_id);
+            $response = [
+                'visitors' => $visitors
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'visitors' => array(),
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_save_inmate_visitors()
+    {
+        try
+        {
+            $visitors = json_decode($this->input->post('visitors'), TRUE);
+
+            if ($this->privileges[PRIV_INMATES]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            // Loop through and update
+            foreach ($visitors as $visitor)
+            {
+                $this->inmates_model->add_inmate_visitor($visitor);
+            }
+
+            $response = [
+                'visitors' => $visitors
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'visitors' => array(),
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
     }
 
     /**
