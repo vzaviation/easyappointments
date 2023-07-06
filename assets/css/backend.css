@@ -260,7 +260,7 @@ body legend {
 }
 
 .backend-page .filter-records .results .entry.selected {
-    background-color: #F4F4F4;
+    background-color: var(--light-tan);
     border-right: 5px solid var(--medium-tan);
 }
 
@@ -896,10 +896,6 @@ body .form-horizontal .controls {
     margin-bottom: 20px;
     overflow-y: auto;
     outline: none;
-}
-
-#visitors-page .visitor-row.selected {
-    background-color: var(--light-tan);
 }
 
 #visitors-page #visitor-appointments .appointment-row {

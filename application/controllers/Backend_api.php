@@ -257,7 +257,7 @@ class Backend_api extends EA_Controller {
         {
             $appt_date = $this->input->post('appt_date');
             
-            $appointments = $this->appointments_model->get_by_date($appt_date);;
+            $appointments = $this->appointments_model->get_by_date($appt_date);
 
             $response = [
                 'appointments' => $appointments
@@ -677,6 +677,36 @@ class Backend_api extends EA_Controller {
             $this->output->set_status_header(500);
 
             $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+
+    /**
+     * Get visitors to refresh the BE after updates
+     */
+    public function ajax_get_visitors()
+    {
+        try
+        {
+            $visitors = $this->visitors_model->get_all();
+
+            $response = [
+                'visitors' => $visitors
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'visitors' => "",
                 'message' => $exception->getMessage(),
                 'trace' => config('debug') ? $exception->getTrace() : []
             ];

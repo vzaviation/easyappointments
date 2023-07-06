@@ -30,7 +30,7 @@
     <div class="row" id="visitors">
         <div id="filter-visitors" class="filter-records col col-12 col-md-4">
             <form class="mb-4">
-                <div class="input-group">
+                <div class="input-group" style="padding-top:10px;">
                     <input type="text" class="key form-control">
 
                     <div class="input-group-addon">
@@ -52,7 +52,7 @@
             <div class="results"></div>
         </div>
 
-        <div class="visitor-details-outer col-12 col-md-7">
+        <div class="visitor-details-outer col-12 col-md-8">
             <div class="btn-toolbar mb-4">
                 <div id="add-edit-delete-group" class="btn-group"><span style="height:37px;"></span></div>
             </div>
@@ -65,8 +65,6 @@
                 </div>
 
                 <div class="col-8 col-md-7">
-                    <form id="visitor-update-form" action="#" method="POST">
-                    <div id="form-message" class="alert" style="display:none;"></div>
                     <div class="col-8 col-md-12" style="margin-left: 0;">
                         <h3>Visitor <?= lang('details') ?></h3>
 

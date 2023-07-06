@@ -321,10 +321,10 @@
             let isChecked = $(this).prop('checked');
             // if checked, copy the values from vis 1 address into vis 2
             if (isChecked) {
-                $('#visitor-2-address').val($('#address').val());
-                $('#visitor-2-city').val($('#city').val());
+                $('#visitor-2-address').val($('#visitor-1-address').val());
+                $('#visitor-2-city').val($('#visitor-1-city').val());
                 $('#visitor-2-state').val($('#visitor-1-state').find(":selected").val());
-                $('#visitor-2-zip-code').val($('#zip-code').val());
+                $('#visitor-2-zip-code').val($('#visitor-1-zip-code').val());
             } else {  // if not checked, erase the values
                 $('#visitor-2-address').val("");
                 $('#visitor-2-city').val("");
@@ -339,10 +339,10 @@
             let isChecked = $(this).prop('checked');
             // if checked, copy the values from vis 1 address into vis 2
             if (isChecked) {
-                $('#visitor-3-address').val($('#address').val());
-                $('#visitor-3-city').val($('#city').val());
+                $('#visitor-3-address').val($('#visitor-1-address').val());
+                $('#visitor-3-city').val($('#visitor-1-city').val());
                 $('#visitor-3-state').val($('#visitor-1-state').find(":selected").val());
-                $('#visitor-3-zip-code').val($('#zip-code').val());
+                $('#visitor-3-zip-code').val($('#visitor-1-zip-code').val());
             } else {  // if not checked, erase the values
                 $('#visitor-3-address').val("");
                 $('#visitor-3-city').val("");
@@ -365,6 +365,7 @@
             $('#visitor-2-state').addClass('required');
             $('#visitor-2-zip-code').addClass('required');
             $('#visitor-2-birth-date').addClass('required');
+            $('#authorize-visitor-2').show();
           });
         }
 
@@ -426,6 +427,7 @@
             $('#visitor-3-state').addClass('required');
             $('#visitor-3-zip-code').addClass('required');
             $('#visitor-3-birth-date').addClass('required');
+            $('#authorize-visitor-3').show();
           });
         }
 
@@ -841,6 +843,7 @@
                                     <?= lang('visitor_1_dl') ?>
                                     <span class="text-danger">*</span>
                                 </label>
+                                <div id="visitor-1-existing-file" style="font-size:11px;font-weight:bold;display:none;"></div>
                                 <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
                                 <input type="hidden" id="visitor-1-dl-file-name" value="" />
                             </div>
@@ -1016,7 +1019,7 @@
                         </div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="visitor-2-phone-number" class="control-label">
+                                <label for="visitor-1-phone-number" class="control-label">
                                     <?= lang('phone_number') ?>
                                     <span id="visitor-1-show-required-phone" class="text-danger" style="display:none;">*</span>
                                 </label>
@@ -1097,6 +1100,7 @@
                                     <?= lang('visitor_2_dl') ?>
                                     <span class="text-danger">*</span>
                                 </label>
+                                <div id="visitor-2-existing-file" style="font-size:11px;font-weight:bold;display:none;"></div>
                                 <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
                                 <input type="hidden" id="visitor-2-dl-file-name" value="" />
                             </div>
@@ -1364,6 +1368,7 @@
                                     <?= lang('visitor_3_dl') ?>
                                     <span class="text-danger">*</span>
                                 </label>
+                                <div id="visitor-3-existing-file" style="font-size:11px;font-weight:bold;display:none;"></div>
                                 <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
                                 <input type="hidden" id="visitor-3-dl-file-name" value="" />
                             </div>

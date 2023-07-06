@@ -699,10 +699,10 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<span/>', {
                             'text': EALang.service + ': ' + $('#select-service option:selected').text()
                         }),
-                        $('<br/>'),
-                        $('<span/>', {
-                            'text': EALang.provider + ': ' + $('#select-provider option:selected').text()
-                        }),
+//                        $('<br/>'),
+//                        $('<span/>', {
+//                            'text': EALang.provider + ': ' + $('#select-provider option:selected').text()
+//                        }),
                         $('<br/>'),
                         $('<span/>', {
                             'text': EALang.inmate + ': ' + $('#select-inmate option:selected').text()
@@ -768,7 +768,7 @@ window.FrontendBook = window.FrontendBook || {};
                         }),
                         $('<br/>'),
 						$('<span/>', {
-                            'text': EALang.birth_date_ymd + ': ' + v1birthdate
+                            'text': v1birthdate ? EALang.birth_date + ': ' + Date.parse(v1birthdate).toString('MM/dd/yyyy') : EALang.birth_date + ': N/A'
                         }),
                         $('<br/>'),
 						$('<span/>', {
@@ -809,7 +809,7 @@ window.FrontendBook = window.FrontendBook || {};
                         }),
                         $('<br/>'),
 						$('<span/>', {
-                            'text': v2birthdate ? EALang.birth_date_ymd + ': ' + v2birthdate : EALang.birth_date_ymd + ': N/A'
+                            'text': v2birthdate ? EALang.birth_date + ': ' + Date.parse(v2birthdate).toString('MM/dd/yyyy') : EALang.birth_date + ': N/A'
                         }),
                         $('<br/>'),
 						$('<span/>', {
@@ -850,7 +850,7 @@ window.FrontendBook = window.FrontendBook || {};
                         }),
                         $('<br/>'),
 						$('<span/>', {
-                            'text': v3birthdate ? EALang.birth_date_ymd + ': ' + v3birthdate : EALang.birth_date_ymd + ': N/A'
+                            'text': v3birthdate ? EALang.birth_date + ': ' + Date.parse(v3birthdate).toString('MM/dd/yyyy') : EALang.birth_date + ': N/A'
                         }),
                         $('<br/>'),
 						$('<span/>', {

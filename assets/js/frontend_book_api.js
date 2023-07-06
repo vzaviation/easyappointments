@@ -186,6 +186,9 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                             visitorOk = false;
                         }
                     }
+                    if (visitor == 'visitor-2') {
+                        $('#button-add-visitor-3').show();
+                    }
 
                     if (visitorOk) {
                         const ymdBirthdate = ymdDate.toString('yyyy-MM-dd');
@@ -229,11 +232,15 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                                             const vbdom = vbdate.getDate().toString().padStart(2, "0");
                                             const bdate = vbmonth + "/" + vbdom + "/" + vbdate.getFullYear();
                                             $('#' + visitor + '-birth-date').val(bdate);
-                //                            $('#' + visitor + '-dl-box').show();
-                                            $('#' + visitor + '-dl-number-box').show();
-                                            $('#' + visitor + '-dl-state-box').show();
+//                                            $('#' + visitor + '-dl-box').show();
+//                                            $('#' + visitor + '-dl-number-box').show();
+//                                            $('#' + visitor + '-dl-state-box').show();
                                             $('#' + visitor + '-dl-number').val(response.visitor.id_number);
                                             $('#' + visitor + '-dl-state').val(response.visitor.id_state);
+                                            if (response.visitor.id_image_filename != '') {
+                                                $('#' + visitor + '-existing-file').text('Keep existing file ' + response.visitor.id_image_filename + ' or Choose new');
+                                                $('#' + visitor + '-existing-file').show();
+                                            }
                                             $('#' + visitor + '-dl-file-name').val(response.visitor.id_image_filename);
                                             $('#' + visitor + '-email').val(response.visitor.email);
                                             $('#' + visitor + '-phone-number').val(response.visitor.phone_number);
@@ -247,15 +254,29 @@ window.FrontendBookApi = window.FrontendBookApi || {};
 
                                             // Make the rest of the visitor form visible
                                             $('.' + visitor + '-information').show();
-                                            $('#button-add-visitor-3').show();
                                             $('#button-next-3').show();
                                         }
                                     }
                                 } else {
+                                    // Clear any existing values
+                                    $('#' + visitor + '-dl-number').val('');
+                                    $('#' + visitor + '-dl-state').val('');
+                                    $('#' + visitor + '-dl-file-name').val('');
+                                    $('#' + visitor + '-email').val('');
+                                    $('#' + visitor + '-phone-number').val('');
+                                    $('#' + visitor + '-address').val('');
+                                    $('#' + visitor + '-city').val('');
+                                    $('#' + visitor + '-state').val('');
+                                    $('#' + visitor + '-zip-code').val('');
+                                    $('#' + visitor + '-existing-file').text('');
+                                    $('#' + visitor + '-existing-file').hide();
+
+                                    // Trigger the birthdate focusout event to properly handle that
+                                    $('#' + visitor + '-birth-date').trigger("focusout");
+                    
                                     // Let them enter new information
                                     $('#authorize-' + visitor + '-message').text("Please enter your information below");        
                                     $('.' + visitor + '-information').show();
-                                    $('#button-add-visitor-3').show();
                                     $('#button-next-3').show();
                                 }
                             })

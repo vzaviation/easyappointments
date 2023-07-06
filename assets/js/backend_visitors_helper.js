@@ -186,7 +186,6 @@
 
             // Save the flag notes here also, if any
             const flag_notes = $('[name="visitor-flag-notes-' + visitor_id + '"]').val();
-            console.log("*** FLAG Visitor ID: " + visitor_id + " / checked " + checked);
 
             // Call to update the DB
             var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_set_visitor_flag_visitors';
@@ -201,10 +200,13 @@
             $.post(url, data)
                 .done(function (response) {
                     const visitor = response;
-                    console.log("V: " + JSON.stringify(visitor));
-                    instance.displayVisitor(visitor);
-
                     const visitor_id = visitor.id;
+
+                    // reset the form to get updated data
+                    const key = $('#filter-visitors .key').val();
+                    instance.resetForm();
+                    instance.filter(key,visitor_id,true);
+       
                     const flagCBname = "visitor-flag-check-" + visitor_id;
                     const flagCBchecked = (visitor.flag && visitor.flag == 1) ? true : false;
                     $('[name="' + flagCBname + '"]').prop('checked',flagCBchecked);
@@ -231,10 +233,13 @@
             $.post(url, data)
                 .done(function (response) {
                     const visitor = response;
-                    console.log("OUT V: " + JSON.stringify(visitor));
-                    instance.displayVisitor(visitor);
-
                     const visitor_id = visitor.id;
+
+                    // reset the form to get updated data
+                    const key = $('#filter-visitors .key').val();
+                    instance.resetForm();
+                    instance.filter(key,visitor_id,true);
+       
                     const flagCBname = "visitor-flag-check-" + visitor_id;
                     const flagCBchecked = (visitor.flag && visitor.flag == 1) ? true : false;
                     $('[name="' + flagCBname + '"]').prop('checked',flagCBchecked);
@@ -479,6 +484,7 @@
 
         return $('<div/>', {
             'class': 'visitor-row entry',
+            'name': 'visitor-row-' + visitor.id,
             'data-id': visitor.id,
             'html': [
                 $('<strong/>', {
@@ -503,11 +509,9 @@
      * on the form.
      */
     VisitorsHelper.prototype.select = function (id, display) {
+        const instance = this;
+
         display = display || false;
-
-        $('#filter-visitors .selected').removeClass('selected');
-
-        $('#filter-visitors .entry[data-id="' + id + '"]').addClass('selected');
 
         if (display) {
             const visitor_id = id;
@@ -519,7 +523,7 @@
             instance.display(visitor_appointments);
 
             $('#visitors .visitor-row').removeClass('selected');
-            $(this).addClass('selected');
+            $('#visitors .visitor-row[name="visitor-row-' + id + '"]').addClass('selected');
             $('#edit-customer, #delete-customer').prop('disabled', false);
 
             instance.displayVisitor(visitor_appointments);
@@ -554,121 +558,113 @@
             const vFlagDate = visitor.flag_date ? Date.parse(visitor.flag_date).toString('MM/dd/yyyy') : "N/A";
 
             $('<div/>', {
-                'id': 'visitor-info-outer',
-                'class': 'col-md-12',
+                'class': 'visitor-info col-md-12',
                 'data-id': visitor_id,
                 'html': [
                     $('<div/>', {
-                        'id': 'visitor-info-inner-top',
-                        'class': 'col-12 col-md-12',
+                        'class': 'visitor-info-left',
+                        'style': 'float:left;width:50%;',
                         'data-id': visitor_id,
                         'html': [
+                            // Name
                             $('<div/>', {
-                                'class': 'visitor-info-left col-md-7',
-                                'style': 'float:left',
-                                'data-id': visitor_id,
-                                'html': [
-                                    // Name
-                                    $('<div/>', {
-                                        'text': 'Name: ' + visitor.last_name + ', ' + visitor.first_name
-                                    }),
-                                    // DOB
-                                    $('<div/>', {
-                                        'text': 'Birth Date: ' + Date.parse(visitor.birthdate).toString('MM/dd/yyyy')
-                                    }),
-                                    // Email
-                                    $('<div/>', {
-                                        'text': 'Email: ' + visitor.email ? visitor.email : 'N/A'
-                                    }),
-                                    // Phone
-                                    $('<div/>', {
-                                        'text': 'Phone: ' + visitor.phone ? visitor.phone : 'N/A'
-                                    }),
-                                    // Address
-                                    $('<div/>', {
-                                        'text': 'Address: ' + visitor.address ? visitor.address : 'N/A'
-                                    }),
-                                    $('<div/>', {
-                                        'text': visitor.address ? visitor.city + ', ' + visitor.state + ' ' + visitor.zip_code : ''
-                                    }),
-                                    $('<br/>'),
-                                    // ID Number
-                                    $('<div/>', {
-                                        'text': 'ID Number: ' + vIDNum
-                                    }),
-                                    // ID State
-                                    $('<div/>', {
-                                        'text': 'ID State: ' + vIDState
-                                    })
-                                ]
+                                'text': visitor.last_name + ', ' + visitor.first_name
+                            }),
+                            // DOB
+                            $('<div/>', {
+                                'text': 'Birth Date: ' + Date.parse(visitor.birthdate).toString('MM/dd/yyyy')
+                            }),
+                            // Email
+                            $('<div/>', {
+                                'text': visitor.email
+                            }),
+                            // Phone
+                            $('<div/>', {
+                                'text': visitor.phone
+                            }),
+                            // Address
+                            $('<div/>', {
+                                'text': visitor.address 
                             }),
                             $('<div/>', {
-                                'class': 'visitor-id col-md-3',
-                                'style': 'float:left',
-                                'data-id': visitor_id,
-                                'html': [
-                                    // ID Image
-                                    $('<img/>', {
-                                        'id': 'v1-id-image-file',
-                                        'width': '250',
-                                        'src': vIDImageSrc
-                                    })
-                                ]
+                                'text': visitor.city + ', ' + visitor.state + ' ' + visitor.zip_code
                             }),
+                            $('<br/>'),
+                            // ID Number
+                            $('<div/>', {
+                                'text': 'ID Number: ' + vIDNum
+                            }),
+                            // ID State
+                            $('<div/>', {
+                                'text': 'ID State: ' + vIDState
+                            })
                         ]
                     }),
-                    $('<br/>'),
                     $('<div/>', {
-                        'id': 'visitor-info-inner-bottom',
-                        'style': 'float:left',
-                        'class': 'col-md-12',
+                        'class': 'visitor-info-right',
+                        'style': 'float:right;width:50%;',
                         'data-id': visitor_id,
                         'html': [
                             $('<div/>', {
-                                'class': 'visitor-flag-info',
+                                'class': 'visitor-flag-notes',
                                 'data-id': visitor_id,
                                 'html': [
-                                    $('<span/>', {
-                                        'class': 'visitor-flag-check',
-                                        'text': 'Flag: '
-                                    }),
-                                    $('<input/>', {
-                                        'id': 'visitor-flag-check',
-                                        'name': 'visitor-flag-check-' + visitor_id,
-                                        'data-id': visitor_id,
-                                        'type': 'checkbox'
-                                    }),
-                                    $('<span/>', {
-                                        'class': 'visitor-flag-check',
-                                        'style': 'padding-left:10px',
-                                        'text': 'Date Flagged: ' + vFlagDate
-                                    }),
                                     $('<div/>', {
-                                        'style': 'padding-top:5px;',
+                                        'class': 'visitor-flag',
+                                        'data-id': visitor_id,
                                         'html': [
                                             $('<span/>', {
                                                 'class': 'visitor-flag-check',
-                                                'style': 'vertical-align:top',
+                                                'text': 'Flag: '
+                                            }),
+                                            $('<input/>', {
+                                                'id': 'visitor-flag-check',
+                                                'name': 'visitor-flag-check-' + visitor_id,
+                                                'data-id': visitor_id,
+                                                'type': 'checkbox'
+                                            }),
+                                            $('<span/>', {
+                                                'class': 'visitor-flag-check',
+                                                'text': 'Date Flagged: ' + vFlagDate
+                                            }),
+                                            $('<br/>'),
+                                            $('<span/>', {
+                                                'class': 'visitor-flag-check',
                                                 'text': 'Flag Notes: '
                                             }),
+                                            $('<br/>'),
                                             $('<textarea/>', {
                                                 'id': 'visitor-flag-notes',
                                                 'name': 'visitor-flag-notes-' + visitor_id,
                                                 'text': visitor.flag_notes,
-                                                'rows': 4,
-                                                'cols': 30
+                                                'rows': 3,
+                                                'cols': 24
+                                            }),
+                                            $('<br/>'),
+                                            $('<input/>', {
+                                                'id': 'visitor-flag-notes-save',
+                                                'name': 'visitor-flag-notes-save-' + visitor_id,
+                                                'data-id': visitor_id,
+                                                'type': 'button',
+                                                'value': 'Save Notes'
+                                            }),
+                                            $('<br/>'),
+                                            $('<div/>', {
+                                                'class': 'visitor-id',
+                                                'data-id': visitor_id,
+                                                'html': [
+                                                    // ID Image
+                                                    $('<img/>', {
+                                                        'id': 'v1-id-image-file',
+                                                        'width': '250',
+                                                        'src': vIDImageSrc
+                                                    })
+                                                ]
                                             })
                                         ]
-                                    }),
-                                    $('<input/>', {
-                                        'id': 'visitor-flag-notes-save',
-                                        'name': 'visitor-flag-notes-save-' + visitor_id,
-                                        'data-id': visitor_id,
-                                        'type': 'button',
-                                        'value': 'Save Notes'
                                     })
                                 ]
-                            }),
+                            })
                         ]
                     })
                 ]
