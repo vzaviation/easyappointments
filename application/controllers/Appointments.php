@@ -838,6 +838,16 @@ class Appointments extends EA_Controller {
                         ->set_output(json_encode($response));
                     return;
                 }
+                // Now check inmate's age - if 17 (or younger) - also restrict
+                $dob = DateTime::createFromFormat('mdY', $inmate["DOB"]);
+                $age = $dob->diff(new DateTime('now'))->y;
+                if ($age <= 17) {
+                    $response[] = "restricted";
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode($response));
+                    return;
+                }
                 
                 // Get the appointment data of any existing visits with this inmate
                 $appointments = $this->inmates_model->get_inmate_appointments($inmate_id);
@@ -1106,7 +1116,7 @@ class Appointments extends EA_Controller {
 	        $inmate_id = $this->input->get_post('selectedInmateId');
             $unavailable_dates = [];
 
-    	    if($inmate_id){
+    	    if ($inmate_id){
                 $provider_ids = $provider_id === ANY_PROVIDER
                     ? $this->search_providers_by_inmates($inmate_id, $service_id)
                     : [$provider_id];
