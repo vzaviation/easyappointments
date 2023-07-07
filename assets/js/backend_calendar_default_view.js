@@ -1573,17 +1573,18 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
         // Fill the select list boxes of the page.
         if (GlobalVariables.availableServices.length > 0) {
+            let services = '<option value="0" type="' + FILTER_TYPE_SERVICE + '">-- ALL SERVICES --</option>';
+            services += GlobalVariables.availableServices.map(function (availableService) {
+                return '<option ' + 
+                    'value="' + availableService.id + '" ' +
+                    'type="' + FILTER_TYPE_SERVICE + '">' +
+                    availableService.name +
+                    '</option>'
+            });
             $('<optgroup/>', {
                 'label': EALang.services,
                 'type': 'services-group',
-                'html': GlobalVariables.availableServices.map(function (availableService) {
-                    return $('<option/>', {
-                        'value': availableService.id,
-                        'type': FILTER_TYPE_SERVICE,
-                        'text': availableService.name
-                    })
-                })
-            })
+            }).append(services)
                 .appendTo('#select-filter-item');
         }
 

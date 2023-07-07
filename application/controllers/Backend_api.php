@@ -177,21 +177,26 @@ class Backend_api extends EA_Controller {
                 return;
             }
 
-            if ($this->input->post('filter_type') == FILTER_TYPE_PROVIDER)
-            {
-                $where_id = 'id_users_provider';
-            }
-            else
-            {
-                $where_id = 'id_services';
-            }
-
             // Get appointments
             $record_id = $this->db->escape($this->input->post('record_id'));
             $start_date = $this->db->escape($this->input->post('start_date'));
             $end_date = $this->db->escape(date('Y-m-d', strtotime($this->input->post('end_date') . ' +1 day')));
+            if ($this->input->post('filter_type') == FILTER_TYPE_PROVIDER)
+            {
+                $where_id = 'id_users_provider';
+                $where_id_clause = $where_id . ' = ' . $record_id;
+            }
+            else
+            {
+                $where_id = 'id_services';
+                if ($record_id == "'0'") {
+                    $where_id_clause = $where_id . ' <> ' . $record_id;
+                } else {
+                    $where_id_clause = $where_id . ' = ' . $record_id;
+                }
+            }
 
-            $where_clause = $where_id . ' = ' . $record_id . '
+            $where_clause = $where_id_clause . '
                 AND ((start_datetime > ' . $start_date . ' AND start_datetime < ' . $end_date . ') 
                 or (end_datetime > ' . $start_date . ' AND end_datetime < ' . $end_date . ') 
                 or (start_datetime <= ' . $start_date . ' AND end_datetime >= ' . $end_date . ')) 
