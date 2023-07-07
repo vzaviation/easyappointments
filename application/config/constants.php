@@ -92,5 +92,8 @@ define('AVAILABILITIES_TYPE_FIXED', 'fixed');
 
 define('EVENT_MINIMUM_DURATION', 5); // Minutes
 
+// Attorney visits are handled differently in many areas
+define('ATTORNEY_SERVICE_ID', 2);
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

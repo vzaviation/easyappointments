@@ -57,10 +57,11 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         // Make ajax post request and get the available hours.
         var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_get_available_hours';
 
+        const providerId = $('#select-provider').val() ? $('#select-provider').val() : -1;
         var data = {
             csrfToken: GlobalVariables.csrfToken,
-            service_id: $('#select-service').val(),
-            provider_id: $('#select-provider').val(),
+            service_id: serviceId,
+            provider_id: providerId,
             selected_date: selectedDate,
             service_duration: serviceDuration,
             manage_mode: FrontendBook.manageMode,
@@ -141,7 +142,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
      * @param {String} last_name
      * @param {String} birthdate (format mm/dd/yyyy)
      */
-    exports.checkVisitorAuthorization = function (visitor, inmate_id, first_name, last_name, birthdate) {
+    exports.checkVisitorAuthorization = function (service_id, visitor, inmate_id, first_name, last_name, birthdate) {
         // Make ajax post request and get the available hours.
         const url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_check_visitor_authorization';
 
@@ -155,9 +156,9 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             .done(function (response) {
                 const authResult = response.check_visitor_authorization;
                 //console.log("*** Response from check_visitor_authorization: " + authResult);
-//                if (authResult) {   -- Comment out until inmate approved visitor lists are ready - for now, always true
-                if (true) {
-                        // visitor is on inmates list of allowed visitors - yay
+//                if ((authResult) || (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID())) {   -- Comment out until inmate approved visitor lists are ready - for now, always true
+                if ((true) || (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID())) {
+                    // visitor is on inmates list of allowed visitors - yay
                     // Using the name and email, check for the visitor record in the DB
                     const visitorUrl = GlobalVariables.baseUrl + '/index.php/appointments/ajax_fetch_visitor_information';
 
@@ -221,7 +222,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                                             });
                                         }
 
-                                        if (curApptVisitor) {
+                                        if ((service_id != GeneralFunctions.ATTORNEY_SERVICE_ID()) && (curApptVisitor)) {
                                                 $('#authorize-' + visitor + '-message').text("This visitor already has a visit scheduled with this inmate on this date. Please contact the jurisdiction with any questions.");
                                         } else {
                                             // All good, display the info
@@ -248,6 +249,22 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                                             $('#' + visitor + '-city').val(response.visitor.city);
                                             $('#' + visitor + '-state').val(response.visitor.state);
                                             $('#' + visitor + '-zip-code').val(response.visitor.zip_code);
+
+                                            // Attorney Fields
+                                            if (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) {
+                                                const caVal = (response.visitor.court_appointed && response.visitor.court_appointed == 1) ? true : false;
+                                                if (caVal) {
+                                                    $('#' + visitor + '-court-appointed-yes').prop('checked',true);
+                                                } else {
+                                                    $('#' + visitor + '-court-appointed-no').prop('checked',true);
+                                                }
+                                                $('#' + visitor + '-cause-number').val(response.visitor.cause_number);
+                                                $('#' + visitor + '-law-firm').val(response.visitor.law_firm);
+                                                $('#' + visitor + '-law-firm').addClass('required');
+                                                $('#' + visitor + '-attorney-type').val(response.visitor.attorney_type);
+                                                $('#' + visitor + '-attorney-type').addClass('required');
+                                                $('#' + visitor + '-attorney-information').show();
+                                            }
 
                                             // Trigger the birthdate focusout event to properly handle that
                                             $('#' + visitor + '-birth-date').trigger("focusout");
@@ -297,63 +314,70 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             });
     };
 
-    exports.appointmentVisitorCountForDate = function (inmate_id, selected_date) {
+    exports.appointmentVisitorCountForDate = function (inmate_id, selected_date, service_id) {
 
-        var data = {
-            csrfToken: GlobalVariables.csrfToken,
-            inmate_id: inmate_id,
-            selected_date: selected_date
-        };
+        if (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) {
+            // Attorney visit handled differently
+            // We can ignore any visitor count for non-attorney visitors
+            // Second, there are additional fields to show on the form
+            //$('#visitor-1-attorney-information').show();
+        } else {
+            var data = {
+                csrfToken: GlobalVariables.csrfToken,
+                inmate_id: inmate_id,
+                selected_date: selected_date
+            };
 
-        var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_inmate_visitor_count';
+            var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_inmate_visitor_count';
 
-        $.ajax({
-            url: url,
-            method: 'post',
-            data: data,
-            dataType: 'json',
-            })
-            .done(function (response) {
-//                console.log("*** Response from ajax_inmate_visitor_count: " + JSON.stringify(response));
-                const curVisitorCountForDate = response.visitor_slots_used;
+            $.ajax({
+                url: url,
+                method: 'post',
+                data: data,
+                dataType: 'json',
+                })
+                .done(function (response) {
+    //                console.log("*** Response from ajax_inmate_visitor_count: " + JSON.stringify(response));
+                    const curVisitorCountForDate = response.visitor_slots_used;
 
-                // Clear / re-hide any info relating to visitor authorization
-                $('#authorize-visitor-1').show();
-                $('.visitor-1-information').hide();
-                $('#authorize-visitor-1-message').text("");
-                $('#authorize-visitor-2').show();
-                $('.visitor-2-information').hide();
-                $('#authorize-visitor-2-message').text("");
-                $('#authorize-visitor-3').show();
-                $('.visitor-3-information').hide();
-                $('#authorize-visitor-3-message').text("");
+                    // Clear / re-hide any info relating to visitor authorization
+                    $('#authorize-visitor-1').show();
+                    $('.visitor-1-information').hide();
+                    $('#authorize-visitor-1-message').text("");
+                    $('#authorize-visitor-2').show();
+                    $('.visitor-2-information').hide();
+                    $('#authorize-visitor-2-message').text("");
+                    $('#authorize-visitor-3').show();
+                    $('.visitor-3-information').hide();
+                    $('#authorize-visitor-3-message').text("");
 
-                if (curVisitorCountForDate >= 3) {
-                    // This should not have happened, but we will not allow any further visits
-                    $('#no-visitor-slots').show();
-                    $('#visitor-1-basic-info').hide();
-                } else if (curVisitorCountForDate == 2) {
-                    // Room for one
-                    $('#button-add-visitor-2').attr('disabled','disabled');
-                    $('#no-visitor-slots-2').show();
-                } else if (curVisitorCountForDate == 1) {
-                    // Room for two
-                    $('#button-add-visitor-3').attr('disabled','disabled');
-                    $('#no-visitor-slots-3').show();
-                } else {
-                    // Room for 3 - normal operations
-                }
-            })
-            .fail(function (jqxhr, textStatus, errorThrown) {
-                // Clear / re-hide any info relating to visitor authorization
-                $('#authorize-visitor-1').show();
-                $('.visitor-1-information').hide();
-                $('#authorize-visitor-1-message').text("");
-                $('.visitor-2-information').hide();
-                $('#authorize-visitor-2-message').text("");
-                $('.visitor-3-information').hide();
-                $('#authorize-visitor-3-message').text("");
-            });
+                    if (curVisitorCountForDate >= 3) {
+                        // This should not have happened, but we will not allow any further visits
+                        $('#no-visitor-slots').show();
+                        $('#visitor-1-basic-info').hide();
+                    } else if (curVisitorCountForDate == 2) {
+                        // Room for one
+                        $('#button-add-visitor-2').attr('disabled','disabled');
+                        $('#no-visitor-slots-2').show();
+                    } else if (curVisitorCountForDate == 1) {
+                        // Room for two
+                        $('#button-add-visitor-3').attr('disabled','disabled');
+                        $('#no-visitor-slots-3').show();
+                    } else {
+                        // Room for 3 - normal operations
+                    }
+                })
+                .fail(function (jqxhr, textStatus, errorThrown) {
+                    // Clear / re-hide any info relating to visitor authorization
+                    $('#authorize-visitor-1').show();
+                    $('.visitor-1-information').hide();
+                    $('#authorize-visitor-1-message').text("");
+                    $('.visitor-2-information').hide();
+                    $('#authorize-visitor-2-message').text("");
+                    $('.visitor-3-information').hide();
+                    $('#authorize-visitor-3-message').text("");
+                });
+        }
     };
 
     /**

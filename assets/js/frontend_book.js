@@ -356,9 +356,10 @@ window.FrontendBook = window.FrontendBook || {};
                     return;
                 }
                 // We need to know how many, if any, existing visitor-appointment slots are availble on this day
+                const service_id = $('#select-service').val();
                 const inmate_id = $('#select-inmate').val();
                 const selected_date = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd');
-                FrontendBookApi.appointmentVisitorCountForDate(inmate_id,selected_date);
+                FrontendBookApi.appointmentVisitorCountForDate(inmate_id,selected_date,service_id);
             }
 
             // If we are on the 3rd tab then we will need to validate the user's input before proceeding to the next
@@ -515,6 +516,7 @@ window.FrontendBook = window.FrontendBook || {};
         $('.authorize-visitor').on('click', function () {
             const visitor = $(this).data('visitor');
             const inmate_id = $('#select-inmate').val();
+            const service_id = $('#select-service').val();
             const v_first_name = $('#' + visitor + '-first-name').val();
             const v_last_name = $('#' + visitor + '-last-name').val();
             const v_birthdate = $('#' + visitor + '-birth-date').val();
@@ -525,7 +527,7 @@ window.FrontendBook = window.FrontendBook || {};
                 console.log("WARN: No name / birthdate entered - not progressing");
                 return false;
             }
-            FrontendBookApi.checkVisitorAuthorization(visitor,inmate_id,v_first_name,v_last_name,v_birthdate);
+            FrontendBookApi.checkVisitorAuthorization(service_id,visitor,inmate_id,v_first_name,v_last_name,v_birthdate);
         });
 
         /**
@@ -640,6 +642,10 @@ window.FrontendBook = window.FrontendBook || {};
         var v1idfilename = GeneralFunctions.escapeHtml($('#visitor-1-dl-file-name').val());
         var v1idnumber = GeneralFunctions.escapeHtml($('#visitor-1-dl-number').val());
         var v1idstate = GeneralFunctions.escapeHtml($('#visitor-1-dl-state').find(":selected").val());
+        var v1courtAppt = GeneralFunctions.escapeHtml($('input[name="visitor-1-court-appointed"]:checked').val());
+        var v1causeNum = GeneralFunctions.escapeHtml($('#visitor-1-cause-number').val());
+        var v1lawFirm = GeneralFunctions.escapeHtml($('#visitor-1-law-firm').val());
+        var v1attType = GeneralFunctions.escapeHtml($('#visitor-1-attorney-type').find(":selected").val());
 
         // Visitor 2 Details
         var v2firstName = GeneralFunctions.escapeHtml($('#visitor-2-first-name').val());
@@ -655,6 +661,10 @@ window.FrontendBook = window.FrontendBook || {};
         var v2idfilename = GeneralFunctions.escapeHtml($('#visitor-2-dl-file-name').val());
         var v2idnumber = GeneralFunctions.escapeHtml($('#visitor-2-dl-number').val());
         var v2idstate = GeneralFunctions.escapeHtml($('#visitor-2-dl-state').find(":selected").val());
+        var v2courtAppt = GeneralFunctions.escapeHtml($('input[name="visitor-2-court-appointed"]:checked').val());
+        var v2causeNum = GeneralFunctions.escapeHtml($('#visitor-2-cause-number').val());
+        var v2lawFirm = GeneralFunctions.escapeHtml($('#visitor-2-law-firm').val());
+        var v2attType = GeneralFunctions.escapeHtml($('#visitor-2-attorney-type').find(":selected").val());
 
         // Visitor 3 Details       
         var v3firstName = GeneralFunctions.escapeHtml($('#visitor-3-first-name').val());
@@ -670,6 +680,10 @@ window.FrontendBook = window.FrontendBook || {};
         var v3idfilename = GeneralFunctions.escapeHtml($('#visitor-3-dl-file-name').val());
         var v3idnumber = GeneralFunctions.escapeHtml($('#visitor-3-dl-number').val());
         var v3idstate = GeneralFunctions.escapeHtml($('#visitor-3-dl-state').find(":selected").val());
+        var v3courtAppt = GeneralFunctions.escapeHtml($('input[name="visitor-3-court-appointed"]:checked').val());
+        var v3causeNum = GeneralFunctions.escapeHtml($('#visitor-3-cause-number').val());
+        var v3lawFirm = GeneralFunctions.escapeHtml($('#visitor-3-law-firm').val());
+        var v3attType = GeneralFunctions.escapeHtml($('#visitor-3-attorney-type').find(":selected").val());
 
         if (selectedDate !== null) {
             selectedDate = GeneralFunctions.formatDate(selectedDate, GlobalVariables.dateFormat);
@@ -731,6 +745,43 @@ window.FrontendBook = window.FrontendBook || {};
 
         $('#customer-details').empty();
         
+        // Create sections for the attorney info, if they exist
+        let v1AttorneyInfo = "<br/>";
+        if (v1attType) {
+            const v1causeNumText = v1causeNum ? 'Cause Number: ' + v1causeNum : 'Cause Number: N/A';
+            v1AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v1courtAppt + "</span>" +
+            "<br/>" +
+            "<span>" + v1causeNumText + "</span>" +
+            "<br/>" +
+            "<span>Law Firm: " + v1lawFirm + "</span>" +
+            "<br/>" +
+            "<span>Attorney Type: " + v1attType + "</span>" +
+            "<br/>";
+        }
+        let v2AttorneyInfo = "<br/>";
+        if (v2attType) {
+            const v2causeNumText = v2causeNum ? 'Cause Number: ' + v2causeNum : 'Cause Number: N/A';
+            v2AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v2courtAppt + "</span>" +
+            "<br/>" +
+            "<span>" + v2causeNumText + "</span>" +
+            "<br/>" +
+            "<span>Law Firm: " + v2lawFirm + "</span>" +
+            "<br/>" +
+            "<span>Attorney Type: " + v2attType + "</span>" +
+            "<br/>";
+        }
+        let v3AttorneyInfo = "<br/>";
+        if (v3attType) {
+            const v3causeNumText = v3causeNum ? 'Cause Number: ' + v3causeNum : 'Cause Number: N/A';
+            v3AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v3courtAppt + "</span>" +
+            "<br/>" +
+            "<span>" + v3causeNumText + "</span>" +
+            "<br/>" +
+            "<span>Law Firm: " + v3lawFirm + "</span>" +
+            "<br/>" +
+            "<span>Attorney Type: " + v3attType + "</span>" +
+            "<br/>";
+        }
 
         $('<div/>', {
             'html': [
@@ -773,11 +824,7 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<br/>'),
 						$('<span/>', {
                             'text': v1idstate ? EALang.visitor_1_dl_state + ': ' + v1idstate : EALang.visitor_1_dl_state + ': N/A'
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': v1idnumber ? EALang.visitor_1_dl_number + ': ' + v1idnumber : EALang.visitor_1_dl_number + ': N/A'
-                        }),
+                        }).append(v1AttorneyInfo),
                         $('<br/>'),
                         $('<br/>'),
 						$('<span/>', {
@@ -818,7 +865,7 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<br/>'),
 						$('<span/>', {
                             'text': v2idnumber ? EALang.visitor_2_dl_number + ': ' + v2idnumber : EALang.visitor_2_dl_number + ': N/A'
-                        }),
+                        }).append(v2AttorneyInfo),
                         $('<br/>'),
                         $('<br/>'),
 						$('<span/>', {
@@ -859,7 +906,7 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<br/>'),
 						$('<span/>', {
                             'text': v3idnumber ? EALang.visitor_3_dl_number + ': ' + v3idnumber : EALang.visitor_3_dl_number + ': N/A'
-                        })
+                        }).append(v3AttorneyInfo)
                     ]
                 })
             ]
@@ -870,6 +917,7 @@ window.FrontendBook = window.FrontendBook || {};
         // Update appointment form data for submission to server when the user confirms the appointment.
         var data = {};
 
+        let v1ca = (v1courtAppt == 'yes') ? 1 : 0;
         data.visitor1 = {
             last_name: v1lastName,
             first_name: v1firstName,
@@ -883,10 +931,15 @@ window.FrontendBook = window.FrontendBook || {};
             birthdate: v1birthdate,
             id_image_filename: v1idfilename,
             id_number: v1idnumber,
-            id_state: v1idstate
+            id_state: v1idstate,
+            court_appointed: v1ca,
+            cause_number: v1causeNum,
+            law_firm: v1lawFirm,
+            attorney_type: v1attType 
         };
 
         if (v2firstName != null) {
+            let v2ca = (v2courtAppt == 'yes') ? 1 : 0;
             data.visitor2 = {
                 last_name: v2lastName,
                 first_name: v2firstName,
@@ -899,11 +952,16 @@ window.FrontendBook = window.FrontendBook || {};
                 birthdate: v2birthdate,
                 id_image_filename: v2idfilename,
                 id_number: v2idnumber,
-                id_state: v2idstate
+                id_state: v2idstate,
+                court_appointed: v2ca,
+                cause_number: v2causeNum,
+                law_firm: v2lawFirm,
+                attorney_type: v2attType 
             };
         }
 
         if (v3firstName != null) {
+            let v3ca = (v3courtAppt == 'yes') ? 1 : 0;
             data.visitor3 = {
                 last_name: v3lastName,
                 first_name: v3firstName,
@@ -916,7 +974,11 @@ window.FrontendBook = window.FrontendBook || {};
                 birthdate: v3birthdate,
                 id_image_filename: v3idfilename,
                 id_number: v3idnumber,
-                id_state: v3idstate
+                id_state: v3idstate,
+                court_appointed: v3ca,
+                cause_number: v3causeNum,
+                law_firm: v3lawFirm,
+                attorney_type: v3attType
             };
         }
 

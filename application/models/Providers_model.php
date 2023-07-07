@@ -614,6 +614,48 @@ class Providers_model extends EA_Model {
     }
 
     /**
+     * Get available providers by service
+     *
+     * @return array Returns an array with the providers data.
+     */
+    public function get_available_providers_by_service($service_id)
+    {
+        // Get provider records from database.
+        $this->db
+            ->select('u.*')
+            ->from('services_providers sp')
+            ->join('users u', 'u.id = sp.id_users', 'inner')
+            ->where('sp.id_services', $service_id)
+            ->order_by('u.first_name ASC, u.last_name ASC, u.email ASC');
+
+        $providers = $this->db->get()->result_array();
+
+        // Include each provider services and settings.
+        foreach ($providers as &$provider)
+        {
+            // Services
+            $services = $this->db->get_where('services_providers', ['id_users' => $provider['id']])->result_array();
+
+            $provider['services'] = [];
+            foreach ($services as $service)
+            {
+                $provider['services'][] = $service['id_services'];
+            }
+
+            // Settings
+            $provider['settings'] = $this->db->get_where('user_settings', ['id_users' => $provider['id']])->row_array();
+            unset(
+                $provider['settings']['username'],
+                $provider['settings']['password'],
+                $provider['settings']['salt']
+            );
+        }
+
+        // Return provider records.
+        return $providers;
+    }
+
+    /**
      * Save the provider working plan exception.
      *
      * @param string $date The working plan exception date (in YYYY-MM-DD format).

@@ -763,7 +763,9 @@ class Appointments extends EA_Controller {
 
         $date = date('Y-m-d', strtotime($appointment['start_datetime']));
 
-        if ($appointment['id_users_provider'] === ANY_PROVIDER)
+        if ((! isset($appointment['id_users_provider'])) ||
+            ($appointment['id_users_provider'] == NULL) ||
+            ($appointment['id_users_provider'] === ANY_PROVIDER))
         {
 
             $appointment['id_users_provider'] = $this->search_any_provider($date, $appointment['id_services']);
@@ -811,7 +813,21 @@ class Appointments extends EA_Controller {
             $unavailable_dates = [];
             $appointment_ids = [];
 
-    	    if ($inmate_id) {
+            //  Attorney Visits - $service_id = ATTORNEY_SERVICE_ID
+            //  Handle these differently - all dates and times available except when inmate has existing appointment
+            if ($service_id == ATTORNEY_SERVICE_ID) {
+                // Get the valid providers for the service type
+                $provider_ids = $provider_id === ANY_PROVIDER
+                ? $this->search_providers_by_service($service_id)
+                : [$provider_id];
+            } else {
+                // Get the valid providers for this inmate
+                $provider_ids = $provider_id === ANY_PROVIDER
+                ? $this->search_providers_by_inmates($inmate_id, $service_id)
+                : [$provider_id];            
+            }
+
+            if ($inmate_id) {
                 // First check for inmate_flag - if exists, this inmate cannot take visitors
                 //  return and display a message
                 $inmate = $this->inmates_model->get_row($inmate_id);
@@ -822,11 +838,6 @@ class Appointments extends EA_Controller {
                         ->set_output(json_encode($response));
                     return;
                 }
-
-                // Get the valid providers for this inmate
-                $provider_ids = $provider_id === ANY_PROVIDER
-                    ? $this->search_providers_by_inmates($inmate_id, $service_id)
-                    : [$provider_id];
                 
                 // Get the appointment data of any existing visits with this inmate
                 $appointments = $this->inmates_model->get_inmate_appointments($inmate_id);
@@ -841,7 +852,7 @@ class Appointments extends EA_Controller {
                 // Skip the call if there is no inmate chosen
                 $provider_ids = [];
             }
-
+    
             // Get the service record.
             $service = $this->services_model->get_row($service_id);
 
@@ -854,7 +865,7 @@ class Appointments extends EA_Controller {
                     // Past dates become immediately unavailable.
                     $unavailable_dates[] = $current_date->format('Y-m-d');
                     continue;
-                } else if ($current_date->format('Y-m-d') == new DateTime(date('Y-m-d'))) {
+                } else if (($service_id != 2) && ($current_date->format('Y-m-d') == new DateTime(date('Y-m-d')))) {
                     // No same day booking allowed for inmate visitation
                     // TODO: add in service check - other services may be able to book same day
                     $unavailable_dates[] = $current_date->format('Y-m-d');
@@ -884,16 +895,18 @@ class Appointments extends EA_Controller {
                     $unavailable_dates[] = $current_date->format('Y-m-d');
                 } else {
                     // Check if the inmate already has 3 appointment-visitor slots filled up for the day
-                    // If so, no go
-                    $visitorSlotsForDate = 0;
-                    foreach ($appointments as $appt) {
-                        $startDate = new DateTime($appt["start_datetime"]);
-                        if ($startDate->format('Y-m-d') == $current_date->format('Y-m-d')) {
-                            $visitorSlotsForDate++;
+                    // If so, no go (for non-attorney visits)
+                    if ($service_id != 2) {
+                        $visitorSlotsForDate = 0;
+                        foreach ($appointments as $appt) {
+                            $startDate = new DateTime($appt["start_datetime"]);
+                            if ($startDate->format('Y-m-d') == $current_date->format('Y-m-d')) {
+                                $visitorSlotsForDate++;
+                            }
                         }
-                    }
-                    if ($visitorSlotsForDate >= 3) {
-                        $unavailable_dates[] = $current_date->format('Y-m-d');
+                        if ($visitorSlotsForDate >= 3) {
+                            $unavailable_dates[] = $current_date->format('Y-m-d');
+                        }
                     }
                 }
             }
@@ -939,10 +952,9 @@ class Appointments extends EA_Controller {
 
             // If the user has selected the "any-provider" option then we will need to search for an available provider
             // that will provide the requested service.
-            if ($provider_id === ANY_PROVIDER)
+            if (($provider_id === ANY_PROVIDER) || ($provider_id == -1))
             {
                 $provider_id = $this->search_any_provider($selected_date, $service_id);
-
                 if ($provider_id === NULL)
                 {
                     $this->output

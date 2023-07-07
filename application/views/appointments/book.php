@@ -832,6 +832,50 @@
                         </div>
                     </div>
 
+                    <!-- V1 Attorney fields -->
+                    <div class="row frame-content visitor-1-information" id="visitor-1-attorney-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-1-court-appointed" class="control-label">
+                                    Are you the inmate's court appointed attorney?
+                                </label>
+                                Yes <input type="radio" id="visitor-1-court-appointed-yes" name="visitor-1-court-appointed" value="yes"/>
+                                No <input type="radio" id="visitor-1-court-appointed-no" name="visitor-1-court-appointed" value="no" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-1-cause-number" class="control-label">
+                                    Cause Number
+                                </label>
+                                <input type="text" id="visitor-1-cause-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-1-law-firm" class="control-label">
+                                    Law Firm
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-1-law-firm" class="required form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-1-attorney-type" class="control-label">
+                                    Attorney Type
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="visitor-1-attorney-type" class="required form-control">
+                                    <option value="">Select</option>
+                                    <option value="attorney">I am the attorney</option>
+                                    <option value="representative">I am a representative of the attorney</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- V1 Attorney fields -->
+
                     <div class="row frame-content visitor-1-information" style="display:none;">
                         <div class="col-12 col-md-6">
                             <div class="form-group">
@@ -1087,6 +1131,50 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- V2 Attorney fields -->
+                    <div class="row frame-content visitor-2-information" id="visitor-2-attorney-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-court-appointed" class="control-label">
+                                    Are you the inmate's court appointed attorney?
+                                </label>
+                                Yes <input type="radio" id="visitor-2-court-appointed-yes" name="visitor-2-court-appointed" value="yes"/>
+                                No <input type="radio" id="visitor-2-court-appointed-no" name="visitor-2-court-appointed" value="no" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-cause-number" class="control-label">
+                                    Cause Number
+                                </label>
+                                <input type="text" id="visitor-2-cause-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-law-firm" class="control-label">
+                                    Law Firm
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-law-firm" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-attorney-type" class="control-label">
+                                    Attorney Type
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="visitor-2-attorney-type" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="attorney">I am the attorney</option>
+                                    <option value="representative">I am a representative of the attorney</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- V2 Attorney fields -->
 
                     <div class="row frame-content visitor-2-information" style="display:none;">
                         <div class="col-12 col-md-6">
@@ -1355,6 +1443,50 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- V3 Attorney fields -->
+                    <div class="row frame-content visitor-3-information" id="visitor-3-attorney-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-court-appointed" class="control-label">
+                                    Are you the inmate's court appointed attorney?
+                                </label>
+                                Yes <input type="radio" id="visitor-3-court-appointed-yes" name="visitor-3-court-appointed" value="yes"/>
+                                No <input type="radio" id="visitor-3-court-appointed-no" name="visitor-3-court-appointed" value="no" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-cause-number" class="control-label">
+                                    Cause Number
+                                </label>
+                                <input type="text" id="visitor-3-cause-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-law-firm" class="control-label">
+                                    Law Firm
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-law-firm" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-attorney-type" class="control-label">
+                                    Attorney Type
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="visitor-3-attorney-type" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="attorney">I am the attorney</option>
+                                    <option value="representative">I am a representative of the attorney</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- V3 Attorney fields -->
 
                     <div class="row frame-content visitor-3-information" style="display:none;">
                         <div class="col-12 col-md-6">

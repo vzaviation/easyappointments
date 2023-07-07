@@ -557,6 +557,17 @@
             const vIDImageSrc = visitor.id_image_filename ? '/storage/uploads/user_doc/' + visitor.id_image_filename : '/assets/img/no-ID.jpg';
             const vFlagDate = visitor.flag_date ? Date.parse(visitor.flag_date).toString('MM/dd/yyyy') : "N/A";
 
+            // Create sections for the attorney info, if they exist
+            let vAttorneyInfo = "<br/>";
+            if (visitor.attorney_type) {
+                const vcauseNumText = visitor.cause_number ? 'Cause Number: ' + visitor.cause_number : 'Cause Number: N/A';
+                const vca = visitor.court_appointed == 1 ? 'yes' : 'no';
+                vAttorneyInfo = "<br/><br/><div>Court Appointed Attorney: " + vca + "</div>" +
+                "<div>" + vcauseNumText + "</div>" +
+                "<div>Law Firm: " + visitor.law_firm + "</div>" +
+                "<div>Attorney Type: " + visitor.attorney_type + "</div>";
+            }
+
             $('<div/>', {
                 'class': 'visitor-info col-md-12',
                 'data-id': visitor_id,
@@ -597,7 +608,7 @@
                             // ID State
                             $('<div/>', {
                                 'text': 'ID State: ' + vIDState
-                            })
+                            }).append(vAttorneyInfo)
                         ]
                     }),
                     $('<div/>', {

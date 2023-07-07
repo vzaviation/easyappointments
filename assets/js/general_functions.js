@@ -31,6 +31,11 @@ window.GeneralFunctions = window.GeneralFunctions || {};
         });
     });
 
+    // Global Constants
+    exports.ATTORNEY_SERVICE_ID = function () {
+        return 2;
+    };
+
     /**
      * This functions displays a message box in the admin array. It is useful when user
      * decisions or verifications are needed.

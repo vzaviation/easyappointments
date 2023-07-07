@@ -53,7 +53,6 @@ class Availability {
     public function get_available_hours($date, $service, $provider, $exclude_appointment_ids = NULL)
     {
         $available_periods = $this->get_available_periods($date, $provider, $exclude_appointment_ids);
-
         $available_hours = $this->generate_available_hours($date, $service, $available_periods);
 
         if ($service['attendants_number'] > 1)
