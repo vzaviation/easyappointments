@@ -250,6 +250,10 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                                             $('#' + visitor + '-state').val(response.visitor.state);
                                             $('#' + visitor + '-zip-code').val(response.visitor.zip_code);
 
+                                            // Make the rest of the visitor form visible
+                                            $('.' + visitor + '-information').show();
+                                            $('#button-next-3').show();
+
                                             // Attorney Fields
                                             if (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) {
                                                 const caVal = (response.visitor.court_appointed && response.visitor.court_appointed == 1) ? true : false;
@@ -264,14 +268,14 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                                                 $('#' + visitor + '-attorney-type').val(response.visitor.attorney_type);
                                                 $('#' + visitor + '-attorney-type').addClass('required');
                                                 $('#' + visitor + '-attorney-information').show();
+                                            } else {
+                                                $('#' + visitor + '-law-firm').removeClass('required');
+                                                $('#' + visitor + '-attorney-type').removeClass('required');
+                                                $('#' + visitor + '-attorney-information').hide();
                                             }
 
                                             // Trigger the birthdate focusout event to properly handle that
                                             $('#' + visitor + '-birth-date').trigger("focusout");
-
-                                            // Make the rest of the visitor form visible
-                                            $('.' + visitor + '-information').show();
-                                            $('#button-next-3').show();
                                         }
                                     }
                                 } else {
@@ -316,11 +320,28 @@ window.FrontendBookApi = window.FrontendBookApi || {};
 
     exports.appointmentVisitorCountForDate = function (inmate_id, selected_date, service_id) {
 
+        // Reset any previous count notices
+        $('#no-visitor-slots').hide();
+        $('#visitor-1-basic-info').show();
+        $('#button-add-visitor-2').attr('disabled',false);
+        $('#no-visitor-slots-2').hide();
+        $('#button-add-visitor-3').attr('disabled',false);
+        $('#no-visitor-slots-3').hide();
+
         if (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) {
             // Attorney visit handled differently
             // We can ignore any visitor count for non-attorney visitors
             // Second, there are additional fields to show on the form
-            //$('#visitor-1-attorney-information').show();
+            // Clear / re-hide any info relating to visitor authorization
+            $('#authorize-visitor-1').show();
+            $('.visitor-1-information').hide();
+            $('#authorize-visitor-1-message').text("");
+            $('#authorize-visitor-2').show();
+            $('.visitor-2-information').hide();
+            $('#authorize-visitor-2-message').text("");
+            $('#authorize-visitor-3').show();
+            $('.visitor-3-information').hide();
+            $('#authorize-visitor-3-message').text("");
         } else {
             var data = {
                 csrfToken: GlobalVariables.csrfToken,
@@ -337,7 +358,6 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 dataType: 'json',
                 })
                 .done(function (response) {
-    //                console.log("*** Response from ajax_inmate_visitor_count: " + JSON.stringify(response));
                     const curVisitorCountForDate = response.visitor_slots_used;
 
                     // Clear / re-hide any info relating to visitor authorization

@@ -747,7 +747,7 @@ window.FrontendBook = window.FrontendBook || {};
         
         // Create sections for the attorney info, if they exist
         let v1AttorneyInfo = "<br/>";
-        if (v1attType) {
+        if ((serviceId == GeneralFunctions.ATTORNEY_SERVICE_ID()) && (v1attType)) {
             const v1causeNumText = v1causeNum ? 'Cause Number: ' + v1causeNum : 'Cause Number: N/A';
             v1AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v1courtAppt + "</span>" +
             "<br/>" +
@@ -759,7 +759,7 @@ window.FrontendBook = window.FrontendBook || {};
             "<br/>";
         }
         let v2AttorneyInfo = "<br/>";
-        if (v2attType) {
+        if ((serviceId == GeneralFunctions.ATTORNEY_SERVICE_ID()) && (v2attType)) {
             const v2causeNumText = v2causeNum ? 'Cause Number: ' + v2causeNum : 'Cause Number: N/A';
             v2AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v2courtAppt + "</span>" +
             "<br/>" +
@@ -771,7 +771,7 @@ window.FrontendBook = window.FrontendBook || {};
             "<br/>";
         }
         let v3AttorneyInfo = "<br/>";
-        if (v3attType) {
+        if ((serviceId == GeneralFunctions.ATTORNEY_SERVICE_ID()) && (v3attType)) {
             const v3causeNumText = v3causeNum ? 'Cause Number: ' + v3causeNum : 'Cause Number: N/A';
             v3AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v3courtAppt + "</span>" +
             "<br/>" +
