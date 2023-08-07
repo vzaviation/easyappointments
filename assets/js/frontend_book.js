@@ -355,6 +355,31 @@ window.FrontendBook = window.FrontendBook || {};
                     }
                     return;
                 }
+                // Reset any visitor data entry fields depending on visitor type
+                const visitor = $(this).data('visitor');
+                const serv_id = $('#select-service').val();
+                if (serv_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) {
+                    $('#visitor-1-law-firm').addClass('required');
+                    $('#visitor-1-attorney-type').addClass('required');
+                    $('#visitor-1-attorney-information').show();
+                    $('#visitor-2-law-firm').addClass('required');
+                    $('#visitor-2-attorney-type').addClass('required');
+                    $('#visitor-2-attorney-information').show();
+                    $('#visitor-3-law-firm').addClass('required');
+                    $('#visitor-3-attorney-type').addClass('required');
+                    $('#visitor-3-attorney-information').show();
+                } else {
+                    $('#visitor-1-law-firm').removeClass('required');
+                    $('#visitor-1-attorney-type').removeClass('required');
+                    $('#visitor-1-attorney-information').hide();
+                    $('#visitor-2-law-firm').removeClass('required');
+                    $('#visitor-2-attorney-type').removeClass('required');
+                    $('#visitor-2-attorney-information').hide();
+                    $('#visitor-3-law-firm').removeClass('required');
+                    $('#visitor-3-attorney-type').removeClass('required');
+                    $('#visitor-3-attorney-information').hide();
+                }
+
                 // We need to know how many, if any, existing visitor-appointment slots are availble on this day
                 const service_id = $('#select-service').val();
                 const inmate_id = $('#select-inmate').val();
