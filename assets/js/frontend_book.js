@@ -359,15 +359,9 @@ window.FrontendBook = window.FrontendBook || {};
                 const visitor = $(this).data('visitor');
                 const serv_id = $('#select-service').val();
                 if (serv_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) {
-                    $('#visitor-1-law-firm').addClass('required');
-                    $('#visitor-1-attorney-type').addClass('required');
-                    $('#visitor-1-attorney-information').show();
-                    $('#visitor-2-law-firm').addClass('required');
-                    $('#visitor-2-attorney-type').addClass('required');
-                    $('#visitor-2-attorney-information').show();
-                    $('#visitor-3-law-firm').addClass('required');
-                    $('#visitor-3-attorney-type').addClass('required');
-                    $('#visitor-3-attorney-information').show();
+                    $('#' + visitor + '-law-firm').addClass('required');
+                    $('#' + visitor + '-attorney-type').addClass('required');
+                    $('#' + visitor + '-attorney-information').show();
                 } else {
                     $('#visitor-1-law-firm').removeClass('required');
                     $('#visitor-1-attorney-type').removeClass('required');
