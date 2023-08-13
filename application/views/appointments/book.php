@@ -1803,10 +1803,10 @@
             <div id="frame-footer">
                 <small>
                     <span class="footer-powered-by">
-                        Provided by
-                        <a href="https://tarmactech.com/home" target="_blank">Tarmac Technologies VisitationLink</a>
-                        and Powered By
-                        <a href="https://easyappointments.org" target="_blank">E!A</a>
+                        Provided by Tarmac Technologies VisitationLink
+<!--                        <a href="https://tarmactech.com/home" target="_blank">Tarmac Technologies VisitationLink</a> -->
+                        and Powered By E!A
+<!--                        <a href="https://easyappointments.org" target="_blank">E!A</a> -->
                     </span>
 
                     <!--
