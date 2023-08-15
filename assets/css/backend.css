@@ -13,6 +13,12 @@
  * BACKEND CSS FILE FOR EASY!APPOINTMENTS
  */
 
+ :root {
+    --light-tan: #D1B48C;
+    --medium-tan: #8C785C;
+    --dark-tan: #4D4232;    
+}
+
 root {
     display: block;
 }
@@ -21,7 +27,7 @@ root {
    -------------------------------------------------------------------- */
 
 #header {
-    background-color: #429a82;
+    background-color: var(--light-tan);
     box-shadow: none;
     border-radius: 0;
     padding: 0;
@@ -66,11 +72,11 @@ root {
 }
 
 #header #header-menu .nav-item:hover {
-    background: #3a8873;
+    background: var(--medium-tan);
 }
 
 #header #header-menu .nav-item.active {
-    background: #2e6a5b;
+    background: var(--dark-tan);
 }
 
 #footer {
@@ -148,7 +154,7 @@ body .modal .modal-title {
 
 body .modal-header {
     padding: 20px 15px;
-    background: #429a82;
+    background: var(--medium-tan);
 }
 
 body .modal-header h3 {
@@ -254,8 +260,8 @@ body legend {
 }
 
 .backend-page .filter-records .results .entry.selected {
-    background-color: #F4F4F4;
-    border-right: 5px solid #429a82;
+    background-color: var(--light-tan);
+    border-right: 5px solid var(--medium-tan);
 }
 
 .backend-page .filter-records .results hr {
@@ -446,7 +452,7 @@ body legend {
 }
 
 #existing-customers-list div:hover {
-    background: #429a82;
+    background: var(--medium-tan);
     font-weight: bold;
     color: #FFF;
     cursor: pointer;
@@ -551,7 +557,7 @@ body .form-horizontal .controls {
 }
 
 #calendar .calendar-view .date-column .provider-column .event.unavailability {
-    background: #409482;
+    background: var(--medium-tan);
     color: #fff;
 
 }
@@ -871,4 +877,148 @@ body .form-horizontal .controls {
 
 #settings-page #update-ea {
     margin-left: 12px;
+}
+
+/* BACKEND VISITORS PAGE
+   -------------------------------------------------------------------- */
+
+#visitors-page .visitor-details {
+    max-width: 800px;
+    margin-bottom: 20px;
+    background-color: var(--medium-tan);
+}
+
+#visitors-page #visitor-appointments {
+    min-height: 400px;
+    max-height: 800px;
+    max-width: 330px;
+    width: 100%;
+    margin-bottom: 20px;
+    overflow-y: auto;
+    outline: none;
+}
+
+#visitors-page #visitor-appointments .appointment-row {
+    padding: 7px;
+    border-bottom: 1px solid var(--dark-tan);
+    border-right: none;
+}
+
+#visitors-page #visitor-appointments .appointment-row:last-child {
+    border-bottom: none;
+}
+
+/* BACKEND APPOINTMENTS CHECK-IN PAGE
+   -------------------------------------------------------------------- */
+.dashboard-button-group {
+   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+   font-weight: 400;
+   line-height: 1.5;
+   color: #212529;
+   direction: ltr;
+   font-size: 15.2px;
+   text-align: center;
+   box-sizing: border-box;
+   display: inline-block;
+   float: left;
+   margin-left: 0;
+}
+
+.dashboard-prev-button {
+    direction: ltr;
+    border-radius: 0;
+    font-family: inherit;
+    line-height: inherit;
+    overflow: visible;
+    text-transform: none;
+    -webkit-appearance: button;
+    border: 1px solid;
+    background-color: #f5f5f5;
+    background-image: linear-gradient(to bottom,#fff,#e6e6e6);
+    background-repeat: repeat-x;
+    border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) rgba(0,0,0,.25);
+    color: #333;
+    text-shadow: 0 1px 1px rgba(255,255,255,.75);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.2),0 1px 2px rgba(0,0,0,.05);
+    font-size: 1em;
+    white-space: nowrap;
+    box-sizing: border-box;
+    height: 2.1em;
+    padding: 0 .6em;
+    position: relative;
+    cursor: pointer;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    float: left;
+    margin: 0 0 0 -1px;
+    margin-left: 0;
+}
+
+.dashboard-icon {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    text-transform: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+}
+
+#visitors-page {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.appointments-title {
+    padding-bottom: 8px;
+    border-bottom: var(--medium-tan) 4px solid;
+}
+
+.appointment-row {
+    background-color: none;
+}
+
+.appointment-row.selected {
+    background-color: var(--light-tan);
+}
+
+#appointment-visitor-row {
+    border: var(--medium-tan) 2px solid;
+}
+
+.visitor-info {
+    float: left;
+    padding-bottom: 8px;
+    border-bottom: var(--dark-tan) 2px solid;
+}
+
+.visitor-id {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.visitor-notes {
+    float: left;
+    min-height: 50px;
+}
+
+.visitor-flag {
+    margin-left: 8px;
+    float: left;
+    white-space: nowrap;
+}
+
+.visitor-flag-notes {
+    float: left;
+}
+
+.visitor-flag-check {
+    font-weight: bolder;
+    color: #541414;
+    white-space: nowrap;
+    padding-left: 6px;
 }

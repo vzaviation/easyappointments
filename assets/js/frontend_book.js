@@ -126,7 +126,7 @@ window.FrontendBook = window.FrontendBook || {};
             onChangeMonthYear: function (year, month, instance) {
                 var currentDate = new Date(year, month - 1, 1);
                 FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
-                    currentDate.toString('yyyy-MM-dd'));
+                    currentDate.toString('yyyy-MM-dd'), $('#select-inmate').val());
             }
         });
 
@@ -213,8 +213,9 @@ window.FrontendBook = window.FrontendBook || {};
          * Whenever the provider changes the available appointment date - time periods must be updated.
          */
         $('#select-provider').on('change', function () {
-            FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
-                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
+            // KPB 2022-11-28 We don't need to get the dates here
+            //FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
+            //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
         });
         
@@ -268,11 +269,11 @@ window.FrontendBook = window.FrontendBook || {};
                 $('#select-provider').prepend(new Option('- ' + EALang.any_provider + ' -', 'any-provider',true,true));
             }
             
-
-            FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
-                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
+            // KPB 2022-11-28 We don't need to get the dates here
+            //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
+            //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
             FrontendBook.updateConfirmFrame();
-            updateServiceDescription(serviceId);
+            //updateServiceDescription(serviceId);
         });
 
 
@@ -305,10 +306,19 @@ window.FrontendBook = window.FrontendBook || {};
             }
             
 
-            FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
-                $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
+            // KPB 2022-11-28 We don't need to get the dates here
+            //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
+            //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
             updateServiceDescription(serviceId);
+        });
+
+        /**
+         * Add a "reset" button that just reloads the start page
+         */
+        $('.button-reset').on('click', function () {
+            window.location.href = window.location.href;
+            window.location.reload();
         });
 
         /**
@@ -318,9 +328,18 @@ window.FrontendBook = window.FrontendBook || {};
          * Some special tasks might be performed, depending the current wizard step.
          */
         $('.button-next').on('click', function () {
-            // If we are on the first step and there is not provider selected do not continue with the next step.
-            if ($(this).attr('data-step_index') === '1' && !$('#select-provider').val()) {
-                return;
+            // If we are on the first step and there is not an inmate selected do not continue with the next step.
+            if ($(this).attr('data-step_index') === '1') {
+                // Add check for inmate selected as well
+                if (!$('#select-inmate').val() || 
+                    ($('#select-inmate').val() === '0')) {
+                        alert("Please select an Inmate");
+                        return;
+                } else {
+                    // if all good, now we get the unavailable dates
+                    FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
+                        $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
+                }
             }
 
             // If we are on the 2nd tab then the user should have an appointment hour selected.
@@ -336,6 +355,30 @@ window.FrontendBook = window.FrontendBook || {};
                     }
                     return;
                 }
+                // Reset any visitor data entry fields depending on visitor type
+                const visitor = $(this).data('visitor');
+                const serv_id = $('#select-service').val();
+                if (serv_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) {
+                    $('#' + visitor + '-law-firm').addClass('required');
+                    $('#' + visitor + '-attorney-type').addClass('required');
+                    $('#' + visitor + '-attorney-information').show();
+                } else {
+                    $('#visitor-1-law-firm').removeClass('required');
+                    $('#visitor-1-attorney-type').removeClass('required');
+                    $('#visitor-1-attorney-information').hide();
+                    $('#visitor-2-law-firm').removeClass('required');
+                    $('#visitor-2-attorney-type').removeClass('required');
+                    $('#visitor-2-attorney-information').hide();
+                    $('#visitor-3-law-firm').removeClass('required');
+                    $('#visitor-3-attorney-type').removeClass('required');
+                    $('#visitor-3-attorney-information').hide();
+                }
+
+                // We need to know how many, if any, existing visitor-appointment slots are availble on this day
+                const service_id = $('#select-service').val();
+                const inmate_id = $('#select-inmate').val();
+                const selected_date = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd');
+                FrontendBookApi.appointmentVisitorCountForDate(inmate_id,selected_date,service_id);
             }
 
             // If we are on the 3rd tab then we will need to validate the user's input before proceeding to the next
@@ -349,9 +392,9 @@ window.FrontendBook = window.FrontendBook || {};
                     var $acceptToTermsAndConditions = $('#accept-to-terms-and-conditions');
                     if ($acceptToTermsAndConditions.length && $acceptToTermsAndConditions.prop('checked') === true) {
                         var newTermsAndConditionsConsent = {
-                            first_name: $('#first-name').val(),
-                            last_name: $('#last-name').val(),
-                            email: $('#email').val(),
+                            first_name: $('#visitor-1-first-name').val(),
+                            last_name: $('#visitor-1-last-name').val(),
+                            email: $('#visitor-1-email').val(),
                             type: 'terms-and-conditions'
                         };
 
@@ -364,9 +407,9 @@ window.FrontendBook = window.FrontendBook || {};
                     var $acceptToPrivacyPolicy = $('#accept-to-privacy-policy');
                     if ($acceptToPrivacyPolicy.length && $acceptToPrivacyPolicy.prop('checked') === true) {
                         var newPrivacyPolicyConsent = {
-                            first_name: $('#first-name').val(),
-                            last_name: $('#last-name').val(),
-                            email: $('#email').val(),
+                            first_name: $('#visitor-1-first-name').val(),
+                            last_name: $('#visitor-1-last-name').val(),
+                            email: $('#visitor-1-email').val(),
                             type: 'privacy-policy'
                         };
 
@@ -485,6 +528,28 @@ window.FrontendBook = window.FrontendBook || {};
         }
 
         /**
+         * Event: Authorize Visitor button "Clicked"
+         *
+         * For each visitor (1-3) - check for the button click
+         */
+        $('.authorize-visitor').on('click', function () {
+            const visitor = $(this).data('visitor');
+            const inmate_id = $('#select-inmate').val();
+            const service_id = $('#select-service').val();
+            const v_first_name = $('#' + visitor + '-first-name').val();
+            const v_last_name = $('#' + visitor + '-last-name').val();
+            const v_birthdate = $('#' + visitor + '-birth-date').val();
+
+            //console.log("** Checking visitor name \"" + v_first_name + " " + v_last_name + "\" against inmate id = " + inmate_id + " authorized list ...");
+
+            if ((v_first_name == "") || (v_last_name == "") || (v_birthdate == "")) {
+                console.log("WARN: No name / birthdate entered - not progressing");
+                return false;
+            }
+            FrontendBookApi.checkVisitorAuthorization(service_id,visitor,inmate_id,v_first_name,v_last_name,v_birthdate);
+        });
+
+        /**
          * Event: Book Appointment Form "Submit"
          *
          * Before the form is submitted to the server we need to make sure that
@@ -494,6 +559,8 @@ window.FrontendBook = window.FrontendBook || {};
          * @param {jQuery.Event} event
          */
         $('#book-appointment-submit').on('click', function () {
+            // KPB - 2023-06-30 remove restrictions check - this check is done in the authorize step
+            //FrontendBookApi.checkVisitorAppointmentRestrictions();
             FrontendBookApi.registerAppointment();
         });
 
@@ -512,6 +579,7 @@ window.FrontendBook = window.FrontendBook || {};
                 FrontendBookApi.applyPreviousUnavailableDates(); // New jQuery UI version will replace the td elements.
             }, 300); // There is no draw event unfortunately.
         })
+
     }
 
     /**
@@ -529,6 +597,9 @@ window.FrontendBook = window.FrontendBook || {};
             var missingRequiredField = false;
             $('.required').each(function (index, requiredField) {
                 if (!$(requiredField).val()) {
+                    $(requiredField).parents('.form-group').addClass('has-error');
+                    missingRequiredField = true;
+                } else if ($(requiredField).val() == "Select") {
                     $(requiredField).parents('.form-group').addClass('has-error');
                     missingRequiredField = true;
                 }
@@ -549,10 +620,9 @@ window.FrontendBook = window.FrontendBook || {};
                 throw new Error(EALang.fields_are_required);
             }
 
-
             // Validate email address.
-            if (!GeneralFunctions.validateEmail($('#email').val())) {
-                $('#email').parents('.form-group').addClass('has-error');
+            if (!GeneralFunctions.validateEmail($('#visitor-1-email').val())) {
+                $('#visitor-1-email').parents('.form-group').addClass('has-error');
                 throw new Error(EALang.invalid_email);
             }
 
@@ -575,22 +645,64 @@ window.FrontendBook = window.FrontendBook || {};
         // Appointment Details
         
         var selectedDate = $('#select-date').datepicker('getDate');
-        var visitor2name = GeneralFunctions.escapeHtml($('#visitor-2-name').val());
-        var visitor3name = GeneralFunctions.escapeHtml($('#visitor-3-name').val());
-        var visitor4name = GeneralFunctions.escapeHtml($('#visitor-4-name').val());
-        var visitor1dlnumber = GeneralFunctions.escapeHtml($('#visitor-1-dl-number').val());
-        var visitor2dlnumber = GeneralFunctions.escapeHtml($('#visitor-2-dl-number').val());
-        var visitor3dlnumber = GeneralFunctions.escapeHtml($('#visitor-3-dl-number').val());
-        var visitor4dlnumber = GeneralFunctions.escapeHtml($('#visitor-4-dl-number').val());
-        var visitor1dlstate = GeneralFunctions.escapeHtml($('#visitor-1-dl-state').val());
-        var visitor2dlstate = GeneralFunctions.escapeHtml($('#visitor-2-dl-state').val());
-        var visitor3dlstate = GeneralFunctions.escapeHtml($('#visitor-3-dl-state').val());
-        var visitor4dlstate = GeneralFunctions.escapeHtml($('#visitor-4-dl-state').val());
-        var visitor1dl = GeneralFunctions.escapeHtml($('#visitor-1-dl').val());
-        var visitor2dl = GeneralFunctions.escapeHtml($('#visitor-2-dl').val());
-        var visitor3dl = GeneralFunctions.escapeHtml($('#visitor-3-dl').val());
-        var visitor4dl = GeneralFunctions.escapeHtml($('#visitor-4-dl').val());
-        
+
+        // Visitor 1 Details
+        var v1firstName = GeneralFunctions.escapeHtml($('#visitor-1-first-name').val());
+        var v1lastName = GeneralFunctions.escapeHtml($('#visitor-1-last-name').val());
+        var v1phoneNumber = GeneralFunctions.escapeHtml($('#visitor-1-phone-number').val());
+        var v1email = GeneralFunctions.escapeHtml($('#visitor-1-email').val());
+        var v1address = GeneralFunctions.escapeHtml($('#visitor-1-address').val());
+        var v1city = GeneralFunctions.escapeHtml($('#visitor-1-city').val());
+        var v1state = GeneralFunctions.escapeHtml($('#visitor-1-state').find(":selected").val());
+        var v1zipCode = GeneralFunctions.escapeHtml($('#visitor-1-zip-code').val());
+        var v1notes = GeneralFunctions.escapeHtml($('#visitor-1-notes').val());
+        var v1birthdate = GeneralFunctions.escapeHtml($('#visitor-1-birth-date').val());
+        v1birthdate = GeneralFunctions.dateToDBFormat(v1birthdate);
+        var v1idfilename = GeneralFunctions.escapeHtml($('#visitor-1-dl-file-name').val());
+        var v1idnumber = GeneralFunctions.escapeHtml($('#visitor-1-dl-number').val());
+        var v1idstate = GeneralFunctions.escapeHtml($('#visitor-1-dl-state').find(":selected").val());
+        var v1courtAppt = GeneralFunctions.escapeHtml($('input[name="visitor-1-court-appointed"]:checked').val());
+        var v1causeNum = GeneralFunctions.escapeHtml($('#visitor-1-cause-number').val());
+        var v1lawFirm = GeneralFunctions.escapeHtml($('#visitor-1-law-firm').val());
+        var v1attType = GeneralFunctions.escapeHtml($('#visitor-1-attorney-type').find(":selected").val());
+
+        // Visitor 2 Details
+        var v2firstName = GeneralFunctions.escapeHtml($('#visitor-2-first-name').val());
+        var v2lastName = GeneralFunctions.escapeHtml($('#visitor-2-last-name').val());
+        var v2phoneNumber = GeneralFunctions.escapeHtml($('#visitor-2-phone-number').val());
+        var v2email = GeneralFunctions.escapeHtml($('#visitor-2-email').val());
+        var v2address = GeneralFunctions.escapeHtml($('#visitor-2-address').val());
+        var v2city = GeneralFunctions.escapeHtml($('#visitor-2-city').val());
+        var v2state = GeneralFunctions.escapeHtml($('#visitor-2-state').find(":selected").val());
+        var v2zipCode = GeneralFunctions.escapeHtml($('#visitor-2-zip-code').val());
+        var v2birthdate = GeneralFunctions.escapeHtml($('#visitor-2-birth-date').val());
+        v2birthdate = GeneralFunctions.dateToDBFormat(v2birthdate);
+        var v2idfilename = GeneralFunctions.escapeHtml($('#visitor-2-dl-file-name').val());
+        var v2idnumber = GeneralFunctions.escapeHtml($('#visitor-2-dl-number').val());
+        var v2idstate = GeneralFunctions.escapeHtml($('#visitor-2-dl-state').find(":selected").val());
+        var v2courtAppt = GeneralFunctions.escapeHtml($('input[name="visitor-2-court-appointed"]:checked').val());
+        var v2causeNum = GeneralFunctions.escapeHtml($('#visitor-2-cause-number').val());
+        var v2lawFirm = GeneralFunctions.escapeHtml($('#visitor-2-law-firm').val());
+        var v2attType = GeneralFunctions.escapeHtml($('#visitor-2-attorney-type').find(":selected").val());
+
+        // Visitor 3 Details       
+        var v3firstName = GeneralFunctions.escapeHtml($('#visitor-3-first-name').val());
+        var v3lastName = GeneralFunctions.escapeHtml($('#visitor-3-last-name').val());
+        var v3phoneNumber = GeneralFunctions.escapeHtml($('#visitor-3-phone-number').val());
+        var v3email = GeneralFunctions.escapeHtml($('#visitor-3-email').val());
+        var v3address = GeneralFunctions.escapeHtml($('#visitor-3-address').val());
+        var v3city = GeneralFunctions.escapeHtml($('#visitor-3-city').val());
+        var v3state = GeneralFunctions.escapeHtml($('#visitor-3-state').find(":selected").val());
+        var v3zipCode = GeneralFunctions.escapeHtml($('#visitor-3-zip-code').val());
+        var v3birthdate = GeneralFunctions.escapeHtml($('#visitor-3-birth-date').val());
+        v3birthdate = GeneralFunctions.dateToDBFormat(v3birthdate);
+        var v3idfilename = GeneralFunctions.escapeHtml($('#visitor-3-dl-file-name').val());
+        var v3idnumber = GeneralFunctions.escapeHtml($('#visitor-3-dl-number').val());
+        var v3idstate = GeneralFunctions.escapeHtml($('#visitor-3-dl-state').find(":selected").val());
+        var v3courtAppt = GeneralFunctions.escapeHtml($('input[name="visitor-3-court-appointed"]:checked').val());
+        var v3causeNum = GeneralFunctions.escapeHtml($('#visitor-3-cause-number').val());
+        var v3lawFirm = GeneralFunctions.escapeHtml($('#visitor-3-law-firm').val());
+        var v3attType = GeneralFunctions.escapeHtml($('#visitor-3-attorney-type').find(":selected").val());
 
         if (selectedDate !== null) {
             selectedDate = GeneralFunctions.formatDate(selectedDate, GlobalVariables.dateFormat);
@@ -600,9 +712,6 @@ window.FrontendBook = window.FrontendBook || {};
         var servicePrice = '';
         var serviceCurrency = '';
         
-        
-       
-
         GlobalVariables.availableServices.forEach(function (service, index) {
             if (Number(service.id) === Number(serviceId) && Number(service.price) > 0) {
                 servicePrice = service.price;
@@ -623,70 +732,10 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<span/>', {
                             'text': EALang.service + ': ' + $('#select-service option:selected').text()
                         }),
-                        $('<br/>'),
-                        $('<span/>', {
-                            'text': EALang.provider + ': ' + $('#select-provider option:selected').text()
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_2_name + ': ' + visitor2name 
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_3_name + ': ' + visitor3name
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_4_name + ': ' + visitor4name
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_1_dl_number + ': ' + visitor1dlnumber
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_2_dl_number + ': ' + visitor2dlnumber
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_3_dl_number + ': ' + visitor3dlnumber
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_4_dl_number + ': ' + visitor4dlnumber
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_1_dl_state + ': ' + visitor1dlstate
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_2_dl_state + ': ' + visitor2dlstate
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_3_dl_state + ': ' + visitor3dlstate
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_4_dl_state + ': ' + visitor4dlstate
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_1_dl + ': ' + visitor1dl
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_2_dl + ': ' + visitor2dl
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_3_dl + ': ' + visitor3dl
-                        }),
-                        $('<br/>'),
-						$('<span/>', {
-                            'text': EALang.visitor_4_dl + ': ' + visitor4dl
-                        }),
+//                        $('<br/>'),
+//                        $('<span/>', {
+//                            'text': EALang.provider + ': ' + $('#select-provider option:selected').text()
+//                        }),
                         $('<br/>'),
                         $('<span/>', {
                             'text': EALang.inmate + ': ' + $('#select-inmate option:selected').text()
@@ -695,10 +744,10 @@ window.FrontendBook = window.FrontendBook || {};
                         $('<span/>', {
                             'text': EALang.start + ': ' + selectedDate + ' ' + $('.selected-hour').text()
                         }),
-                        $('<br/>'),
-                        $('<span/>', {
-                            'text': EALang.timezone + ': ' + $('#select-timezone option:selected').text()
-                        }),
+//                        $('<br/>'),
+//                        $('<span/>', {
+//                            'text': EALang.timezone + ': ' + $('#select-timezone option:selected').text()
+//                        }),
                         $('<br/>'),
                         $('<span/>', {
                             'text': EALang.price + ': ' + servicePrice + ' ' + serviceCurrency,
@@ -712,53 +761,171 @@ window.FrontendBook = window.FrontendBook || {};
         })
             .appendTo('#appointment-details');
 
-        // Customer Details
-        var firstName = GeneralFunctions.escapeHtml($('#first-name').val());
-        var lastName = GeneralFunctions.escapeHtml($('#last-name').val());
-        var phoneNumber = GeneralFunctions.escapeHtml($('#phone-number').val());
-        var email = GeneralFunctions.escapeHtml($('#email').val());
-        var address = GeneralFunctions.escapeHtml($('#address').val());
-        var city = GeneralFunctions.escapeHtml($('#city').val());
-        var zipCode = GeneralFunctions.escapeHtml($('#zip-code').val());
-
-        
-       
-        
 
         $('#customer-details').empty();
         
+        // Create sections for the attorney info, if they exist
+        let v1AttorneyInfo = "<br/>";
+        if ((serviceId == GeneralFunctions.ATTORNEY_SERVICE_ID()) && (v1attType)) {
+            const v1causeNumText = v1causeNum ? 'Cause Number: ' + v1causeNum : 'Cause Number: N/A';
+            v1AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v1courtAppt + "</span>" +
+            "<br/>" +
+            "<span>" + v1causeNumText + "</span>" +
+            "<br/>" +
+            "<span>Law Firm: " + v1lawFirm + "</span>" +
+            "<br/>" +
+            "<span>Attorney Type: " + v1attType + "</span>" +
+            "<br/>";
+        }
+        let v2AttorneyInfo = "<br/>";
+        if ((serviceId == GeneralFunctions.ATTORNEY_SERVICE_ID()) && (v2attType)) {
+            const v2causeNumText = v2causeNum ? 'Cause Number: ' + v2causeNum : 'Cause Number: N/A';
+            v2AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v2courtAppt + "</span>" +
+            "<br/>" +
+            "<span>" + v2causeNumText + "</span>" +
+            "<br/>" +
+            "<span>Law Firm: " + v2lawFirm + "</span>" +
+            "<br/>" +
+            "<span>Attorney Type: " + v2attType + "</span>" +
+            "<br/>";
+        }
+        let v3AttorneyInfo = "<br/>";
+        if ((serviceId == GeneralFunctions.ATTORNEY_SERVICE_ID()) && (v3attType)) {
+            const v3causeNumText = v3causeNum ? 'Cause Number: ' + v3causeNum : 'Cause Number: N/A';
+            v3AttorneyInfo = "<br/><span>Court Appointed Attorney: " + v3courtAppt + "</span>" +
+            "<br/>" +
+            "<span>" + v3causeNumText + "</span>" +
+            "<br/>" +
+            "<span>Law Firm: " + v3lawFirm + "</span>" +
+            "<br/>" +
+            "<span>Attorney Type: " + v3attType + "</span>" +
+            "<br/>";
+        }
 
         $('<div/>', {
             'html': [
                 $('<h4/>)', {
-                    'text': EALang.customer
+                    'text': EALang.customers
                 }),
                 $('<p/>', {
                     'html': [
                         $('<span/>', {
-                            'text': EALang.customer + ': ' + firstName + ' ' + lastName
+                            'text': EALang.visitor_1_name + ': ' + v1firstName + ' ' + v1lastName
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': EALang.phone_number + ': ' + phoneNumber
+                            'text': EALang.phone_number + ': ' + v1phoneNumber
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': EALang.email + ': ' + email
+                            'text': EALang.email + ': ' + v1email
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': address ? EALang.address + ': ' + address : ''
+                            'text': v1address ? EALang.address + ': ' + v1address : EALang.address + ': '
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': city ? EALang.city + ': ' + city : ''
+                            'text': v1city ? EALang.city + ': ' + v1city : EALang.city + ': '
                         }),
                         $('<br/>'),
                         $('<span/>', {
-                            'text': zipCode ? EALang.zip_code + ': ' + zipCode : ''
+                            'text': v1state ? EALang.state + ': ' + v1state : EALang.state + ': '
                         }),
                         $('<br/>'),
+                        $('<span/>', {
+                            'text': v1zipCode ? EALang.zip_code + ': ' + v1zipCode : EALang.zip_code + ': '
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v1birthdate ? EALang.birth_date + ': ' + Date.parse(v1birthdate).toString('MM/dd/yyyy') : EALang.birth_date + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v1idstate ? EALang.visitor_1_dl_state + ': ' + v1idstate : EALang.visitor_1_dl_state + ': N/A'
+                        }).append(v1AttorneyInfo),
+                        $('<br/>'),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v2firstName ? EALang.visitor_2_name + ': ' + v2firstName + ' ' + v2lastName : EALang.visitor_2_name + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2phoneNumber ? EALang.phone_number + ': ' + v2phoneNumber : EALang.phone_number + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2email ? EALang.email + ': ' + v2email : EALang.email + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2address ? EALang.address + ': ' + v2address : EALang.address + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2city ? EALang.city + ': ' + v2city : EALang.city + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2state ? EALang.state + ': ' + v2state : EALang.state + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v2zipCode ? EALang.zip_code + ': ' + v2zipCode : EALang.zip_code + ': '
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v2birthdate ? EALang.birth_date + ': ' + Date.parse(v2birthdate).toString('MM/dd/yyyy') : EALang.birth_date + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v2idstate ? EALang.visitor_2_dl_state + ': ' + v2idstate : EALang.visitor_2_dl_state + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v2idnumber ? EALang.visitor_2_dl_number + ': ' + v2idnumber : EALang.visitor_2_dl_number + ': N/A'
+                        }).append(v2AttorneyInfo),
+                        $('<br/>'),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3firstName ? EALang.visitor_3_name + ': ' + v3firstName + ' ' + v3lastName : EALang.visitor_3_name + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3address ? EALang.address + ': ' + v3address : EALang.address + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3city ? EALang.city + ': ' + v3city : EALang.city + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3state ? EALang.state + ': ' + v3state : EALang.state + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3zipCode ? EALang.zip_code + ': ' + v3zipCode : EALang.zip_code + ': '
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3phoneNumber ? EALang.phone_number + ': ' + v3phoneNumber : EALang.phone_number + ': N/A'
+                        }),
+                        $('<br/>'),
+                        $('<span/>', {
+                            'text': v3email ? EALang.email + ': ' + v3email : EALang.email + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3birthdate ? EALang.birth_date + ': ' + Date.parse(v3birthdate).toString('MM/dd/yyyy') : EALang.birth_date + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3idstate ? EALang.visitor_3_dl_state + ': ' + v3idstate : EALang.visitor_3_dl_state + ': N/A'
+                        }),
+                        $('<br/>'),
+						$('<span/>', {
+                            'text': v3idnumber ? EALang.visitor_3_dl_number + ': ' + v3idnumber : EALang.visitor_3_dl_number + ': N/A'
+                        }).append(v3AttorneyInfo)
                     ]
                 })
             ]
@@ -769,19 +936,76 @@ window.FrontendBook = window.FrontendBook || {};
         // Update appointment form data for submission to server when the user confirms the appointment.
         var data = {};
 
-        data.customer = {
-            last_name: $('#last-name').val(),
-            first_name: $('#first-name').val(),
-            email: $('#email').val(),
-            phone_number: $('#phone-number').val(),
-            address: $('#address').val(),
-            city: $('#city').val(),
-            zip_code: $('#zip-code').val(),
-            timezone: $('#select-timezone').val(),
-            
-
-            
+        let v1ca = (v1courtAppt == 'yes') ? 1 : 0;
+        data.visitor1 = {
+            last_name: v1lastName,
+            first_name: v1firstName,
+            email: v1email,
+            phone_number: v1phoneNumber,
+            address: v1address,
+            city: v1city,
+            state: v1state,
+            zip_code: v1zipCode,
+            notes: v1notes,
+            birthdate: v1birthdate,
+            id_image_filename: v1idfilename,
+            id_number: v1idnumber,
+            id_state: v1idstate,
+            court_appointed: v1ca,
+            cause_number: v1causeNum,
+            law_firm: v1lawFirm,
+            attorney_type: v1attType 
         };
+
+        if (v2firstName != null) {
+            let v2ca = (v2courtAppt == 'yes') ? 1 : 0;
+            data.visitor2 = {
+                last_name: v2lastName,
+                first_name: v2firstName,
+                email: v2email,
+                phone_number: v2phoneNumber,
+                address: v2address,
+                city: v2city,
+                state: v2state,
+                zip_code: v2zipCode,
+                birthdate: v2birthdate,
+                id_image_filename: v2idfilename,
+                id_number: v2idnumber,
+                id_state: v2idstate,
+                court_appointed: v2ca,
+                cause_number: v2causeNum,
+                law_firm: v2lawFirm,
+                attorney_type: v2attType 
+            };
+        }
+
+        if (v3firstName != null) {
+            let v3ca = (v3courtAppt == 'yes') ? 1 : 0;
+            data.visitor3 = {
+                last_name: v3lastName,
+                first_name: v3firstName,
+                email: v3email,
+                phone_number: v3phoneNumber,
+                address: v3address,
+                city: v3city,
+                state: v3state,
+                zip_code: v3zipCode,
+                birthdate: v3birthdate,
+                id_image_filename: v3idfilename,
+                id_number: v3idnumber,
+                id_state: v3idstate,
+                court_appointed: v3ca,
+                cause_number: v3causeNum,
+                law_firm: v3lawFirm,
+                attorney_type: v3attType
+            };
+        }
+
+        // Remove number from inmate name for database
+        var inmateName = $('#select-inmate option:selected').text();
+        if (inmateName.indexOf("-") >= 0) {
+            inmateName = inmateName.substring(inmateName.indexOf("-") + 1);
+        }
 
         data.appointment = {
             start_datetime: $('#select-date').datepicker('getDate').toString('yyyy-MM-dd')
@@ -792,23 +1016,7 @@ window.FrontendBook = window.FrontendBook || {};
             id_users_provider: $('#select-provider').val(),
             id_services: $('#select-service').val(),
             id_inmate: $('#select-inmate').val(),
-            visitor_2_name: $('#visitor-2-name').val(),
-            visitor_3_name: $('#visitor-3-name').val(),
-            visitor_4_name: $('#visitor-4-name').val(),
-            visitor_1_dl_number: $('#visitor-1-dl-number').val(),
-            visitor_2_dl_number: $('#visitor-2-dl-number').val(),
-            visitor_3_dl_number: $('#visitor-3-dl-number').val(),
-            visitor_4_dl_number: $('#visitor-4-dl-number').val(),
-            visitor_1_dl_state: $('#visitor-1-dl-state').val(),
-            visitor_2_dl_state: $('#visitor-2-dl-state').val(),
-            visitor_3_dl_state: $('#visitor-3-dl-state').val(),
-            visitor_4_dl_state: $('#visitor-4-dl-state').val(),
-            visitor_1_dl: $('#visitor-1-dl').val(),
-            visitor_2_dl: $('#visitor-2-dl').val(),
-            visitor_3_dl: $('#visitor-3-dl').val(),
-            visitor_4_dl: $('#visitor-4-dl').val(),
-                      
-            
+            inmate_name: inmateName
         };
 
         data.manage_mode = FrontendBook.manageMode;
@@ -877,16 +1085,14 @@ window.FrontendBook = window.FrontendBook || {};
             $('#visitor-2-name').val(appointment.visitor_2_name);
 
             // Apply Customer's Data
-            $('#last-name').val(customer.last_name);
-            $('#first-name').val(customer.first_name);
-            $('#email').val(customer.email);
-            $('#phone-number').val(customer.phone_number);
-            $('#address').val(customer.address);
-            $('#city').val(customer.city);
-            $('#zip-code').val(customer.zip_code);
+            $('#visitor-1-last-name').val(customer.last_name);
+            $('#visitor-1-first-name').val(customer.first_name);
+            $('#visitor-1-email').val(customer.email);
+            $('#visitor-1-phone-number').val(customer.phone_number);
+            $('#visitor-1-address').val(customer.address);
+            $('#visitor-1-city').val(customer.city);
+            $('#visitor-1-zip-code').val(customer.zip_code);
            
-
-            
             if (customer.timezone) {
                 $('#select-timezone').val(customer.timezone)
             }

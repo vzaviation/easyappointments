@@ -447,6 +447,16 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
+/*
+|--------------------------------------------------------------------------
+| File Uploads
+|--------------------------------------------------------------------------
+|
+*/
+//$config['allowed_types'] = 'gif|jpg|png';
+$config['max_size'] = 20000;
+//$config['max_width'] = 1500;
+//$config['max_height'] = 1500;
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */

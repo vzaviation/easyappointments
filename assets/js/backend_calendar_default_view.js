@@ -59,11 +59,23 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             $(this).parents('.popover').popover('dispose');
         });
 
+        $calendarPage.on('click', '.edit-popover', function () {
+            $(this).parents('.popover').popover('dispose');
+            // Take user to check-in page for date and select appointment
+            const appointment = lastFocusedEventData.data;
+            const aid = appointment.id;
+            const adatetime = new Date(appointment.start_datetime);
+            const amonth = (adatetime.getMonth() + 1).toString().padStart(2, "0");
+            const adom = adatetime.getDate().toString().padStart(2, "0");
+            const adate = adatetime.getFullYear() + "-" + amonth + "-" + adom;
+            window.location="/index.php/backend/dashboard?date=" + adate + "&aid=" + aid;
+        });
+
         /**
          * Event: Popover Edit Button "Click"
          *
          * Enables the edit dialog of the selected calendar event.
-         */
+         *
         $calendarPage.on('click', '.edit-popover', function () {
             $(this).parents('.popover').popover('dispose');
 
@@ -137,16 +149,52 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 $dialog.find('#visitor-2-dl-state').val(appointment.visitor_2_dl_state);
                 $dialog.find('#visitor-3-dl-state').val(appointment.visitor_3_dl_state);
                 $dialog.find('#visitor-4-dl-state').val(appointment.visitor_4_dl_state);
-                $dialog.find('#visitor-1-dl').val(appointment.visitor_1_dl);
-                $dialog.find('#visitor-2-dl').val(appointment.visitor_2_dl);
-                $dialog.find('#visitor-3-dl').val(appointment.visitor_3_dl);
-                $dialog.find('#visitor-4-dl').val(appointment.visitor_4_dl);
-                $dialog.find('#visitor-2-name').val(appointment.visitor_2_name);
+                $dialog.find('#visitor-1-dl-file-name').val(appointment.visitor_1_dl);
+                $dialog.find('#visitor-2-dl-file-name').val(appointment.visitor_2_dl);
+                $dialog.find('#visitor-3-dl-file-name').val(appointment.visitor_3_dl);
+                $dialog.find('#visitor-4-dl-file-name').val(appointment.visitor_4_dl);
+
+		if(appointment.visitor_1_dl){
+                   $("#visitor-1-dl-link").attr("href", GlobalVariables.baseUrl +"/storage/uploads/user_doc/"+appointment.visitor_1_dl);
+			$("#visitor-1-dl-link").show();
+                } else {
+                   $("#visitor-1-dl-link").hide();
+                }
+
+                if(appointment.visitor_2_dl){
+			$("#visitor-2-dl-link").attr("href", GlobalVariables.baseUrl +"/storage/uploads/user_doc/"+appointment.visitor_2_dl);
+			$("#visitor-1-dl-link").show();
+                } else {
+                   $("#visitor-2-dl-link").hide();
+                }
+
+                if(appointment.visitor_3_dl){
+                   $("#visitor-3-dl-link").attr("href", GlobalVariables.baseUrl +"/storage/uploads/user_doc/"+appointment.visitor_3_dl);
+                  $("#visitor-3-dl-link").show();
+		} else {
+                   $("#visitor-3-dl-link").hide();
+                }
+
+                if(appointment.visitor_4_dl){
+                   $("#visitor-4-dl-link").attr("href", GlobalVariables.baseUrl +"/storage/uploads/user_doc/"+appointment.visitor_4_dl);
+               		$("#visitor-4-dl-link").show();
+		} else {
+                   $("#visitor-4-dl-link").hide();
+                }
+
+		        $dialog.find('#visitor-2-name').val(appointment.visitor_2_name);
                 $dialog.find('#visitor-3-name').val(appointment.visitor_3_name);
                 $dialog.find('#visitor-4-name').val(appointment.visitor_4_name);
                 $dialog.find('#inmate-name').val(appointment.inmate_name);
                 $dialog.find('#appointment-notes').val(appointment.notes);
                 $dialog.find('#customer-notes').val(customer.notes);
+                if (appointment.visitor_1_arrived == 1) {
+                    $dialog.find('#visitor-1-arrived').prop('checked', true);
+                }
+                if (appointment.visitor_2_arrived == 1) {
+                    $dialog.find('#visitor-2-arrived').prop('checked', true);
+                }
+
                 $dialog.modal('show');
             } else {
                 var unavailable = lastFocusedEventData.data;
@@ -170,6 +218,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 $dialog.modal('show');
             }
         });
+        */
 
         /**
          * Event: Popover Delete Button "Click"
@@ -476,15 +525,6 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     }),
                     $('<br/>'),
 
-                    $('<strong/>', {
-                        'class': 'd-inline-block mr-2',
-                        'text': EALang.timezone
-                    }),
-                    $('<span/>', {
-                        'text': GlobalVariables.timezones[event.data.provider.timezone]
-                    }),
-                    $('<br/>'),
-
                     $('<hr/>'),
 
                     $('<div/>', {
@@ -555,22 +595,12 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
-                        'text': EALang.timezone
+                        'text': EALang.inmate
                     }),
                     $('<span/>', {
-                        'text': GlobalVariables.timezones[event.data.provider.timezone]
+                        'text': event.data.inmate_name
                     }),
                     $('<br/>'),
-
-                    $('<strong/>', {
-                        'class': 'd-inline-block mr-2',
-                        'text': EALang.service
-                    }),
-                    $('<span/>', {
-                        'text': event.data.service.name
-                    }),
-                    $('<br/>'),
-
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
                         'text': EALang.provider
@@ -580,7 +610,6 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                         'text': event.data.provider.first_name + ' ' + event.data.provider.last_name
                     }),
                     $('<br/>'),
-
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
                         'text': EALang.customer
@@ -638,17 +667,20 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                                     })
                                 ]
                             }),
-                            $('<button/>', {
-                                'class': 'delete-popover btn btn-outline-secondary ' + displayDelete,
-                                'html': [
-                                    $('<i/>', {
-                                        'class': 'fas fa-trash-alt mr-2'
-                                    }),
-                                    $('<span/>', {
-                                        'text': EALang.delete
-                                    })
-                                ]
-                            }),
+                            $('<div/>'), {
+                                'style': 'width=40px;'
+                            },
+//                            $('<button/>', {
+//                                'class': 'delete-popover btn btn-outline-secondary ' + displayDelete,
+//                                'html': [
+//                                    $('<i/>', {
+//                                        'class': 'fas fa-trash-alt mr-2'
+//                                    }),
+//                                    $('<span/>', {
+//                                        'text': EALang.delete
+//                                    })
+//                                ]
+//                            }),
                             $('<button/>', {
                                 'class': 'edit-popover btn btn-primary ' + displayEdit,
                                 'html': [
@@ -1540,6 +1572,22 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
         calendarWindowResize();
 
         // Fill the select list boxes of the page.
+        if (GlobalVariables.availableServices.length > 0) {
+            let services = '<option value="0" type="' + FILTER_TYPE_SERVICE + '">-- ALL SERVICES --</option>';
+            services += GlobalVariables.availableServices.map(function (availableService) {
+                return '<option ' + 
+                    'value="' + availableService.id + '" ' +
+                    'type="' + FILTER_TYPE_SERVICE + '">' +
+                    availableService.name +
+                    '</option>'
+            });
+            $('<optgroup/>', {
+                'label': EALang.services,
+                'type': 'services-group',
+            }).append(services)
+                .appendTo('#select-filter-item');
+        }
+
         if (GlobalVariables.availableProviders.length > 0) {
             $('<optgroup/>', {
                 'label': EALang.providers,
@@ -1552,21 +1600,6 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                         'type': FILTER_TYPE_PROVIDER,
                         'google-sync': hasGoogleSync,
                         'text': availableProvider.first_name + ' ' + availableProvider.last_name
-                    })
-                })
-            })
-                .appendTo('#select-filter-item');
-        }
-
-        if (GlobalVariables.availableServices.length > 0) {
-            $('<optgroup/>', {
-                'label': EALang.services,
-                'type': 'services-group',
-                'html': GlobalVariables.availableServices.map(function (availableService) {
-                    return $('<option/>', {
-                        'value': availableService.id,
-                        'type': FILTER_TYPE_SERVICE,
-                        'text': availableService.name
                     })
                 })
             })
@@ -1646,11 +1679,17 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             $dialog.find('#visitor-2-dl').val(appointment.visitor_2_dl);
             $dialog.find('#visitor-3-dl').val(appointment.visitor_3_dl);
             $dialog.find('#visitor-4-dl').val(appointment.visitor_4_dl);
-            $dialog.find('#visitor-2-name').val(appointment.visitor_2_name);
+            $dialog.find('#visitor-2-name').val('appointment.visitor_2_name');
             $dialog.find('#visitor-3-name').val(appointment.visitor_3_name);
             $dialog.find('#visitor-4-name').val(appointment.visitor_4_name);
             $dialog.find('#inmate-name').val(appointment.inmate_name);
             $dialog.find('#customer-notes').val(customer.notes);
+            if (appointment.visitor_1_arrived == 1) {
+                $dialog.find('#visitor-1-arrived').prop('checked', true);
+            }
+            if (appointment.visitor_2_arrived == 1) {
+                $dialog.find('#visitor-2-arrived').prop('checked', true);
+            }
 
             $dialog.modal('show');
         }

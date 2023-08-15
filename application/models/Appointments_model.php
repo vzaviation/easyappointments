@@ -114,6 +114,7 @@ class Appointments_model extends EA_Model {
 
         if ($appointment['is_unavailable'] == FALSE)
         {
+            /*   IGNORE current customer check in favor of Visitor rules
             // Check if the customer's id is valid.
             $num_rows = $this->db
                 ->select('*')
@@ -127,6 +128,7 @@ class Appointments_model extends EA_Model {
             {
                 throw new Exception('Appointment customer id is invalid.');
             }
+            */
 
             // Check if the service id is valid.
             $num_rows = $this->db->get_where('services', ['id' => $appointment['id_services']])->num_rows();
@@ -188,7 +190,7 @@ class Appointments_model extends EA_Model {
      *
      * @throws Exception If appointment record could not be updated.
      */
-    protected function update($appointment)
+    public function update($appointment)
     {
         $this->db->where('id', $appointment['id']);
         if ( ! $this->db->update('appointments', $appointment))
@@ -363,6 +365,26 @@ class Appointments_model extends EA_Model {
     }
 
     /**
+     * Get by date - get all appointments for the given date
+     */
+    public function get_by_date($date = NULL) {
+        if ($date == NULL) {
+            $date = date('Y-m-d');
+        }
+
+        $results = $this->db
+            ->select('appointments.*,services.name AS "service_name",users.first_name AS "provider_first_name",users.last_name as "provider_last_name"')
+            ->from('appointments')
+            ->join('services', 'services.id = appointments.id_services')
+            ->join('users', 'users.id = appointments.id_users_provider')
+            ->where("DATE_FORMAT(start_datetime,'%Y-%m-%d')", $date)
+            ->order_by('appointments.start_datetime','ASC')
+            ->get();
+
+        return $results->result_array();
+    }
+
+    /**
      * Get all, or specific records from appointment's table.
      *
      * Example:
@@ -402,6 +424,33 @@ class Appointments_model extends EA_Model {
         }
 
         return $appointments;
+    }
+
+    /**
+     * Get list of all providers
+     */
+    public function get_providers() {
+        $results = $this->db
+            ->select('u.id as "provider_id",u.first_name AS "provider_first_name",u.last_name as "provider_last_name",u.inmate_classification_level')
+            ->from('users u')
+            ->where('u.id_roles', 2)
+            ->order_by('u.id','ASC')
+            ->get();
+
+        return $results->result_array();
+    }
+
+    /**
+     * Get list of all services
+     */
+    public function get_services() {
+        $results = $this->db
+            ->select('*')
+            ->from('services')
+            ->order_by('id','ASC')
+            ->get();
+
+        return $results->result_array();
     }
 
     /**

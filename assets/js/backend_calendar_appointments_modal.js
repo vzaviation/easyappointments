@@ -70,14 +70,18 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                 visitor_2_dl_state: $dialog.find('#visitor-2-dl-state').val(),
                 visitor_3_dl_state: $dialog.find('#visitor-3-dl-state').val(),
                 visitor_4_dl_state: $dialog.find('#visitor-4-dl-state').val(),
-                visitor_1_dl: $dialog.find('#visitor-1-dl').val(),
-                visitor_2_dl: $dialog.find('#visitor-2-dl').val(),
-                visitor_3_dl: $dialog.find('#visitor-3-dl').val(),
-                visitor_4_dl: $dialog.find('#visitor-4-dl').val(),
+                visitor_1_dl: $dialog.find('#visitor-1-dl-file-name').val(),
+                visitor_2_dl: $dialog.find('#visitor-2-dl-file-name').val(),
+                visitor_3_dl: $dialog.find('#visitor-3-dl-file-name').val(),
+                visitor_4_dl: $dialog.find('#visitor-4-dl-file-name').val(),
                 visitor_2_name: $dialog.find('#visitor-2-name').val(),
                 visitor_3_name: $dialog.find('#visitor-3-name').val(),
                 visitor_4_name: $dialog.find('#visitor-4-name').val(),
                 inmate_name: $dialog.find('#inmate-name').val(),
+                visitor_1_arrived: $dialog.find('#visitor-1-arrived').is(":checked"),
+                visitor_2_arrived: $dialog.find('#visitor-2-arrived').is(":checked"),
+                visitor_3_arrived: $dialog.find('#visitor-3-arrived').is(":checked"),
+                visitor_4_arrived: $dialog.find('#visitor-4-arrived').is(":checked"),
                 is_unavailable: false
             };
 

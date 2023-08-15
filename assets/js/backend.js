@@ -59,9 +59,12 @@ window.Backend = window.Backend || {};
     exports.PRIV_DELETE = 8;
 
     exports.PRIV_APPOINTMENTS = 'appointments';
+    exports.PRIV_DASHBOARD = 'dashboard';
     exports.PRIV_CUSTOMERS = 'customers';
+    exports.PRIV_INMATES = 'inmates';
     exports.PRIV_SERVICES = 'services';
     exports.PRIV_USERS = 'users';
+    exports.PRIV_REPORTING = 'reporting';
     exports.PRIV_SYSTEM_SETTINGS = 'system_settings';
     exports.PRIV_USER_SETTINGS = 'user_settings';
 
@@ -75,11 +78,13 @@ window.Backend = window.Backend || {};
             $footer.css({
                 'position': 'absolute',
                 'width': '100%',
-                'bottom': '0px'
+                'bottom':'-50px'
             });
         } else {
             $footer.css({
-                'position': 'static'
+                'position': 'absolute',
+                'width': '100%',
+                'bottom':'-50px'
             });
         }
     };

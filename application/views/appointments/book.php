@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/cookieconsent/cookieconsent.min.css') ?>">
-    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend.css') ?>">
+    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend-andersonco.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/general.css') ?>">
 
     <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
@@ -19,9 +19,487 @@
 
     <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>
     <script src="<?= asset_url('assets/ext/fontawesome/js/solid.min.js') ?>"></script>
+    <script src="<?= asset_url('assets/js/upload_documents.js') ?>"></script>
+
+    <script type="text/javascript">
+        var inactivityTime = function () {
+            var time;
+            window.onload = resetTimer;
+            // DOM Events
+            document.onmousemove = resetTimer;
+            document.onmousedown = resetTimer; // touchscreen presses
+            document.ontouchstart = resetTimer;
+            document.onclick = resetTimer;  
+            document.onkeydown = resetTimer;
+
+            function resetForm() {
+                alert("Resetting form due to inactivity");
+                window.location.href = window.location.href;
+                window.location.reload();
+            }
+
+            function resetTimer() {
+                clearTimeout(time);
+                time = setTimeout(resetForm, 600000);  // 10 minutes = 600,000 ms
+            }
+        };
+   </script>
+
+   <script type="text/javascript">
+        var inmateFilter = function () {
+          $('#inmate-filter').keyup(function () {
+            let valthis = $(this).val().toLowerCase();
+
+            $('#select-inmate>option').each(function () {
+                let text = $(this).text().toLowerCase();
+                if (text.indexOf(valthis) === 0) {
+                    $(this).show(); $(this).prop('selected',true);
+                }
+                else {
+                    $(this).hide();
+                }
+            });
+          });
+        };
+   </script>
+
+    <script type="text/javascript">
+        var birthDateV1 = function () {
+          $('#visitor-1-birth-date').focusout(function () {
+            const dateregex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+            let valthis = $(this).val();
+            if (valthis != "") {
+                const matches = valthis.match(dateregex);
+                if ((matches == null) || (matches.length == 0)) {
+                    alert("Please enter the bithdate in the format mm/dd/yyyy");
+                    $(this).val("");
+                } else {
+                    // Check the given date vs the current date to determine visitor age
+                    let today = new Date();
+                    try {
+                        let bDate = new Date(matches[3], matches[1] - 1, matches[2]);
+                        var age = today.getFullYear() - bDate.getFullYear();
+                        var m = today.getMonth() - bDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+                            age--;
+                        }
+                        if (age < 0) {
+                            alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                            $(this).val("");
+                        } else {
+                            if (age == 16) {
+                                $('#visitor-1-dl-box').show();
+                                $('#visitor-1-dl-file-name').addClass("required");
+                                $('#visitor-1-dl-number-box').hide();
+                                $('#visitor-1-dl-number').removeClass("required");
+                                $('#visitor-1-dl-state-box').hide();
+                                $('#visitor-1-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-1-show-required-email').hide();
+                                $('#visitor-1-show-required-phone').hide();
+                                $('#visitor-1-email').removeClass("required");
+                                $('#visitor-1-phone-number').removeClass("required");
+                            } else if (age == 17) {
+                                $('#visitor-1-dl-box').show();
+                                $('#visitor-1-dl-file-name').addClass("required");
+                                $('#visitor-1-dl-number-box').show();
+                                $('#visitor-1-dl-number').addClass("required");
+                                $('#visitor-1-dl-state-box').show();
+                                $('#visitor-1-dl-state').addClass("required");
+                                // Make email and phone not required
+                                $('#visitor-1-show-required-email').hide();
+                                $('#visitor-1-show-required-phone').hide();
+                                $('#visitor-1-email').removeClass("required");
+                                $('#visitor-1-phone-number').removeClass("required");
+                            } else if (age >= 18) {
+                                $('#visitor-1-dl-box').show();
+                                $('#visitor-1-dl-file-name').addClass("required");
+                                $('#visitor-1-dl-number-box').show();
+                                $('#visitor-1-dl-number').addClass("required");
+                                $('#visitor-1-dl-state-box').show();
+                                $('#visitor-1-dl-state').addClass("required");
+                                // Make email and phone required
+                                $('#visitor-1-show-required-email').show();
+                                $('#visitor-1-show-required-phone').show();
+                                $('#visitor-1-email').addClass("required");
+                                $('#visitor-1-phone-number').addClass("required");
+                            } else {
+                                $('#visitor-1-dl-box').hide();
+                                $('#visitor-1-dl-file-name').removeClass("required");
+                                $('#visitor-1-dl-number-box').hide();
+                                $('#visitor-1-dl-number').removeClass("required");
+                                $('#visitor-1-dl-state-box').hide();
+                                $('#visitor-1-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-1-show-required-email').hide();
+                                $('#visitor-1-show-required-phone').hide();
+                                $('#visitor-1-email').removeClass("required");
+                                $('#visitor-1-phone-number').removeClass("required");
+                            }
+                        }
+                    } catch (err) {
+                        alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                        $(this).val("");
+                    }
+                }
+            } else {
+                alert("Birth Date is required");
+            }
+          });
+        };
+
+        var birthDateV2 = function () {
+          $('#visitor-2-birth-date').focusout(function () {
+            const dateregex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+            let valthis = $(this).val();
+            if (valthis != "") {
+                const matches = valthis.match(dateregex);
+                if ((matches == null) || (matches.length == 0)) {
+                    alert("Please enter the bithdate in the format mm/dd/yyyy");
+                    $(this).val("");
+                } else {
+                    // Check the given date vs the current date to determine visitor age
+                    let today = new Date();
+                    try {
+                        let bDate = new Date(matches[3], matches[1] - 1, matches[2]);
+                        var age = today.getFullYear() - bDate.getFullYear();
+                        var m = today.getMonth() - bDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+                            age--;
+                        }
+                        if (age < 0) {
+                            alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                            $(this).val("");
+                        } else {
+                            if (age == 16) {
+                                $('#visitor-2-dl-box').show();
+                                $('#visitor-2-dl-file-name').addClass("required");
+                                $('#visitor-2-dl-number-box').hide();
+                                $('#visitor-2-dl-number').removeClass("required");
+                                $('#visitor-2-dl-state-box').hide();
+                                $('#visitor-2-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-2-show-required-email').hide();
+                                $('#visitor-2-show-required-phone').hide();
+                                $('#visitor-2-email').removeClass("required");
+                                $('#visitor-2-phone-number').removeClass("required");
+                            } else if (age == 17) {
+                                $('#visitor-2-dl-box').show();
+                                $('#visitor-2-dl-file-name').addClass("required");
+                                $('#visitor-2-dl-number-box').show();
+                                $('#visitor-2-dl-number').addClass("required");
+                                $('#visitor-2-dl-state-box').show();
+                                $('#visitor-2-dl-state').addClass("required");
+                                // Make email and phone not required
+                                $('#visitor-2-show-required-email').hide();
+                                $('#visitor-2-show-required-phone').hide();
+                                $('#visitor-2-email').removeClass("required");
+                                $('#visitor-2-phone-number').removeClass("required");
+                            } else if (age >= 18) {
+                                $('#visitor-2-dl-box').show();
+                                $('#visitor-2-dl-file-name').addClass("required");
+                                $('#visitor-2-dl-number-box').show();
+                                $('#visitor-2-dl-number').addClass("required");
+                                $('#visitor-2-dl-state-box').show();
+                                $('#visitor-2-dl-state').addClass("required");
+                                // Make email and phone required
+                                $('#visitor-2-show-required-email').show();
+                                $('#visitor-2-show-required-phone').show();
+                                $('#visitor-2-email').addClass("required");
+                                $('#visitor-2-phone-number').addClass("required");
+                            } else {
+                                $('#visitor-2-dl-box').hide();
+                                $('#visitor-2-dl-file-name').removeClass("required");
+                                $('#visitor-2-dl-number-box').hide();
+                                $('#visitor-2-dl-number').removeClass("required");
+                                $('#visitor-2-dl-state-box').hide();
+                                $('#visitor-2-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-2-show-required-email').hide();
+                                $('#visitor-2-show-required-phone').hide();
+                                $('#visitor-2-email').removeClass("required");
+                                $('#visitor-2-phone-number').removeClass("required");
+                            }
+                        }
+                    } catch (err) {
+                        alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                        $(this).val("");
+                    }
+                }
+            } else {
+                alert("Birth Date is required");
+            }
+          });
+        };
+
+        var birthDateV3 = function () {
+          $('#visitor-3-birth-date').focusout(function () {
+            const dateregex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+            let valthis = $(this).val();
+            if (valthis != "") {
+                const matches = valthis.match(dateregex);
+                if ((matches == null) || (matches.length == 0)) {
+                    alert("Please enter the bithdate in the format mm/dd/yyyy");
+                    $(this).val("");
+                } else {
+                    // Check the given date vs the current date to determine visitor age
+                    let today = new Date();
+                    try {
+                        let bDate = new Date(matches[3], matches[1] - 1, matches[2]);
+                        var age = today.getFullYear() - bDate.getFullYear();
+                        var m = today.getMonth() - bDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+                            age--;
+                        }
+                        if (age < 0) {
+                            alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                            $(this).val("");
+                        } else {
+                            if (age == 16) {
+                                $('#visitor-3-dl-box').show();
+                                $('#visitor-3-dl-file-name').addClass("required");
+                                $('#visitor-3-dl-number-box').hide();
+                                $('#visitor-3-dl-number').removeClass("required");
+                                $('#visitor-3-dl-state-box').hide();
+                                $('#visitor-3-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-3-show-required-email').hide();
+                                $('#visitor-3-show-required-phone').hide();
+                                $('#visitor-3-email').removeClass("required");
+                                $('#visitor-3-phone-number').removeClass("required");
+                            } else if (age == 17) {
+                                $('#visitor-3-dl-box').show();
+                                $('#visitor-3-dl-file-name').addClass("required");
+                                $('#visitor-3-dl-number-box').show();
+                                $('#visitor-3-dl-number').addClass("required");
+                                $('#visitor-3-dl-state-box').show();
+                                $('#visitor-3-dl-state').addClass("required");
+                                // Make email and phone not required
+                                $('#visitor-3-show-required-email').hide();
+                                $('#visitor-3-show-required-phone').hide();
+                                $('#visitor-3-email').removeClass("required");
+                                $('#visitor-3-phone-number').removeClass("required");
+                            } else if (age >= 18) {
+                                $('#visitor-3-dl-box').show();
+                                $('#visitor-3-dl-file-name').addClass("required");
+                                $('#visitor-3-dl-number-box').show();
+                                $('#visitor-3-dl-number').addClass("required");
+                                $('#visitor-3-dl-state-box').show();
+                                $('#visitor-3-dl-state').addClass("required");
+                                // Make email and phone required
+                                $('#visitor-3-show-required-email').show();
+                                $('#visitor-3-show-required-phone').show();
+                                $('#visitor-3-email').addClass("required");
+                                $('#visitor-3-phone-number').addClass("required");
+                            } else {
+                                $('#visitor-3-dl-box').hide();
+                                $('#visitor-3-dl-file-name').removeClass("required");
+                                $('#visitor-3-dl-number-box').hide();
+                                $('#visitor-3-dl-number').removeClass("required");
+                                $('#visitor-3-dl-state-box').hide();
+                                $('#visitor-3-dl-state').removeClass("required");
+                                // Make email and phone not required
+                                $('#visitor-3-show-required-email').hide();
+                                $('#visitor-3-show-required-phone').hide();
+                                $('#visitor-3-email').removeClass("required");
+                                $('#visitor-3-phone-number').removeClass("required");
+                            }
+                        }
+                    } catch (err) {
+                        alert("Please enter a valid bithdate in the format mm/dd/yyyy");
+                        $(this).val("");
+                    }
+                }
+            } else {
+                alert("Birth Date is required");
+            }
+          });
+        };
+
+        var useSameAddressV2 = function () {
+          $('#visitor-2-use-same-address').change(function () {
+            let isChecked = $(this).prop('checked');
+            // if checked, copy the values from vis 1 address into vis 2
+            if (isChecked) {
+                $('#visitor-2-address').val($('#visitor-1-address').val());
+                $('#visitor-2-city').val($('#visitor-1-city').val());
+                $('#visitor-2-state').val($('#visitor-1-state').find(":selected").val());
+                $('#visitor-2-zip-code').val($('#visitor-1-zip-code').val());
+            } else {  // if not checked, erase the values
+                $('#visitor-2-address').val("");
+                $('#visitor-2-city').val("");
+                $('#visitor-2-state').val("");
+                $('#visitor-2-zip-code').val("");
+            }
+          });
+        };
+
+        var useSameAddressV3 = function () {
+          $('#visitor-3-use-same-address').change(function () {
+            let isChecked = $(this).prop('checked');
+            // if checked, copy the values from vis 1 address into vis 2
+            if (isChecked) {
+                $('#visitor-3-address').val($('#visitor-1-address').val());
+                $('#visitor-3-city').val($('#visitor-1-city').val());
+                $('#visitor-3-state').val($('#visitor-1-state').find(":selected").val());
+                $('#visitor-3-zip-code').val($('#visitor-1-zip-code').val());
+            } else {  // if not checked, erase the values
+                $('#visitor-3-address').val("");
+                $('#visitor-3-city').val("");
+                $('#visitor-3-state').val("");
+                $('#visitor-3-zip-code').val("");
+            }
+          });
+        };
+
+        var addVisitor2 = function () {
+          $('#button-add-visitor-2').click(function () {
+            $('#visitor-2-info').show();
+            $('#button-add-visitor-2').hide();
+            $('#button-remove-visitor-2').show();
+            $('#visitor-2-first-name').addClass('required');
+            $('#visitor-2-last-name').addClass('required');
+            $('#visitor-2-email').addClass('required');
+            $('#visitor-2-address').addClass('required');
+            $('#visitor-2-city').addClass('required');
+            $('#visitor-2-state').addClass('required');
+            $('#visitor-2-zip-code').addClass('required');
+            $('#visitor-2-birth-date').addClass('required');
+            $('#authorize-visitor-2').show();
+          });
+        }
+
+        var removeVisitor2 = function () {
+          $('#button-remove-visitor-2').click(function () {
+            $('#visitor-2-info').hide();
+            $('#button-add-visitor-2').show();
+            $('#button-remove-visitor-2').hide();
+            $('#visitor-2-first-name').removeClass('required');
+            $('#visitor-2-last-name').removeClass('required');
+            $('#visitor-2-email').removeClass('required');
+            $('#visitor-2-address').removeClass('required');
+            $('#visitor-2-city').removeClass('required');
+            $('#visitor-2-state').removeClass('required');
+            $('#visitor-2-zip-code').removeClass('required');
+            $('#visitor-2-birth-date').removeClass('required');
+            $('#visitor-2-dl-box').hide();
+            $('#visitor-2-dl-file-name').removeClass("required");
+            $('#visitor-2-dl-number-box').hide();
+            $('#visitor-2-dl-number').removeClass("required");
+            $('#visitor-2-dl-state-box').hide();
+            $('#visitor-2-dl-state').removeClass("required");
+            $('#visitor-2-first-name').val("");
+            $('#visitor-2-last-name').val("");
+            $('#visitor-2-email').val("");
+            $('#visitor-2-address').val("");
+            $('#visitor-2-city').val("");
+            $('#visitor-2-state').val("");
+            $('#visitor-2-zip-code').val("");
+            $('#visitor-2-birth-date').val("");
+            $('#visitor-2-dl-file-name').val("");
+            $('#visitor-2-dl-number').val("");
+            $('#visitor-2-dl-state').val("");
+            $('#visitor-2-show-required-email').hide();
+            $('#visitor-2-show-required-phone').hide();
+            $('#visitor-2-email').removeClass("required");
+            $('#visitor-2-phone-number').removeClass("required");
+            $('#visitor-2-email').val("");
+            $('#visitor-2-phone-number').val("");
+
+            $('.visitor-2-information').hide();
+
+            $('#button-add-visitor-3').hide();
+            $('#button-remove-visitor-3').hide();
+          });
+        }
+
+        var addVisitor3 = function () {
+          $('#button-add-visitor-3').click(function () {
+            $('#button-remove-visitor-2').hide();
+            $('#visitor-3-info').show();
+            $('#button-add-visitor-3').hide();
+            $('#button-remove-visitor-3').show();
+            $('#visitor-3-first-name').addClass('required');
+            $('#visitor-3-last-name').addClass('required');
+            $('#visitor-3-email').addClass('required');
+            $('#visitor-3-address').addClass('required');
+            $('#visitor-3-city').addClass('required');
+            $('#visitor-3-state').addClass('required');
+            $('#visitor-3-zip-code').addClass('required');
+            $('#visitor-3-birth-date').addClass('required');
+            $('#authorize-visitor-3').show();
+          });
+        }
+
+        var removeVisitor3 = function () {
+          $('#button-remove-visitor-3').click(function () {
+            $('#button-remove-visitor-2').show();
+            $('#visitor-3-info').hide();
+            $('#button-add-visitor-3').show();
+            $('#button-remove-visitor-3').hide();
+            $('#visitor-3-first-name').removeClass('required');
+            $('#visitor-3-last-name').removeClass('required');
+            $('#visitor-3-email').removeClass('required');
+            $('#visitor-3-address').removeClass('required');
+            $('#visitor-3-city').removeClass('required');
+            $('#visitor-3-state').removeClass('required');
+            $('#visitor-3-zip-code').removeClass('required');
+            $('#visitor-3-birth-date').removeClass('required');
+            $('#visitor-3-first-name').val("");
+            $('#visitor-3-last-name').val("");
+            $('#visitor-3-email').val("");
+            $('#visitor-3-address').val("");
+            $('#visitor-3-city').val("");
+            $('#visitor-3-state').val("");
+            $('#visitor-3-zip-code').val("");
+            $('#visitor-3-birth-date').val("");
+            $('#visitor-3-dl-box').hide();
+            $('#visitor-3-dl-file-name').removeClass("required");
+            $('#visitor-3-dl-number-box').hide();
+            $('#visitor-3-dl-number').removeClass("required");
+            $('#visitor-3-dl-state-box').hide();
+            $('#visitor-3-dl-state').removeClass("required");
+            $('#visitor-3-dl-file-name').val("");
+            $('#visitor-3-dl-number').val("");
+            $('#visitor-3-dl-state').val("");
+            $('#visitor-3-show-required-email').hide();
+            $('#visitor-3-show-required-phone').hide();
+            $('#visitor-3-email').removeClass("required");
+            $('#visitor-3-phone-number').removeClass("required");
+            $('#visitor-3-email').val("");
+            $('#visitor-3-phone-number').val("");
+
+            $('.visitor-3-information').hide();
+          });
+        }
+    </script>
+
+    <style>
+            #loading {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0.7;
+        background-color: #fff;
+        z-index: 99;
+        }
+
+        #loading-image {
+        z-index: 100;
+        }
+   </style>
 </head>
 
-<body>
+<body onload="inactivityTime();inmateFilter();birthDateV1();birthDateV2();birthDateV3();useSameAddressV2();useSameAddressV3();addVisitor2();removeVisitor2();addVisitor3();removeVisitor3();">
+
+<div id="loading" style="display: none;">
+  <img id="loading-image" src="<?= asset_url('assets/img/loading.gif') ?>" alt="Loading..." />
+</div>
 <div id="main" class="container">
     <div class="row wrapper">
         <div id="book-appointment-wizard" class="col-12 col-lg-10 col-xl-8">
@@ -29,14 +507,20 @@
             <!-- FRAME TOP BAR -->
 
             <div id="header">
-                <span id="company-name"><?= $company_name ?></span>
+                <span id="company-name">
+                    <?= $company_name ?><br />
+                    <span class="company-address">
+                        1200 East Lacy St<br />
+                        Palestine, TX 75801<br />
+                        (903) 729-6069
+                    </span>
+                </span>
 
                 <div id="steps">
                     <div id="step-1" class="book-step active-step"
                          data-tippy-content="<?= lang('service_and_provider') ?>">
                         <strong>1</strong>
                     </div>
-
                     <div id="step-2" class="book-step" data-toggle="tooltip"
                          data-tippy-content="<?= lang('appointment_date_and_time') ?>">
                         <strong>2</strong>
@@ -50,6 +534,10 @@
                         <strong>4</strong>
                     </div>
                 </div>
+
+                <span id="vis-link">
+                    VisitationLink by <image src="/assets/img/TarmacTech-small.png" height="20px"/> TarmacTech
+                </span>
             </div>
 
             <?php if ($manage_mode): ?>
@@ -92,6 +580,14 @@
                 </div>
             <?php endif ?>
 
+            <!-- Add a form "reset" button -->
+            <div id="form-wizard-reset">
+                <div class="command-buttons">
+                    <button type="button" id="button-reset" class="btn button-reset btn-outline-primary">
+                        Clear Form / Reset
+                    </button>
+                </div>
+            </div>
 
             <!-- SELECT SERVICE AND PROVIDER -->
 
@@ -174,25 +670,51 @@
                                     }
                                     ?>
                                 </select>
+                                <div id="service-description"></div>
                             </div>
-
 
           				    <div class="form-group">
                                 <label for="select-inmate">
                                     <strong><?= lang('inmates') ?></strong>
                                 </label>
-                                
-                                <select id="select-inmate" class="form-control">
+                                <br/><span style="padding:10px 10px 10px 10px;">Filter by last name: <input type="text" id="inmate-filter" size="10" /></span>
+                                <select id="select-inmate" size="10" class="form-control">
                                 <?php 
+                                //  First create an array of lastname, first middle
+                                $inmateLFM = array();
                                 foreach ($available_inmates as $inmate)
                                 {
-                                    echo '<option value="' . $inmate['id'] . '">' . $inmate['id']. "-" .$inmate['inmate_name'] . '</option>';
+                                    $fmlname = strtolower(trim($inmate['inmate_name']));
+                                    $fmlname = preg_replace('/\s+/', ' ', $fmlname);
+                                    $nameparts = explode(' ', $fmlname);
+                                    $inmateLastFirst = $fmlname;
+                                    if (count($nameparts) > 3) {
+                                        $inmateLastFirst = ucfirst($nameparts[count($nameparts) - 1]) . ", ";
+                                        for ($i = 0; $i < count($nameparts) - 1; $i++) {
+                                            $inmateLastFirst .= ucfirst($nameparts[$i]) . " ";
+                                        }
+                                    } else if (count($nameparts) == 3) {
+                                        $inmateLastFirst = ucfirst($nameparts[2]) . ", " . ucfirst($nameparts[0]) . " " . ucfirst($nameparts[1]);
+                                    } else if (count($nameparts) == 2) {
+                                        $inmateLastFirst = ucfirst($nameparts[1]) . ", " . ucfirst($nameparts[0]);
+                                    }
+                                    $obj = array('id' => $inmate['id'], 'name' => $inmateLastFirst);
+                                    array_push($inmateLFM, $obj);
+                                }
+
+                                usort($inmateLFM, function($a, $b) {
+                                    return strcmp($a['name'], $b['name']);
+                                });
+
+                                foreach ($inmateLFM as $inmate)
+                                {
+                                    echo '<option value="' . $inmate['id'] . '">' . $inmate['name'] . '</option>';
                                 }                            
             					?>
             					</select>
                             </div>       
-                                                 
-                            <div class="form-group">
+
+                            <div class="form-group" style="display:none;">
                                 <label for="select-provider">
                                     <strong><?= lang('provider') ?></strong>
                                 </label>
@@ -200,8 +722,6 @@
                                 <select id="select-provider" class="form-control"></select>
                             </div>
 
-
-                            <div id="service-description"></div>
                         </div>
                     </div>
                 </div>
@@ -231,7 +751,7 @@
 
                         <div class="col-12 col-md-6">
                             <div id="select-time">
-                                <div class="form-group">
+                                <div class="form-group" style="display:none;">
                                     <label for="select-timezone"><?= lang('timezone') ?></label>
                                     <?= render_timezone_dropdown('id="select-timezone" class="form-control" value="UTC"'); ?>
                                 </div>
@@ -256,52 +776,140 @@
                 </div>
             </div>
 
-            <!-- ENTER CUSTOMER DATA -->
+            <!-- ENTER VISITOR DATA -->
 
             <div id="wizard-frame-3" class="wizard-frame" style="display:none;">
                 <div class="frame-container">
 
                     <h2 class="frame-title"><?= lang('customer_information') ?></h2>
 
-                    <div class="row frame-content">
+                    <div class="vl_information">
+                    1. The inmate designates five (5) individuals who are authorized to visit.  Minors fifteen (15) years or younger are not required to be listed.  All visitors sixteen (16) years or older must show some form of picture identification.  Minors under sixteen (16) years of age must be accompanied by an adult.
+                    <br/><br/>
+                    2. Only three (3) people from the inmate's list may be in the visitation room at any one time.
+                    </div>
+
+                    <div class="row frame-content" id="visitor-1-basic-info">
+                        <div class="col-12 col-md-12" id="no-visitor-slots" style="font-weight:bold;margin:10px;display:none;">All visitor slots for this inmate and date have been filled. Please use the Back button to choose another date or contact the jurisdiction with any questions.</div>
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="first-name" class="control-label">
+                                <label for="visitor-1-first-name" class="control-label">
                                     <?= lang('first_name') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="first-name" class="required form-control" maxlength="100"/>
+                                <input type="text" id="visitor-1-first-name" class="required form-control" maxlength="100"/>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="last-name" class="control-label">
+                                <label for="visitor-1-last-name" class="control-label">
                                     <?= lang('last_name') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="last-name" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-last-name" class="required form-control" maxlength="120"/>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
                             <div class="form-group">
-                                <label for="email" class="control-label">
-                                    <?= lang('email') ?>
+                                <label for="visitor-1-birth-date" class="control-label">
+                                    <?= lang('birth_date') ?>
                                     <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="email" class="required form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-birth-date" maxlength="10" class="required form-control"/>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Add a button to continue - we need to check the entered name against the inmates authorized list before continuing -->
+                            <div class="form-group" style="text-align:left;padding-top:9px;">
+                                <br/>
+                                <button type="button" class="authorize-visitor btn btn-warning" id="authorize-visitor-1" data-visitor="visitor-1">
+                                    Authorize Visitor
+                                </button>
+                                <br/><br/>
+                                <div id="authorize-visitor-1-message" style="font-weight:bolder;color:darkred;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- V1 Attorney fields -->
+                    <div class="row frame-content visitor-1-information" id="visitor-1-attorney-information" style="display:none;">
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="phone-number" class="control-label">
-                                    <?= lang('phone_number') ?>
-                                    <?= $require_phone_number === '1' ? '<span class="text-danger">*</span>' : '' ?>
+                                <label for="visitor-1-court-appointed" class="control-label">
+                                    Are you the inmate's court appointed attorney?
                                 </label>
-                                <input type="text" id="phone-number" maxlength="60"
-                                       class="<?= $require_phone_number === '1' ? 'required' : '' ?> form-control"/>
+                                Yes <input type="radio" id="visitor-1-court-appointed-yes" name="visitor-1-court-appointed" value="yes"/>
+                                No <input type="radio" id="visitor-1-court-appointed-no" name="visitor-1-court-appointed" value="no" checked="checked"/>
                             </div>
-                             
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="visitor_1_dl_state" class="control-label">
+                                <label for="visitor-1-cause-number" class="control-label">
+                                    Cause Number
+                                </label>
+                                <input type="text" id="visitor-1-cause-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-1-law-firm" class="control-label">
+                                    Law Firm
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-1-law-firm" class="required form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-1-attorney-type" class="control-label">
+                                    Attorney Type
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="visitor-1-attorney-type" class="required form-control">
+                                    <option value="">Select</option>
+                                    <option value="attorney">I am the attorney</option>
+                                    <option value="representative">I am a representative of the attorney</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- V1 Attorney fields -->
+
+                    <div class="row frame-content visitor-1-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-box" style="display:none;">
+                                <label for="visitor-1-dl" class="control-label">
+                                    <?= lang('visitor_1_dl') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div id="visitor-1-existing-file" style="font-size:11px;font-weight:bold;display:none;"></div>
+                                <input type="file" id="visitor-1-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-1-dl')"/>
+                                <input type="hidden" id="visitor-1-dl-file-name" value="" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-number-box" style="display:none;">
+                                <label for="visitor-1-dl-number" class="control-label">
+                                    <?= lang('visitor_1_dl_number') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-1-dl-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-dl-state-box" style="display:none;">
+                                <label for="visitor-1-dl-state" class="control-label">
                                     <?= lang('visitor_1_dl_state') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
                                 
                                 <select id="visitor-1-dl-state" class="form-control">
-                                            <option value="Select">Select</option>
+                                            <option value="">Select</option>
                                             <option value="Alabama">Alabama</option>
                                             <option value="Alaska">Alaska</option>
                                             <option value="Arizona">Arizona</option>
@@ -353,314 +961,740 @@
                                             <option value="Wisconsin">Wisconsin</option>
                                             <option value="Wyoming">Wyoming</option>
                                         </select>
-                            </div> 
-                             
-                            <div class="form-group">
-                                <label for="notes" class="control-label">
-                                    <?= lang('notes') ?>
-                                </label>
-                                <textarea id="notes" maxlength="500" class="form-control" rows="1"></textarea>
-                            </div>                        
-                            
+                            </div>
                         </div>
-                      
                         <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="address" class="control-label">
+                                <label for="visitor-1-address" class="control-label">
                                     <?= lang('address') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="address" class="form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-address" class="required form-control" maxlength="120"/>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="city" class="control-label">
+                                <label for="visitor-1-city" class="control-label">
                                     <?= lang('city') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="city" class="form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-city" class="required form-control" maxlength="120"/>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-1-state-box">
+                                <label for="visitor-1-state" class="control-label">
+                                    <?= lang('state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-1-state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="zip-code" class="control-label">
+                                <label for="visitor-1-zip-code" class="control-label">
                                     <?= lang('zip_code') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="zip-code" class="form-control" maxlength="120"/>
+                                <input type="text" id="visitor-1-zip-code" class="required form-control" maxlength="120"/>
                             </div>
-                            
-                            <form>
-                                <div class="form-group">
-                                <label for="visitor_1_dl" class="control-label">
-                                    <?= lang('visitor_1_dl') ?>
-                                </label>
-                                    <input type="file" id="visitor-1-dl" class="form-control" maxlength="120"/>
-                                </div>
-                            </form>
-                            
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="visitor_1_dl_number" class="control-label">
-                                    <?= lang('visitor_1_dl_number') ?>
+                                <label for="visitor-1-email" class="control-label">
+                                    <?= lang('email') ?>
+                                    <span id="visitor-1-show-required-email" class="text-danger">*</span>
                                 </label>
-                                <input type="number" id="visitor-1-dl-number" class="form-control"/>
+                                <input type="text" id="visitor-1-email" class="required form-control" maxlength="120"/>
                             </div>
-                            
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-1-phone-number" class="control-label">
+                                    <?= lang('phone_number') ?>
+                                    <span id="visitor-1-show-required-phone" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="text" id="visitor-1-phone-number" class="required form-control" maxlength="60"/>
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="row frame-content visitor-1-information" style="display:none;">
+                        <hr style="width:95%;" />
+                        <div class="col-12 col-md-6">
+                            <div class="command-buttons">
+                                <button type="button" id="button-add-visitor-2" class="btn btn-dark">
+                                    Add Another Visitor
+                                </button>
+                                <button type="button" id="button-remove-visitor-2" class="btn btn-outline-secondary" style="display:none;">
+                                    Remove Visitor
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-12" id="no-visitor-slots-2" style="font-weight:bold;margin:10px;display:none;">No further visitor slots are available for this inmate and date.</div>
                         </div>
                     </div>
-                <h2 class="frame-title"><?= lang('additional_customer_information') ?></h2> 
-                
-                    <div class="row frame-content">
-                        <div class="col-12 col-md-6">
-                
-                            <div class="form-group">
-                                <label for="visitor_2_name" class="control-label">
-                                    <?= lang('visitor_2_name') ?>
-                                </label>
-                                <input type="text" id="visitor-2-name" class="form-control" maxlength="500"/>
-                            </div>
-                            
-                             <div class="form-group">
-                                <label for="visitor_2_dl_number" class="control-label">
-                                    <?= lang('visitor_2_dl_number') ?>
-                                </label>
-                                <input type="number" id="visitor-2-dl-number" class="form-control"/>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="visitor_3_name" class="control-label">
-                                    <?= lang('visitor_3_name') ?>
-                                </label>
-                                <input type="text" id="visitor-3-name" class="form-control" maxlength="500"/>
-                            </div>
-                            
-                              <div class="form-group">
-                                <label for="visitor_3_dl_number" class="control-label">
-                                    <?= lang('visitor_3_dl_number') ?>
-                                </label>
-                                <input type="number" id="visitor-3-dl-number" class="form-control"/>
-                            </div>
-                            
 
-                            
+                    <!-- Visitor 2 -->
+                    <div class="row frame-content" id="visitor-2-info" style="display:none;">
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="visitor_4_name" class="control-label">
-                                    <?= lang('visitor_4_name') ?>
+                                <label for="visitor-2-first-name" class="control-label">
+                                    <?= lang('visitor_2_first_name') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" id="visitor-4-name" class="form-control" maxlength="500"/>
+                                <input type="text" id="visitor-2-first-name" class="form-control" maxlength="100"/>
                             </div>
-                            
-                              <div class="form-group">
-                                <label for="visitor_4_dl_number" class="control-label">
-                                    <?= lang('visitor_4_dl_number') ?>
-                                </label>
-                                <input type="number" id="visitor-4-dl-number" class="form-control"/>
-                            </div>
-                        
                         </div>
-                
-                <div class="col-12 col-md-6">
-                
-                            <form>
-                                <div class="form-group">
-                                <label for="visitor_2_dl" class="control-label">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-last-name" class="control-label">
+                                    <?= lang('visitor_2_last_name') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-last-name" class="form-control" maxlength="100"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
+                            <div class="form-group">
+                                <label for="visitor-2-birth-date" class="control-label">
+                                    <?= lang('birth_date') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-birth-date" maxlength="10" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Add a button to continue - we need to check the entered name against the inmates authorized list before continuing -->
+                            <div class="form-group" style="text-align:left;padding-top:9px;">
+                                <br/>
+                                <button type="button" class="authorize-visitor btn btn-warning" id="authorize-visitor-2" data-visitor="visitor-2">
+                                    Authorize Visitor
+                                </button>
+                                <br/><br/>
+                                <div id="authorize-visitor-2-message" style="font-weight:bolder;color:darkred;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- V2 Attorney fields -->
+                    <div class="row frame-content visitor-2-information" id="visitor-2-attorney-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-court-appointed" class="control-label">
+                                    Are you the inmate's court appointed attorney?
+                                </label>
+                                Yes <input type="radio" id="visitor-2-court-appointed-yes" name="visitor-2-court-appointed" value="yes"/>
+                                No <input type="radio" id="visitor-2-court-appointed-no" name="visitor-2-court-appointed" value="no" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-cause-number" class="control-label">
+                                    Cause Number
+                                </label>
+                                <input type="text" id="visitor-2-cause-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-law-firm" class="control-label">
+                                    Law Firm
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-law-firm" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-attorney-type" class="control-label">
+                                    Attorney Type
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="visitor-2-attorney-type" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="attorney">I am the attorney</option>
+                                    <option value="representative">I am a representative of the attorney</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- V2 Attorney fields -->
+
+                    <div class="row frame-content visitor-2-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <br/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-box" style="display:none;">
+                                <label for="visitor-2-dl" class="control-label">
                                     <?= lang('visitor_2_dl') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                    <input type="file" id="visitor-2-dl" class="form-control" maxlength="120"/>
-                                </div>
-                            </form>   
-                
-                            <div class="form-group">
-                                <label for="visitor_2_dl_state" class="control-label">
+                                <div id="visitor-2-existing-file" style="font-size:11px;font-weight:bold;display:none;"></div>
+                                <input type="file" id="visitor-2-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-2-dl')"/>
+                                <input type="hidden" id="visitor-2-dl-file-name" value="" />
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-number-box" style="display:none;">
+                                <label for="visitor-2-dl-number" class="control-label">
+                                    <?= lang('visitor_2_dl_number') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-dl-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-dl-state-box" style="display:none;">
+                                <label for="visitor-2-dl-state" class="control-label">
                                     <?= lang('visitor_2_dl_state') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
+                                
                                 <select id="visitor-2-dl-state" class="form-control">
-                                            <option value="Select">Select</option>
-                                            <option value="Alabama">Alabama</option>
-                                            <option value="Alaska">Alaska</option>
-                                            <option value="Arizona">Arizona</option>
-                                            <option value="Arkansas">Arkansas</option>
-                                            <option value="California">California</option>
-                                            <option value="Colorado">Colorado</option>
-                                            <option value="Connecticut">Connecticut</option>
-                                            <option value="Delaware">Delaware</option>
-                                            <option value="Florida">Florida</option>
-                                            <option value="Georgia">Georgia</option>
-                                            <option value="Hawaii">Hawaii</option>
-                                            <option value="Idaho">Idaho</option>
-                                            <option value="Illinois">Illinois</option>
-                                            <option value="Indiana">Indiana</option>
-                                            <option value="Iowa">Iowa</option>
-                                            <option value="Kansas">Kansas</option>
-                                            <option value="Kentucky">Kentucky</option>
-                                            <option value="Louisiana">Louisiana</option>
-                                            <option value="Maine">Maine</option>
-                                            <option value="Maryland">Maryland</option>
-                                            <option value="Massachusetts">Massachusetts</option>
-                                            <option value="Michigan">Michigan</option>
-                                            <option value="Minnesota">Minnesota</option>
-                                            <option value="Mississippi">Mississippi</option>
-                                            <option value="Missouri">Missouri</option>
-                                            <option value="Montana">Montana</option>
-                                            <option value="Nebraska">Nebraska</option>
-                                            <option value="Nevada">Nevada</option>
-                                            <option value="New Hampshire">New Hampshire</option>
-                                            <option value="New Jersey">New Jersey</option>
-                                            <option value="New Mexico">New Mexico</option>
-                                            <option value="New York">New York</option>
-                                            <option value="North Carolina">North Carolina</option>
-                                            <option value="North Dakota">North Dakota</option>
-                                            <option value="Ohio">Ohio</option>
-                                            <option value="Oklahoma">Oklahoma</option>
-                                            <option value="Oregon">Oregon</option>
-                                            <option value="Pennsylvania">Pennsylvania</option>
-                                            <option value="Rhode Island">Rhode Island</option>
-                                            <option value="South Carolina">South Carolina</option>
-                                            <option value="South Dakota">South Dakota</option>
-                                            <option value="Tennessee">Tennessee</option>
-                                            <option value="Texas">Texas</option>
-                                            <option value="Utah">Utah</option>
-                                            <option value="Vermont">Vermont</option>
-                                            <option value="Virginia">Virginia</option>
-                                            <option value="Washington">Washington</option>
-                                            <option value="West Virginia">West Virginia</option>
-                                            <option value="Wisconsin">Wisconsin</option>
-                                            <option value="Wyoming">Wyoming</option>
-                                        </select>
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
                             </div>
-                            
-                            <form>
-                                <div class="form-group">
-                                <label for="visitor_3_dl" class="control-label">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <span>Use same address as Visitor 1 &nbsp;&nbsp</span>
+                                <input type="checkbox" id="visitor-2-use-same-address"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <br/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-address" class="control-label">
+                                    Visitor 2 <?= lang('address') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-address" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-city" class="control-label">
+                                    Visitor 2 <?= lang('city') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-city" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-2-state-box">
+                                <label for="visitor-2-state" class="control-label">
+                                    Visitor 2 <?= lang('state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-2-state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-zip-code" class="control-label">
+                                    Visitor 2 <?= lang('zip_code') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-zip-code" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-email" class="control-label">
+                                    Visitor 2 <?= lang('email') ?>
+                                    <span id="visitor-2-show-required-email" class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-email" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-2-phone-number" class="control-label">
+                                    Visitor 2 <?= lang('phone_number') ?>
+                                    <span id="visitor-2-show-required-phone" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="text" id="visitor-2-phone-number" maxlength="60" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row frame-content visitor-2-information" style="display:none;">
+                        <hr style="width:95%;" />
+                        <div class="col-12 col-md-6">
+                            <div class="command-buttons">
+                                <button type="button" id="button-add-visitor-3" class="btn btn-dark">
+                                    Add Another Visitor
+                                </button>
+                                <button type="button" id="button-remove-visitor-3" class="btn btn-outline-secondary" style="display:none;">
+                                    Remove Visitor
+                                </button>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="col-12 col-md-12" id="no-visitor-slots-3" style="font-weight:bold;margin:10px;display:none;">No further visitor slots are available for this inmate and date.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visitor 3 -->
+                    <div class="row frame-content" id="visitor-3-info" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-first-name" class="control-label">
+                                    <?= lang('visitor_3_first_name') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-first-name" class="form-control" maxlength="100"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-last-name" class="control-label">
+                                    <?= lang('visitor_3_last_name') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-last-name" class="form-control" maxlength="100"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Display birth date box - if age is certain values, require further information -->
+                            <div class="form-group">
+                                <label for="visitor-3-birth-date" class="control-label">
+                                    <?= lang('birth_date') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-birth-date" maxlength="10" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- Add a button to continue - we need to check the entered name against the inmates authorized list before continuing -->
+                            <div class="form-group" style="text-align:left;padding-top:9px;">
+                                <br/>
+                                <button type="button" class="authorize-visitor btn btn-warning" id="authorize-visitor-3" data-visitor="visitor-3">
+                                    Authorize Visitor
+                                </button>
+                                <br/><br/>
+                                <div id="authorize-visitor-3-message" style="font-weight:bolder;color:darkred;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- V3 Attorney fields -->
+                    <div class="row frame-content visitor-3-information" id="visitor-3-attorney-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-court-appointed" class="control-label">
+                                    Are you the inmate's court appointed attorney?
+                                </label>
+                                Yes <input type="radio" id="visitor-3-court-appointed-yes" name="visitor-3-court-appointed" value="yes"/>
+                                No <input type="radio" id="visitor-3-court-appointed-no" name="visitor-3-court-appointed" value="no" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-cause-number" class="control-label">
+                                    Cause Number
+                                </label>
+                                <input type="text" id="visitor-3-cause-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-law-firm" class="control-label">
+                                    Law Firm
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-law-firm" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-attorney-type" class="control-label">
+                                    Attorney Type
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="visitor-3-attorney-type" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="attorney">I am the attorney</option>
+                                    <option value="representative">I am a representative of the attorney</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- V3 Attorney fields -->
+
+                    <div class="row frame-content visitor-3-information" style="display:none;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <br/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-box" style="display:none;">
+                                <label for="visitor-3-dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                    <input type="file" id="visitor-3-dl" class="form-control" maxlength="120"/>
-                                </div>
-                            </form> 
-                            
-                            <div class="form-group">
-                                <label for="visitor_3_dl_state" class="control-label">
-                                    <?= lang('visitor_3_dl_state') ?>
-                                </label>
-                                <select id="visitor-3-dl-state" class="form-control">
-                                            <option value="Select">Select</option>
-                                            <option value="Alabama">Alabama</option>
-                                            <option value="Alaska">Alaska</option>
-                                            <option value="Arizona">Arizona</option>
-                                            <option value="Arkansas">Arkansas</option>
-                                            <option value="California">California</option>
-                                            <option value="Colorado">Colorado</option>
-                                            <option value="Connecticut">Connecticut</option>
-                                            <option value="Delaware">Delaware</option>
-                                            <option value="Florida">Florida</option>
-                                            <option value="Georgia">Georgia</option>
-                                            <option value="Hawaii">Hawaii</option>
-                                            <option value="Idaho">Idaho</option>
-                                            <option value="Illinois">Illinois</option>
-                                            <option value="Indiana">Indiana</option>
-                                            <option value="Iowa">Iowa</option>
-                                            <option value="Kansas">Kansas</option>
-                                            <option value="Kentucky">Kentucky</option>
-                                            <option value="Louisiana">Louisiana</option>
-                                            <option value="Maine">Maine</option>
-                                            <option value="Maryland">Maryland</option>
-                                            <option value="Massachusetts">Massachusetts</option>
-                                            <option value="Michigan">Michigan</option>
-                                            <option value="Minnesota">Minnesota</option>
-                                            <option value="Mississippi">Mississippi</option>
-                                            <option value="Missouri">Missouri</option>
-                                            <option value="Montana">Montana</option>
-                                            <option value="Nebraska">Nebraska</option>
-                                            <option value="Nevada">Nevada</option>
-                                            <option value="New Hampshire">New Hampshire</option>
-                                            <option value="New Jersey">New Jersey</option>
-                                            <option value="New Mexico">New Mexico</option>
-                                            <option value="New York">New York</option>
-                                            <option value="North Carolina">North Carolina</option>
-                                            <option value="North Dakota">North Dakota</option>
-                                            <option value="Ohio">Ohio</option>
-                                            <option value="Oklahoma">Oklahoma</option>
-                                            <option value="Oregon">Oregon</option>
-                                            <option value="Pennsylvania">Pennsylvania</option>
-                                            <option value="Rhode Island">Rhode Island</option>
-                                            <option value="South Carolina">South Carolina</option>
-                                            <option value="South Dakota">South Dakota</option>
-                                            <option value="Tennessee">Tennessee</option>
-                                            <option value="Texas">Texas</option>
-                                            <option value="Utah">Utah</option>
-                                            <option value="Vermont">Vermont</option>
-                                            <option value="Virginia">Virginia</option>
-                                            <option value="Washington">Washington</option>
-                                            <option value="West Virginia">West Virginia</option>
-                                            <option value="Wisconsin">Wisconsin</option>
-                                            <option value="Wyoming">Wyoming</option>
-                                        </select>
+                                <div id="visitor-3-existing-file" style="font-size:11px;font-weight:bold;display:none;"></div>
+                                <input type="file" id="visitor-3-dl" class="form-control" maxlength="120" onchange="uploadDocument('visitor-3-dl')"/>
+                                <input type="hidden" id="visitor-3-dl-file-name" value="" />
                             </div>
-                            
-                            <form>
-                                <div class="form-group">
-                                <label for="visitor_4_dl" class="control-label">
-                                    <?= lang('visitor_4_dl') ?>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-number-box" style="display:none;">
+                                <label for="visitor-3-dl-number" class="control-label">
+                                    <?= lang('visitor_3_dl_number') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                    <input type="file" id="visitor-4-dl" class="form-control" maxlength="120"/>
-                                </div>
-                            </form>
-                            
+                                <input type="text" id="visitor-3-dl-number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-dl-state-box" style="display:none;">
+                                <label for="visitor-3-dl-state" class="control-label">
+                                    <?= lang('visitor_3_dl_state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-3-dl-state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
                             <div class="form-group">
-                                <label for="visitor_4_dl_state" class="control-label">
-                                    <?= lang('visitor_4_dl_state') ?>
+                                <span>Use same address as Visitor 1 &nbsp;&nbsp</span>
+                                <input type="checkbox" id="visitor-3-use-same-address"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <br/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-address" class="control-label">
+                                    Visitor 3 <?= lang('address') ?>
+                                    <span class="text-danger">*</span>
                                 </label>
-                                <select id="visitor-4-dl-state" class="form-control">
-                                            <option value="Select">Select</option>
-                                            <option value="Alabama">Alabama</option>
-                                            <option value="Alaska">Alaska</option>
-                                            <option value="Arizona">Arizona</option>
-                                            <option value="Arkansas">Arkansas</option>
-                                            <option value="California">California</option>
-                                            <option value="Colorado">Colorado</option>
-                                            <option value="Connecticut">Connecticut</option>
-                                            <option value="Delaware">Delaware</option>
-                                            <option value="Florida">Florida</option>
-                                            <option value="Georgia">Georgia</option>
-                                            <option value="Hawaii">Hawaii</option>
-                                            <option value="Idaho">Idaho</option>
-                                            <option value="Illinois">Illinois</option>
-                                            <option value="Indiana">Indiana</option>
-                                            <option value="Iowa">Iowa</option>
-                                            <option value="Kansas">Kansas</option>
-                                            <option value="Kentucky">Kentucky</option>
-                                            <option value="Louisiana">Louisiana</option>
-                                            <option value="Maine">Maine</option>
-                                            <option value="Maryland">Maryland</option>
-                                            <option value="Massachusetts">Massachusetts</option>
-                                            <option value="Michigan">Michigan</option>
-                                            <option value="Minnesota">Minnesota</option>
-                                            <option value="Mississippi">Mississippi</option>
-                                            <option value="Missouri">Missouri</option>
-                                            <option value="Montana">Montana</option>
-                                            <option value="Nebraska">Nebraska</option>
-                                            <option value="Nevada">Nevada</option>
-                                            <option value="New Hampshire">New Hampshire</option>
-                                            <option value="New Jersey">New Jersey</option>
-                                            <option value="New Mexico">New Mexico</option>
-                                            <option value="New York">New York</option>
-                                            <option value="North Carolina">North Carolina</option>
-                                            <option value="North Dakota">North Dakota</option>
-                                            <option value="Ohio">Ohio</option>
-                                            <option value="Oklahoma">Oklahoma</option>
-                                            <option value="Oregon">Oregon</option>
-                                            <option value="Pennsylvania">Pennsylvania</option>
-                                            <option value="Rhode Island">Rhode Island</option>
-                                            <option value="South Carolina">South Carolina</option>
-                                            <option value="South Dakota">South Dakota</option>
-                                            <option value="Tennessee">Tennessee</option>
-                                            <option value="Texas">Texas</option>
-                                            <option value="Utah">Utah</option>
-                                            <option value="Vermont">Vermont</option>
-                                            <option value="Virginia">Virginia</option>
-                                            <option value="Washington">Washington</option>
-                                            <option value="West Virginia">West Virginia</option>
-                                            <option value="Wisconsin">Wisconsin</option>
-                                            <option value="Wyoming">Wyoming</option>
-                                        </select>
-                            </div>            
-                           
-                </div>
-                </div>
+                                <input type="text" id="visitor-3-address" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-city" class="control-label">
+                                    Visitor 3 <?= lang('city') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-city" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group" id="visitor-3-state-box">
+                                <label for="visitor-3-state" class="control-label">
+                                    Visitor 3 <?= lang('state') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                
+                                <select id="visitor-3-state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Alabama">Alabama</option>
+                                    <option value="Alaska">Alaska</option>
+                                    <option value="Arizona">Arizona</option>
+                                    <option value="Arkansas">Arkansas</option>
+                                    <option value="California">California</option>
+                                    <option value="Colorado">Colorado</option>
+                                    <option value="Connecticut">Connecticut</option>
+                                    <option value="Delaware">Delaware</option>
+                                    <option value="Florida">Florida</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Idaho">Idaho</option>
+                                    <option value="Illinois">Illinois</option>
+                                    <option value="Indiana">Indiana</option>
+                                    <option value="Iowa">Iowa</option>
+                                    <option value="Kansas">Kansas</option>
+                                    <option value="Kentucky">Kentucky</option>
+                                    <option value="Louisiana">Louisiana</option>
+                                    <option value="Maine">Maine</option>
+                                    <option value="Maryland">Maryland</option>
+                                    <option value="Massachusetts">Massachusetts</option>
+                                    <option value="Michigan">Michigan</option>
+                                    <option value="Minnesota">Minnesota</option>
+                                    <option value="Mississippi">Mississippi</option>
+                                    <option value="Missouri">Missouri</option>
+                                    <option value="Montana">Montana</option>
+                                    <option value="Nebraska">Nebraska</option>
+                                    <option value="Nevada">Nevada</option>
+                                    <option value="New Hampshire">New Hampshire</option>
+                                    <option value="New Jersey">New Jersey</option>
+                                    <option value="New Mexico">New Mexico</option>
+                                    <option value="New York">New York</option>
+                                    <option value="North Carolina">North Carolina</option>
+                                    <option value="North Dakota">North Dakota</option>
+                                    <option value="Ohio">Ohio</option>
+                                    <option value="Oklahoma">Oklahoma</option>
+                                    <option value="Oregon">Oregon</option>
+                                    <option value="Pennsylvania">Pennsylvania</option>
+                                    <option value="Rhode Island">Rhode Island</option>
+                                    <option value="South Carolina">South Carolina</option>
+                                    <option value="South Dakota">South Dakota</option>
+                                    <option value="Tennessee">Tennessee</option>
+                                    <option value="Texas">Texas</option>
+                                    <option value="Utah">Utah</option>
+                                    <option value="Vermont">Vermont</option>
+                                    <option value="Virginia">Virginia</option>
+                                    <option value="Washington">Washington</option>
+                                    <option value="West Virginia">West Virginia</option>
+                                    <option value="Wisconsin">Wisconsin</option>
+                                    <option value="Wyoming">Wyoming</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-zip-code" class="control-label">
+                                    Visitor 3 <?= lang('zip_code') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-zip-code" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-email" class="control-label">
+                                    Visitor 3 <?= lang('email') ?>
+                                    <span id="visitor-3-show-required-email" class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-email" class="form-control" maxlength="120"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="visitor-3-phone-number" class="control-label">
+                                    Visitor 3 <?= lang('phone_number') ?>
+                                    <span id="visitor-3-show-required-phone" class="text-danger" style="display:none;">*</span>
+                                </label>
+                                <input type="text" id="visitor-3-phone-number" maxlength="60" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                    
 
@@ -699,7 +1733,7 @@
                         <?= lang('back') ?>
                     </button>
                     <button type="button" id="button-next-3" class="btn button-next btn-dark"
-                            data-step_index="3">
+                            data-step_index="3" style="display:none;">
                         <?= lang('next') ?>
                         <i class="fas fa-chevron-right ml-2"></i>
                     </button>
@@ -714,6 +1748,20 @@
                     <div class="row frame-content">
                         <div id="appointment-details" class="col-12 col-md-6"></div>
                         <div id="customer-details" class="col-12 col-md-6"></div>
+                        <span class="vl_information_red">
+                        *REMINDER* BEFORE CONFIRMING YOUR VISIT, YOU MUST HAVE PROPER VALID GOVERNMENT IDENTIFICATION UPON ARRIVAL FOR YOUR VISIT.
+                        </span>
+                        <br/><br/>
+                        <span class="visitor-restriction-message" style="font-weight:bold;color:red;display:none;">
+                            NOTE: You cannot schedule an appointment at this time.
+                            <br/><br/>
+                            Please contact the jurisdiction for information.
+                        </span>
+                        <span class="visitor-restriction-message-dates" style="font-weight:bold;color:red;display:none;">
+                            NOTE: You cannot schedule an appointment with an inmate more than a week out from the current date.
+                            <br/><br/>
+                            Please use the back buttons to pick a new date.
+                        </span>
                     </div>
                     <?php if ($this->settings_model->get_setting('require_captcha') === '1'): ?>
                         <div class="row frame-content">
@@ -738,7 +1786,8 @@
                         <i class="fas fa-chevron-left mr-2"></i>
                         <?= lang('back') ?>
                     </button>
-                    <form id="book-appointment-form" style="display:inline-block" method="post">
+
+                    <form enctype="multipart/form-data" id="book-appointment-form" style="display:inline-block" method="post">
                         <button id="book-appointment-submit" type="button" class="btn btn-success">
                             <i class="fas fa-check-square mr-2"></i>
                             <?= ! $manage_mode ? lang('confirm') : lang('update') ?>
@@ -754,22 +1803,25 @@
             <div id="frame-footer">
                 <small>
                     <span class="footer-powered-by">
-                        Powered By
-
-                        <a href="https://easyappointments.org" target="_blank">Easy!Appointments</a>
+                        Provided by Tarmac Technologies VisitationLink
+<!--                        <a href="https://tarmactech.com/home" target="_blank">Tarmac Technologies VisitationLink</a> -->
+                        and Powered By E!A
+<!--                        <a href="https://easyappointments.org" target="_blank">E!A</a> -->
                     </span>
 
+                    <!--
                     <span class="footer-options">
                         <span id="select-language" class="badge badge-secondary">
                             <i class="fas fa-language mr-2"></i>
-                            <?= ucfirst(config('language')) ?>
+                            <= ucfirst(config('language')) ?>
                         </span>
 
-                        <a class="backend-link badge badge-primary" href="<?= site_url('backend'); ?>">
+                        <a class="backend-link badge badge-primary" href="<= site_url('backend'); ?>">
                             <i class="fas fa-sign-in-alt mr-2"></i>
-                            <?= $this->session->user_id ? lang('backend_section') : lang('login') ?>
+                            <= $this->session->user_id ? lang('backend_section') : lang('login') ?>
                         </a>
                     </span>
+                    -->
                 </small>
             </div>
         </div>
@@ -814,6 +1866,7 @@
 <script src="<?= asset_url('assets/js/general_functions.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/jquery/jquery.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.js') ?>"></script>
+<script src="<?= asset_url('assets/ext/jquery-ui/jquery-ui-timepicker-addon.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/cookieconsent/cookieconsent.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/popper/popper.min.js') ?>"></script>

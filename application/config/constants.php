@@ -65,9 +65,12 @@ define('PRIV_EDIT', 4);
 define('PRIV_DELETE', 8);
 
 define('PRIV_APPOINTMENTS', 'appointments');
+define('PRIV_DASHBOARD', 'dashboard');
 define('PRIV_CUSTOMERS', 'customers');
+define('PRIV_INMATES', 'inmates');
 define('PRIV_SERVICES', 'services');
 define('PRIV_USERS', 'users');
+define('PRIV_REPORTING', 'reporting');
 define('PRIV_SYSTEM_SETTINGS', 'system_settings');
 define('PRIV_USER_SETTINGS', 'user_settings');
 
@@ -88,6 +91,9 @@ define('AVAILABILITIES_TYPE_FLEXIBLE', 'flexible');
 define('AVAILABILITIES_TYPE_FIXED', 'fixed');
 
 define('EVENT_MINIMUM_DURATION', 5); // Minutes
+
+// Attorney visits are handled differently in many areas
+define('ATTORNEY_SERVICE_ID', 2);
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

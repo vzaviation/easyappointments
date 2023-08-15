@@ -30,6 +30,7 @@ class Synchronization {
         $this->CI =& get_instance();
         $this->CI->load->model('providers_model');
         $this->CI->load->model('appointments_model');
+        $this->CI->load->model('visitors_model');
         $this->CI->load->library('google_sync');
     }
 
@@ -39,12 +40,13 @@ class Synchronization {
      * @param array $appointment Appointment record.
      * @param array $service Service record.
      * @param array $provider Provider record.
-     * @param array $customer Customer record.
+     * @param array $visitors Visitors record.
      * @param array $settings Required settings for the notification content.
      * @param bool|false $manage_mode True if the appointment is being edited.
      */
-    public function sync_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode = FALSE)
+    public function sync_appointment_saved($appointment, $service, $provider, $visitors, $settings, $manage_mode = FALSE)
     {
+        $customer = $visitors[0];
         try
         {
             $google_sync = filter_var(

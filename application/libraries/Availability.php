@@ -44,16 +44,15 @@ class Availability {
      * @param string $date Selected date (Y-m-d).
      * @param array $service Service record.
      * @param array $provider Provider record.
-     * @param int|null $exclude_appointment_id Exclude an appointment from the availability generation.
+     * @param array|null $exclude_appointment_ids Exclude any existing appointments from the availability generation.
      *
      * @return array
      *
      * @throws Exception
      */
-    public function get_available_hours($date, $service, $provider, $exclude_appointment_id = NULL)
+    public function get_available_hours($date, $service, $provider, $exclude_appointment_ids = NULL)
     {
-        $available_periods = $this->get_available_periods($date, $provider, $exclude_appointment_id);
-
+        $available_periods = $this->get_available_periods($date, $provider, $exclude_appointment_ids);
         $available_hours = $this->generate_available_hours($date, $service, $available_periods);
 
         if ($service['attendants_number'] > 1)
@@ -73,7 +72,7 @@ class Availability {
      *
      * @param string $date Select date string.
      * @param array $provider Provider record.
-     * @param int|null $exclude_appointment_id Exclude an appointment from the availability generation.
+     * @param array of int|null $exclude_appointment_ids Exclude any existing appointments from the availability generation.
      *
      * @return array Returns an array with the available time periods of the provider.
      *
@@ -82,7 +81,7 @@ class Availability {
     protected function get_available_periods(
         $date,
         $provider,
-        $exclude_appointment_id = NULL
+        $exclude_appointment_ids = NULL
     )
     {
         // Get the service, provider's working plan and provider appointments.
@@ -97,9 +96,16 @@ class Availability {
 
         // Sometimes it might be necessary to exclude an appointment from the calculation (e.g. when editing an
         // existing appointment).
-        if ($exclude_appointment_id)
-        {
-            $conditions['id !='] = $exclude_appointment_id;
+        if ($exclude_appointment_ids) {
+            $eidStr = "(";
+            foreach ($exclude_appointment_ids as $eid) {
+                $eidStr .= $eid . ",";
+            }
+            if ($eidStr != "(") {
+                $eidStr = substr($eidStr, 0, -1);
+                $eidStr .= ")";
+                $conditions['id NOT IN '] = $eidStr;
+            }
         }
 
         $appointments = $this->CI->appointments_model->get_batch($conditions);

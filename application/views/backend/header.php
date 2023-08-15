@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <title><?= isset($page_title) ? $page_title : lang('backend_section') ?> | Easy!Appointments</title>
+    <title><?= isset($page_title) ? $page_title : lang('backend_section') ?> | VisitationLink</title>
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.css') ?>">
@@ -39,9 +39,7 @@
 <body>
 <nav id="header" class="navbar navbar-expand-md navbar-dark">
     <div id="header-logo" class="navbar-brand">
-        <img src="<?= base_url('assets/img/logo.png') ?>">
-        <h6>EASY!APPOINTMENTS</h6>
-        <small>Open Source Appointment Scheduler</small>
+        <h4 style="padding-left: 10px;">Anderson County Sheriff's Office</h4>
     </div>
 
     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#header-menu">
@@ -51,6 +49,16 @@
 
     <div id="header-menu" class="collapse navbar-collapse flex-row-reverse">
         <ul class="navbar-nav">
+            <?php $hidden = ($privileges[PRIV_DASHBOARD]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_DASHBOARD) ? 'active' : '' ?>
+            <li class="nav-item <?= $active . $hidden ?>">
+                <a href="<?= site_url('backend/dashboard') ?>" class="nav-link"
+                   data-tippy-content="<?= lang('manage_dashboard_record_hint') ?>">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    <?= lang('dashboard') ?>
+                </a>
+            </li>
+
             <?php $hidden = ($privileges[PRIV_APPOINTMENTS]['view'] == TRUE) ? '' : 'd-none' ?>
             <?php $active = ($active_menu == PRIV_APPOINTMENTS) ? 'active' : '' ?>
             <li class="nav-item <?= $active . $hidden ?>">
@@ -71,6 +79,16 @@
                 </a>
             </li>
 
+            <?php $hidden = ($privileges[PRIV_INMATES]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_INMATES) ? 'active' : '' ?>
+            <li class="nav-item <?= $active . $hidden ?>">
+                <a href="<?= site_url('backend/inmates') ?>" class="nav-link"
+                   data-tippy-content="Manage Inmate Information">
+                    <i class="fas fa-user-friends mr-2"></i>
+                    <?= lang('inmates') ?>
+                </a>
+            </li>
+
             <?php $hidden = ($privileges[PRIV_SERVICES]['view'] == TRUE) ? '' : 'd-none' ?>
             <?php $active = ($active_menu == PRIV_SERVICES) ? 'active' : '' ?>
             <li class="nav-item <?= $active . $hidden ?>">
@@ -88,6 +106,18 @@
                    data-tippy-content="<?= lang('manage_users_hint') ?>">
                     <i class="fas fa-users-cog mr-2"></i>
                     <?= lang('users') ?>
+                </a>
+            </li>
+
+            <?php $hidden = ($privileges[PRIV_REPORTING]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_REPORTING) ? 'active' : '' ?>
+            <li class="nav-item <?= $active . $hidden ?>">
+<!-- prev changed 2023-05-26 <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/b2a98bc7-0ce2-4303-8443-b5974b6c58a3?directory_alias=tarmactech" class="nav-link"
+                   data-tippy-content="Reporting" target="_blank"> -->
+                   <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/a0a704b4-db61-499c-aa24-4eef1d355953?directory_alias=tarmactech"
+                        class="nav-link" data-tippy-content="Reporting" target="_blank">
+                    <i class="fas fa-cogs mr-2"></i>
+                    <?= lang('reporting') ?>
                 </a>
             </li>
 

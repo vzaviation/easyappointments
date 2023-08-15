@@ -22,6 +22,7 @@ use EA\Engine\Types\Url;
 use EA_Controller;
 use Exception;
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
 use RuntimeException;
 
 /**
@@ -86,7 +87,7 @@ class Email {
         array $appointment,
         array $provider,
         array $service,
-        array $customer,
+        array $visitors,
         array $settings,
         Text $title,
         Text $message,
@@ -135,28 +136,41 @@ class Email {
             $appointment_start->setTimezone($appointment_timezone);
             $appointment_end->setTimezone($appointment_timezone);
         }
+        $email_link = $appointment_link_address->get();
+        if (str_contains($appointment_link_address->get(), "donotuse")) {
+            $email_link = "";
+        }
 
         $html = $this->CI->load->view('emails/appointment_details', [
             'email_title' => $title->get(),
             'email_message' => $message->get(),
             'appointment_service' => $service['name'],
+            'appointment_inmate' => $appointment['inmate_name'],
             'appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
             'appointment_start_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_end_date' => $appointment_end->format($date_format . ' ' . $time_format),
             'appointment_timezone' => $timezones[empty($timezone) ? $provider['timezone'] : $timezone],
-            'appointment_link' => $appointment_link_address->get(),
+            'appointment_link' => $email_link,
             'company_link' => $settings['company_link'],
             'company_name' => $settings['company_name'],
-            'customer_name' => $customer['first_name'] . ' ' . $customer['last_name'],
-            'customer_email' => $customer['email'],
-            'customer_phone' => $customer['phone_number'],
-            'customer_address' => $customer['address'],
+            'visitor_1_name' => $visitors[0]['first_name'] . ' ' . $visitors[0]['last_name'],
+            'visitor_1_email' => $visitors[0]['email'],
+            'visitor_1_phone' => $visitors[0]['phone_number'],
+            'visitor_1_address' => $visitors[0]['address'] . ' ' . $visitors[0]['city'] . ' ' . $visitors[0]['zip_code'],
+            'visitor_2_name' => (count($visitors) >= 2 && $visitors[1]['first_name']) ? $visitors[1]['first_name'] . ' ' . $visitors[1]['last_name'] : 'N/A',
+            'visitor_2_email' => (count($visitors) >= 2 && $visitors[1]['email']) ? $visitors[1]['email'] : 'N/A',
+            'visitor_2_phone' => (count($visitors) >= 2 && $visitors[1]['phone_number']) ? $visitors[1]['phone_number'] : 'N/A',
+            'visitor_2_address' => (count($visitors) >= 2 && $visitors[1]['address']) ? $visitors[1]['address'] . ' ' . $visitors[1]['city'] . ' ' . $visitors[1]['zip_code'] : 'N/A',
+            'visitor_3_name' => (count($visitors) >= 3 && $visitors[2]['first_name']) ? $visitors[2]['first_name'] . ' ' . $visitors[2]['last_name'] : 'N/A',
+            'visitor_3_email' => (count($visitors) >= 3 && $visitors[2]['email']) ? $visitors[2]['email'] : 'N/A',
+            'visitor_3_phone' => (count($visitors) >= 3 && $visitors[2]['phone_number']) ? $visitors[2]['phone_number'] : 'N/A',
+            'visitor_3_address' => (count($visitors) >= 3 && $visitors[2]['address']) ? $visitors[2]['address'] . ' ' . $visitors[2]['city'] . ' ' . $visitors[2]['zip_code'] : 'N/A',
         ], TRUE);
 
         $mailer = $this->create_mailer();
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
-        $mailer->AddAddress($recipient_email->get());
+//        $mailer->From = $settings['company_email'];
+//        $mailer->FromName = $settings['company_name'];
+        $mailer->AddAddress($recipient_email->get(),'Vistitation Link User');
         $mailer->Subject = $title->get();
         $mailer->Body = $html;
         $mailer->addStringAttachment($ics_stream->get(), 'invitation.ics');
@@ -193,7 +207,7 @@ class Email {
         array $appointment,
         array $provider,
         array $service,
-        array $customer,
+        array $visitors,
         array $settings,
         EmailAddress $recipient_email,
         Text $reason,
@@ -240,24 +254,33 @@ class Email {
 
         $html = $this->CI->load->view('emails/delete_appointment', [
             'appointment_service' => $service['name'],
+            'appointment_inmate' => $appointment['inmate_name'],
             'appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
             'appointment_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_duration' => $service['duration'] . ' ' . lang('minutes'),
             'appointment_timezone' => $timezones[empty($timezone) ? $provider['timezone'] : $timezone],
             'company_link' => $settings['company_link'],
             'company_name' => $settings['company_name'],
-            'customer_name' => $customer['first_name'] . ' ' . $customer['last_name'],
-            'customer_email' => $customer['email'],
-            'customer_phone' => $customer['phone_number'],
-            'customer_address' => $customer['address'],
+            'visitor_1_name' => $visitors[0]['first_name'] . ' ' . $visitors[0]['last_name'],
+            'visitor_1_email' => $visitors[0]['email'],
+            'visitor_1_phone' => $visitors[0]['phone_number'],
+            'visitor_1_address' => $visitors[0]['address'] . ' ' . $visitors[0]['city'] . ' ' . $visitors[0]['zip_code'],
+            'visitor_2_name' => (count($visitors) >= 2 && $visitors[1]['first_name']) ? $visitors[1]['first_name'] . ' ' . $visitors[1]['last_name'] : 'N/A',
+            'visitor_2_email' => (count($visitors) >= 2 && $visitors[1]['email']) ? $visitors[1]['email'] : 'N/A',
+            'visitor_2_phone' => (count($visitors) >= 2 && $visitors[1]['phone_number']) ? $visitors[1]['phone_number'] : 'N/A',
+            'visitor_2_address' => (count($visitors) >= 2 && $visitors[1]['address']) ? $visitors[1]['address'] . ' ' . $visitors[1]['city'] . ' ' . $visitors[1]['zip_code'] : 'N/A',
+            'visitor_3_name' => (count($visitors) >= 3 && $visitors[2]['first_name']) ? $visitors[2]['first_name'] . ' ' . $visitors[2]['last_name'] : 'N/A',
+            'visitor_3_email' => (count($visitors) >= 3 && $visitors[2]['email']) ? $visitors[2]['email'] : 'N/A',
+            'visitor_3_phone' => (count($visitors) >= 3 && $visitors[2]['phone_number']) ? $visitors[2]['phone_number'] : 'N/A',
+            'visitor_3_address' => (count($visitors) >= 3 && $visitors[2]['address']) ? $visitors[2]['address'] . ' ' . $visitors[2]['city'] . ' ' . $visitors[2]['zip_code'] : 'N/A',
             'reason' => $reason->get(),
         ], TRUE);
 
         $mailer = $this->create_mailer();
 
         // Send email to recipient.
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
+//        $mailer->From = $settings['company_email'];
+//        $mailer->FromName = $settings['company_name'];
         $mailer->AddAddress($recipient_email->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = lang('appointment_cancelled_title');
         $mailer->Body = $html;
@@ -290,8 +313,8 @@ class Email {
 
         $mailer = $this->create_mailer();
 
-        $mailer->From = $settings['company_email'];
-        $mailer->FromName = $settings['company_name'];
+//        $mailer->From = $settings['company_email'];
+//        $mailer->FromName = $settings['company_name'];
         $mailer->AddAddress($recipientEmail->get()); // "Name" argument crushes the phpmailer class.
         $mailer->Subject = lang('new_account_password');
         $mailer->Body = $html;
@@ -312,8 +335,12 @@ class Email {
     {
         $mailer = new PHPMailer();
 
-        if ($this->config['protocol'] === 'smtp')
-        {
+        $from_email = "noreply@visitationlink.com";
+
+        // Using AWS SES we are going to use SMTP
+//        if ($this->config['protocol'] === 'smtp')
+//        {
+//            $mailer->SMTPDebug = SMTP::DEBUG_SERVER;
             $mailer->isSMTP();
             $mailer->Host = $this->config['smtp_host'];
             $mailer->SMTPAuth = TRUE;
@@ -321,8 +348,8 @@ class Email {
             $mailer->Password = $this->config['smtp_pass'];
             $mailer->SMTPSecure = $this->config['smtp_crypto'];
             $mailer->Port = $this->config['smtp_port'];
-        }
-
+//        }
+        $mailer->SetFrom($from_email, 'Visitation Link');
         $mailer->IsHTML($this->config['mailtype'] === 'html');
         $mailer->CharSet = $this->config['charset'];
 

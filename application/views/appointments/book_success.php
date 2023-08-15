@@ -8,7 +8,7 @@
     <title><?= lang('appointment_registered') . ' - ' . $company_name ?></title>
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
-    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend.css') ?>">
+    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend-andersonco.css') ?>">
 
     <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
     <link rel="icon" sizes="192x192" href="<?= asset_url('assets/img/logo.png') ?>">
@@ -61,10 +61,12 @@
             </div>
 
             <div class="mt-2">
-                <small>
-                    Powered by
-                    <a href="https://easyappointments.org">Easy!Appointments</a>
-                </small>
+                <span class="footer-powered-by">
+                    Provided by Tarmac Technologies VisitationLink
+<!--                    <a href="https://tarmactech.com/home" target="_blank">Tarmac Technologies VisitationLink</a> -->
+                    and Powered By E!A
+<!--                    <a href="https://easyappointments.org" target="_blank">E!A</a> -->
+                </span>
             </div>
         </div>
     </div>
@@ -82,7 +84,7 @@
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
         appointmentData: <?= json_encode($appointment_data) ?>,
         providerData: <?= json_encode($provider_data) ?>,
-        customerData: <?= json_encode($customer_data) ?>,
+        customerData: <?= json_encode($visitor_data) ?>,
         serviceData: <?= json_encode($service_data) ?>,
         companyName: <?= json_encode($company_name) ?>,
         googleApiKey: <?= json_encode(config('google_api_key')) ?>,

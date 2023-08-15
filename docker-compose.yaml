@@ -1,0 +1,40 @@
+version: '1.0'
+
+services:
+  easyapp:
+    image: easyappointments-app
+    tty: true
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/var/www/html/easyappointments'
+    ports:
+      - '80:80'
+    networks:
+      - easyapp
+    depends_on:
+      - mysql
+  mysql:
+    image: 'mysql:8.0'
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root123'
+      MYSQL_DATABASE: 'VisitationLink'
+      MYSQL_USER: 'visitationlink'
+      MYSQL_PASSWORD: 'vLink123!'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    networks:
+      - easyapp
+    volumes:
+      - mysql_datavolume:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-padmin123"]
+      retries: 3
+      timeout: 5s
+networks:
+  easyapp:
+    driver: bridge
+volumes:
+  mysql_datavolume:

@@ -11,6 +11,7 @@
 <script src="<?= asset_url('assets/js/backend_calendar_appointments_modal.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_calendar_unavailability_events_modal.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_calendar_api.js') ?>"></script>
+<script src="<?= asset_url('assets/js/upload_documents.js') ?>"></script>
 <script>
     var GlobalVariables = {
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
@@ -230,7 +231,15 @@
 
                                 <div class="form-group">
                                     <label for="appointment-notes" class="control-label"><?= lang('notes') ?></label>
-                                    <textarea id="appointment-notes" class="form-control" rows="3"></textarea>
+                                    <textarea id="appointment-notes" class="form-control" rows="3"></textarea>                                    
+                                </div>
+
+                                <!-- Checkboxes for visitor arrival -->
+                                <div class="form-group">
+                                    <label for="visitor_1_arrived" class="control-label">Visitor Arrival Confirmation
+                                    <br/><span style="font-size:80%;">(please click 'Save' after updating)</span></label>
+                                    <br/>Visitor 1 Arrived: <input type="checkbox" id="visitor-1-arrived" value="true" />
+                                    <br/>Visitor 2 Arrived: <input type="checkbox" id="visitor-2-arrived" value="true" /> (if applicable)
                                 </div>
                             </div>
 
@@ -350,7 +359,7 @@
                                 <label for="visitor_1_dl_state" class="control-label">
                                     <?= lang('visitor_1_dl_state') ?>
                                 </label>
-                                <select id="visitor_1_dl_state" class="form-control">
+                                <select id="visitor-1-dl-state" class="form-control">
                                             <option value="Select">Select</option>
                                             <option value="Alabama">Alabama</option>
                                             <option value="Alaska">Alaska</option>
@@ -439,8 +448,9 @@
                                 <div class="form-group">
                                     <label for="visitor_1_dl" class="control-label">
                                         <?= lang('visitor_1_dl') ?>
-                                    </label>
-                                    <input type="text" id="visitor-1-dl" class="form-control" maxlength="120"/>
+                                    </label> <span><a id="visitor-1-dl-link" href="" target="_blank">View Doc</a></span>
+				    <input type="file" id="visitor-1-dl" class="form-control" onchange="uploadDocument('visitor-1-dl')" maxlength="120"/>
+					<input type="hidden" id="visitor-1-dl-file-name" value="" />
                                 </div>
                             </form>
                             
@@ -472,30 +482,30 @@
                                 <input type="text" id="visitor-2-dl-number" class="form-control" maxlength="500"/>
                             </div>        
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="visitor_3_name" class="control-label">
                                     <?= lang('visitor_3_name') ?>
                                 </label>
                                 <input type="text" id="visitor-3-name" class="form-control" maxlength="500"/>
                             </div>
                             
-                              <div class="form-group">
+                              <div class="form-group" style="display:none;">
                                 <label for="visitor_3_dl_number" class="control-label">
                                     <?= lang('visitor_3_dl_number') ?>
                                 </label>
-                                <input type="text" id="visitor-3-dl-number" class="required form-control" maxlength="500"/>
+                                <input type="text" id="visitor-3-dl-number" class="form-control" maxlength="500"/>
                             </div>
                             
 
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="visitor_4_name" class="control-label">
                                     <?= lang('visitor_4_name') ?>
                                 </label>
                                 <input type="text" id="visitor-4-name" class="form-control" maxlength="500"/>
                             </div>
                             
-                              <div class="form-group">
+                              <div class="form-group" style="display:none;">
                                 <label for="visitor_4_dl_number" class="control-label">
                                     <?= lang('visitor_4_dl_number') ?>
                                 </label>
@@ -510,8 +520,9 @@
                                 <div class="form-group">
                                 <label for="visitor_2_dl" class="control-label">
                                     <?= lang('visitor_2_dl') ?>
-                                </label>
-                                    <input type="text" class="form-control" id="visitor-2-dl">
+                                </label><span><a id="visitor-2-dl-link" href="" target="_blank">View Doc</a></span>
+				    <input type="file" onchange="uploadDocument('visitor-2-dl')" class="form-control" id="visitor-2-dl">
+					<input type="hidden" id="visitor-2-dl-file-name" value="" />
                                 </div>
                             </form>   
                 
@@ -575,15 +586,16 @@
                             </div>
                             
                             <form>
-                                <div class="form-group">
+                                <div class="form-group" style="display:none;">
                                 <label for="visitor_3_dl" class="control-label">
                                     <?= lang('visitor_3_dl') ?>
-                                </label>
-                                    <input type="text" class="form-control" id="visitor-3-dl">
+                                </label> <span><a id="visitor-3-dl-link" href="" target="_blank">View Doc</a></span>
+				    <input type="file" class="form-control" id="visitor-3-dl" onchange="uploadDocument('visitor-3-dl')">
+				<input type="hidden" id="visitor-3-dl-file-name" value="" />
                                 </div>
                             </form> 
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="visitor_3_dl_state" class="control-label">
                                     <?= lang('visitor_3_dl_state') ?>
                                 </label>
@@ -643,15 +655,16 @@
                             </div>
                             
                             <form>
-                                <div class="form-group">
+                                <div class="form-group" style="display:none;">
                                 <label for="visitor_4_dl" class="control-label">
                                     <?= lang('visitor_4_dl') ?>
-                                </label>
-                                    <input type="text" class="form-control" id="visitor-4-dl">
+                                </label> <span><a id="visitor-4-dl-link" href="" target="_blank">View Doc</a></span>
+				    <input type="file" class="form-control" id="visitor-4-dl" onchange="uploadDocument('visitor-4-dl')">
+					<input type="hidden" id="visitor-4-dl-file-name" value="" />
                                 </div>
                             </form>
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display:none;">
                                 <label for="visitor_4_dl_state" class="control-label">
                                     <?= lang('visitor_4_dl_state') ?>
                                 </label>

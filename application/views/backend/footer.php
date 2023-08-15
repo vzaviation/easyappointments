@@ -1,27 +1,22 @@
 <div id="footer">
     <div id="footer-content" class="col-12 col-sm-8">
-        <img class="mr-1" src="<?= base_url('assets/img/logo-16x16.png') ?>" alt="Easy!Appointments Logo">
-        <a href="https://easyappointments.org">
-            Easy!Appointments
+        <img class="mr-1" src="<?= base_url('assets/img/TarmacTech-small.png') ?>" alt="TarmacTech Logo" width="16" height="16" />
+        <a href="https://tarmactech.com/home" target="_blank">
+            VisitationLink by TARMAC TECHNOLOGIES LLC
         </a>
-
-        v<?= config('version') ?>
-        <?php if (config('release_label')): ?>
-            - <?= config('release_label') ?>
-        <?php endif ?>
 
         |
 
-        <img class="mx-1" src="<?= base_url('assets/img/alextselegidis-logo-16x16.png') ?>" alt="Alex Tselegidis Logo">
-        <a href="https://alextselegidis.com">
-            Alex Tselegidis
-        </a>
-        &copy; <?= date('Y') ?> - Software Development
+        Powered by
+        <a href="https://easyappointments.org" target="_blank">
+        Easy!Appointments
+        </a> by Alex Tselegidis
+        &copy; <?= date('Y') ?>
 
         |
 
         <?= lang('licensed_under') ?>
-        <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
+        <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">
             GPL-3.0
         </a>
 

@@ -88,9 +88,6 @@ class Ics_file {
             lang('city') . ': ' . $customer['city'],
             lang('zip_code') . ': ' . $customer['zip_code'],
             '',
-            lang('notes'),
-            '',
-            $appointment['notes'],
         ];
 
         $event->setDescription(implode("\\n", $description));
