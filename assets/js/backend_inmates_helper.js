@@ -606,7 +606,20 @@
                             }),
                             $('<div/>', {
                                 'id': 'visitor-names',
-                                'class': 'col-md-12'
+                                'style': 'width:350px;',
+                                'html': [
+                                    $('<div/>', {
+                                        'id': 'visitor-fn',
+                                        'style': 'display:inline;width:170px;padding-right:110px;',
+                                        'text': 'First Name'
+                                    }),
+                                    $('<div/>', {
+                                        'id': 'visitor-ln',
+                                        'style': 'display:inline;width:170px;',
+                                        'text': 'Last Name'
+                                    })
+
+                                ]
                             })
                         ]
                     })
