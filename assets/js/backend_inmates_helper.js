@@ -38,20 +38,38 @@
          * @param {jQuery.Event} event
          */
         $('#inmates').on('submit', '#filter-inmates form', function (event) {
+            const housed = $('#filter-by-housed').is(':checked');
             event.preventDefault();
             var key = $('#filter-inmates .key').val();
             $('#filter-inmates .selected').removeClass('selected');
             instance.resetForm();
-            instance.filter(key);
+            instance.filter(key,housed);
         });
 
         /**
          * Event: Filter Inmates Clear Button "Click"
          */
         $('#inmates').on('click', '#filter-inmates .clear', function () {
+            $('#filter-by-housed').prop('checked',false);
             $('#filter-inmates .key').val('');
             instance.filter('');
             instance.resetForm();
+        });
+
+        /**
+         * Event: Filter by Housed Checkbox
+         *
+         * Display only the inmates that are currently resident
+         */
+        $('#filter-inmates').on('change', '#filter-by-housed', function () {
+            const housed = $(this).is(':checked');
+            console.log("Housed? " + housed);
+
+            event.preventDefault();
+            var key = $('#filter-inmates .key').val();
+            $('#filter-inmates .selected').removeClass('selected');
+            instance.resetForm();
+            instance.filter(key,housed);
         });
 
         /**
@@ -81,7 +99,7 @@
 
             instance.inmateVisitors(inmateId);
         });
-    
+
         /**
          * Event: Flag "Click"
          */
@@ -109,10 +127,11 @@
 //                    console.log("I: " + JSON.stringify(inmate));
 
                     // reset the form to get updated data
+                    const housed = $('#filter-by-housed').is(':checked');
                     const key = $('#filter-inmates .key').val();
                     $('#filter-inmates .selected').removeClass('selected');
                     instance.resetForm();
-                    instance.filter(key);
+                    instance.filter(key,housed);
 
                     instance.displayInmate(inmate);
 
@@ -146,10 +165,11 @@
 //                    console.log("OUT I: " + JSON.stringify(inmate));
 
                     // reset the form to get updated data
+                    const housed = $('#filter-by-housed').is(':checked');
                     const key = $('#filter-inmates .key').val();
                     $('#filter-inmates .selected').removeClass('selected');
                     instance.resetForm();
-                    instance.filter(key);
+                    instance.filter(key,housed);
 
                     instance.displayInmate(inmate);
 
@@ -219,12 +239,14 @@
             inmate: JSON.stringify(inmate)
         };
 
+        const housed = $('#filter-by-housed').is(':checked');
+
         $.post(url, data)
             .done(function (response) {
                 Backend.displayNotification(EALang.inmate_saved);
                 this.resetForm();
                 $('#filter-inmates .key').val('');
-                this.filter('', response.id, true);
+                this.filter('', housed, response.id, true);
             }.bind(this));
     };
 
@@ -240,12 +262,13 @@
             csrfToken: GlobalVariables.csrfToken,
             inmate_id: id
         };
+        const housed = $('#filter-by-housed').is(':checked');
 
         $.post(url, data)
             .done(function () {
                 Backend.displayNotification(EALang.inmate_deleted);
                 this.resetForm();
-                this.filter($('#filter-inmates .key').val());
+                this.filter($('#filter-inmates .key').val(),housed);
             }.bind(this));
     };
 
@@ -319,21 +342,28 @@
      * Filter inmate records.
      *
      * @param {String} key This key string is used to filter the inmate records.
+     * @param {Boolean} housed Optional (false), if true then only currently resident inmates will be shown
      * @param {Number} selectId Optional, if set then after the filter operation the record with the given
      * ID will be selected (but not displayed).
      * @param {Boolean} display Optional (false), if true then the selected record will be displayed on the form.
      */
-    InmatesHelper.prototype.filter = function (key, selectId, display) {
+    InmatesHelper.prototype.filter = function (key, housed, selectId, display) {
         var instance = this;
 
+        housed = housed || false;
         display = display || false;
+
+        // Clear selected and remove any current data
+        $('#filter-inmates .selected').removeClass('selected');
+        $('#inmate-details-row').empty();
 
         var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_filter_inmates';
 
         var data = {
             csrfToken: GlobalVariables.csrfToken,
             key: key,
-            limit: instance.filterLimit
+            limit: instance.filterLimit,
+            housed
         };
 
         $.post(url, data)
@@ -369,6 +399,7 @@
                     if (a.inmate_name < b.inmate_name) { return -1; }
                     return 0;
                 });
+                const housed = $('#filter-by-housed').is(':checked');
 
                 inmatesSorted.slice(0, this.pageLimit).forEach(function (inmate) {
                     $('#filter-inmates .results')
@@ -389,7 +420,7 @@
                         'text': EALang.load_more,
                         'click': function () {
                             this.pageLimit += this.pageLimit;
-                            this.filter(key, selectId, display);
+                            this.filter(key, housed, selectId, display);
                         }.bind(this)
                     })
                         .appendTo('#filter-inmates .results');

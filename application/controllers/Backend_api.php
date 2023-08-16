@@ -1105,12 +1105,20 @@ class Backend_api extends EA_Controller {
                 throw new Exception('You do not have the required privileges for this task.');
             }
 
+            $housed = $this->input->post('housed');
             $key = $this->db->escape_str($this->input->post('key'));
             $key = strtoupper($key);
 
-            $where =
-                '(inmate_name LIKE upper("%' . $key . '%") OR ' .
-                'inmate_classification_level LIKE upper("%' . $key . '%"))';
+            if ($housed == "true") {
+                $where =
+                    '(booking_status = 1) AND ' .
+                    '(inmate_name LIKE upper("%' . $key . '%") OR ' .
+                    'inmate_classification_level LIKE upper("%' . $key . '%"))';
+            } else {
+                $where =
+                    '(inmate_name LIKE upper("%' . $key . '%") OR ' .
+                    'inmate_classification_level LIKE upper("%' . $key . '%"))';
+            }
 
             $order_by = 'inmate_name ASC';
 

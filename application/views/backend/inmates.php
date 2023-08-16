@@ -42,6 +42,10 @@
                             </button>
                         </div>
                     </div>
+                    <div style="padding:10px;">
+                        <input type="checkbox" id="filter-by-housed"/>
+                        <span>Filter by currently housed</span>
+                    </div>
                 </div>
             </form>
 
