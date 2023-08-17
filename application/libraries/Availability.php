@@ -57,7 +57,7 @@ class Availability {
 
         if ($service['attendants_number'] > 1)
         {
-            $available_hours = $this->consider_multiple_attendants($date, $service, $provider, $exclude_appointment_id);
+            $available_hours = $this->consider_multiple_attendants($date, $service, $provider, $exclude_appointment_ids);
         }
 
         return $this->consider_book_advance_timeout($date, $available_hours, $provider);
@@ -84,6 +84,8 @@ class Availability {
         $exclude_appointment_ids = NULL
     )
     {
+        // Set the timezone to the provider timezone
+        date_default_timezone_set($provider['timezone']);
         // Get the service, provider's working plan and provider appointments.
         $working_plan = json_decode($provider['settings']['working_plan'], TRUE);
 
@@ -222,7 +224,8 @@ class Availability {
                     {
                         // The appointment starts before the period and finishes somewhere inside. We will need to break
                         // this period and leave the available part.
-                        $period['start'] = $appointment_end->format('H:i');
+                        // KPB 2023-08-17 Skip this to enable adding more visitors to existing appointment
+                        //$period['start'] = $appointment_end->format('H:i');
                     }
                     else
                     {

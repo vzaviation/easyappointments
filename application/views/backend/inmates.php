@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div style="padding:10px;">
-                        <input type="checkbox" id="filter-by-housed"/>
+                        <input type="checkbox" id="filter-by-housed" checked="true"/>
                         <span>Filter by currently housed</span>
                     </div>
                 </div>

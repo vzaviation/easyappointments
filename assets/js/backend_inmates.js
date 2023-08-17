@@ -44,7 +44,7 @@ window.BackendInmates = window.BackendInmates || {};
 
         helper = new InmatesHelper();
         helper.resetForm();
-        helper.filter('');
+        helper.filter('',true);
         helper.bindEventHandlers();
 
         if (defaultEventHandlers) {

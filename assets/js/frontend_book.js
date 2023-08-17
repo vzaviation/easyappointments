@@ -120,7 +120,7 @@ window.FrontendBook = window.FrontendBook || {};
 
             onSelect: function (dateText, instance) {
                 FrontendBookApi.getAvailableHours($(this).datepicker('getDate').toString('yyyy-MM-dd'));
-                FrontendBook.updateConfirmFrame();
+                //FrontendBook.updateConfirmFrame();
             },
 
             onChangeMonthYear: function (year, month, instance) {
@@ -204,7 +204,7 @@ window.FrontendBook = window.FrontendBook || {};
 
             FrontendBookApi.getAvailableHours(date.toString('yyyy-MM-dd'));
 
-            FrontendBook.updateConfirmFrame();
+            //FrontendBook.updateConfirmFrame();
         });
 
         /**
@@ -216,7 +216,7 @@ window.FrontendBook = window.FrontendBook || {};
             // KPB 2022-11-28 We don't need to get the dates here
             //FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
             //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
-            FrontendBook.updateConfirmFrame();
+            //FrontendBook.updateConfirmFrame();
         });
         
          /**
@@ -272,7 +272,7 @@ window.FrontendBook = window.FrontendBook || {};
             // KPB 2022-11-28 We don't need to get the dates here
             //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
             //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
-            FrontendBook.updateConfirmFrame();
+            //FrontendBook.updateConfirmFrame();
             //updateServiceDescription(serviceId);
         });
 
@@ -309,7 +309,7 @@ window.FrontendBook = window.FrontendBook || {};
             // KPB 2022-11-28 We don't need to get the dates here
             //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
             //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
-            FrontendBook.updateConfirmFrame();
+            //FrontendBook.updateConfirmFrame();
             updateServiceDescription(serviceId);
         });
 
@@ -456,7 +456,7 @@ window.FrontendBook = window.FrontendBook || {};
         $('#available-hours').on('click', '.available-hour', function () {
             $('.selected-hour').removeClass('selected-hour');
             $(this).addClass('selected-hour');
-            FrontendBook.updateConfirmFrame();
+            //FrontendBook.updateConfirmFrame();
         });
 
         if (FrontendBook.manageMode) {
@@ -1006,10 +1006,10 @@ window.FrontendBook = window.FrontendBook || {};
         if (inmateName.indexOf("-") >= 0) {
             inmateName = inmateName.substring(inmateName.indexOf("-") + 1);
         }
-
+        var start_datetime = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd')
+            + ' ' + Date.parse($('.selected-hour').data('value') || '').toString('HH:mm') + ':00';
         data.appointment = {
-            start_datetime: $('#select-date').datepicker('getDate').toString('yyyy-MM-dd')
-                + ' ' + Date.parse($('.selected-hour').data('value') || '').toString('HH:mm') + ':00',
+            start_datetime: start_datetime,
             end_datetime: calculateEndDatetime(),
             notes: $('#notes').val(),
             is_unavailable: false,

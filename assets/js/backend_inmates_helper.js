@@ -447,6 +447,7 @@
     InmatesHelper.prototype.getFilterHtml = function (inmate) {
         const id = inmate.ID;
         const name = inmate.inmate_name;
+        const housed = inmate.booking_status == 1 ? "HOUSED" : "";
 
         let info = inmate.gender;
         const dobLen = inmate.DOB.length;
@@ -464,6 +465,10 @@
                 $('<br/>'),
                 $('<span/>', {
                     'text': info
+                }),
+                $('<span/>', {
+                    'style': 'padding-left:10px;text-align:right;color:darkblue;',
+                    'text': housed
                 }),
                 $('<br/>'),
             ]

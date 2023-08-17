@@ -373,7 +373,7 @@ class Appointments_model extends EA_Model {
         }
 
         $results = $this->db
-            ->select('appointments.*,services.name AS "service_name",users.first_name AS "provider_first_name",users.last_name as "provider_last_name"')
+            ->select('appointments.*,services.name AS "service_name",users.id AS "provider_id",users.first_name AS "provider_first_name",users.last_name as "provider_last_name"')
             ->from('appointments')
             ->join('services', 'services.id = appointments.id_services')
             ->join('users', 'users.id = appointments.id_users_provider')
@@ -664,5 +664,30 @@ class Appointments_model extends EA_Model {
             ->get()
             ->row()
             ->attendants_number;
+    }
+
+    /**
+     * Get appointment info by date and inmate
+     */
+    public function get_appointment_by_date_inmate($inmate_id, $date = NULL) {
+        if ($date == NULL) {
+            $date = date('Y-m-d');
+        }
+
+        $whereArray = array('a.id_inmate' => $inmate_id, "DATE_FORMAT(start_datetime,'%Y-%m-%d')" => $date);
+        $result = $this->db
+            ->select('a.*')
+            ->from('appointments a')
+            ->where($whereArray)
+            ->get();
+
+        if ($result->num_rows() == 0)
+        {
+            // Record does not exist - ignore
+        }
+        else
+        {
+            return $result->result_array();
+        }
     }
 }
