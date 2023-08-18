@@ -470,28 +470,17 @@ class Appointments extends EA_Controller {
             ->set_output(json_encode($response));
     }
 
-    public function ajax_fetch_appointments_by_date_for_inmate($inmate_id,$appt_date)
+    public function fetch_appointments_by_date_for_inmate($inmate_id,$appt_date)
     {
         try {
             // pull and return existing appointment visitors for the given date and inmate
             $appointments = $this->appointments_model->get_appointment_by_date_inmate($inmate_id, $appt_date);
-            $response = [
-                'appointments' => $appointments
-            ];
-
+            return $appointments;
         }
         catch (Exception $exception)
         {
-            $response = [
-                'appointments' => array(),
-                'error' => $exception->getMessage(),
-                'trace' => config('debug') ? $exception->getTrace() : []
-            ];
+            return NULL;
         }
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($response));
     }
 
     /**
@@ -652,8 +641,7 @@ class Appointments extends EA_Controller {
      */
     public function ajax_register_appointment()
     {
-        try
-        {
+        try {
             $post_data = $this->input->post('post_data');
             $captcha = $this->input->post('captcha');
             $manage_mode = filter_var($post_data['manage_mode'], FILTER_VALIDATE_BOOLEAN);
@@ -670,8 +658,7 @@ class Appointments extends EA_Controller {
             // Otherwise, find first available provider for this inmate's provider block
             $appointment = $this->check_datetime_availability();
 
-            if ( ! $appointment['id_users_provider'])
-            {
+            if (empty($appointment['id_users_provider'])) {
                 throw new Exception(lang('requested_hour_is_unavailable'));
             }
 
@@ -682,8 +669,7 @@ class Appointments extends EA_Controller {
             $captcha_phrase = $this->session->userdata('captcha_phrase');
 
             // Validate the CAPTCHA string.
-            if ($require_captcha === '1' && $captcha_phrase !== $captcha)
-            {
+            if ($require_captcha === '1' && $captcha_phrase !== $captcha) {
                 $this->output
                     ->set_content_type('application/json')
                     ->set_output(json_encode([
@@ -693,25 +679,21 @@ class Appointments extends EA_Controller {
                 return;
             }
 
-            // TODO: Add some checks for existing visitor
-//            if ($this->visitors_model->exists($visitor1))
-//            {
-//                $visitor1['id'] = $this->visitors_model->find_record_id($visitor);
-//            }
+            // Either an existing appointment was found or we need to set some additional params
+            if (!isset($appointment['id'])) {
 
-            if (empty($appointment['location']) && ! empty($service['location']))
-            {
-                $appointment['location'] = $service['location'];
+                if (empty($appointment['location']) && !empty($service['location'])) {
+                    $appointment['location'] = $service['location'];
+                }
+
+                // Save customer language (the language which is used to render the booking page).
+                //$customer['language'] = config('language');
+                //$customer_id = $this->customers_model->add($customer);
+
+                $appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
+                $appointment['id'] = $this->appointments_model->add($appointment);
+                $appointment['hash'] = $this->appointments_model->get_value('hash', $appointment['id']);
             }
-
-            // Save customer language (the language which is used to render the booking page).
-            //$customer['language'] = config('language');
-            //$customer_id = $this->customers_model->add($customer);
-
-//            $appointment['id_users_customer'] = $customer_id;
-            $appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
-            $appointment['id'] = $this->appointments_model->add($appointment);
-            $appointment['hash'] = $this->appointments_model->get_value('hash', $appointment['id']);
 
             // Add the visitor(s)
             $v1id = $this->visitors_model->add($visitor);
@@ -791,10 +773,9 @@ class Appointments extends EA_Controller {
 
         // Get any existing appointment with the inmate
         $inmate_id = $appointment['id_inmate'];
-        $existing_appt = $this->ajax_fetch_appointments_by_date_for_inmate($inmate_id,$date);
+        $existing_appt = $this->fetch_appointments_by_date_for_inmate($inmate_id,$date);
         if (! empty($existing_appt)) {
-            $appointment = $existing_appt;
-            return $appointment;
+            return $existing_appt;
         } else {
             if ((!isset($appointment['id_users_provider'])) ||
                 ($appointment['id_users_provider'] == NULL) ||

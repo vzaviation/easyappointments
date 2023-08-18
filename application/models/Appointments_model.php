@@ -679,6 +679,7 @@ class Appointments_model extends EA_Model {
             ->select('a.*')
             ->from('appointments a')
             ->where($whereArray)
+            ->limit(1)
             ->get();
 
         if ($result->num_rows() == 0)
@@ -687,7 +688,7 @@ class Appointments_model extends EA_Model {
         }
         else
         {
-            return $result->result_array();
+            return $result->row_array();
         }
     }
 }
