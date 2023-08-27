@@ -26,6 +26,22 @@
         this.pageLimit = 20;
     }
 
+    /*
+     *  Create a relationship select object
+     */
+    InmatesHelper.prototype.relationshipSelect = function (index) {
+        var instance = this;
+        // Set up a relationship select object
+        let relationshipSelect = "<select id='relationships-" + index + "'>";
+        relationshipSelect += "<option value='-1'>-- Please select a relationship --</option>";
+        GlobalVariables.relationships.forEach(function(relationship) {
+            let option = "<option value='" + relationship.id + "'>" + relationship.visitor_relationship + "</option>";
+            relationshipSelect +=  option;
+        });
+        relationshipSelect += "</select>";
+        return relationshipSelect;
+    };
+
     /**
      * Binds the default event handlers of the backend inmates page.
      */
@@ -63,7 +79,6 @@
          */
         $('#filter-inmates').on('change', '#filter-by-housed', function () {
             const housed = $(this).is(':checked');
-            console.log("Housed? " + housed);
 
             event.preventDefault();
             var key = $('#filter-inmates .key').val();
@@ -184,30 +199,40 @@
         /*
          * Save the inmate visitors
          */
-        $('#inmate-details').on('click', '#visitor-button', function () {
+        $('#inmate-info-visitors').on('click', '#visitor-button', function () {
             const instance = this;
-            // There are 5 form fields
+            // There are 5 form field rows
             // Loop through and build a visitor object array from each
             let visitors = new Array();
             let inmateId = -1;
+            let effective_date = $('#visitor-ed-datepicker').val();
             for (let i = 0; i < 5; i++) {
                 const inmate_id = $('#visitor-inmate-id-' + i).val();
                 const vid = $('#visitor-inmate-id-' + i).data('id');
                 const first_name = $('#visitor-first-name-' + i).val();
                 const last_name = $('#visitor-last-name-' + i).val();
-                const number = $('#visitor-number-' + i).val();
-//                console.log("** TEST: " + i + ":" + inmate_id + "/" + vid + "/" + first_name + "/" + last_name + "/" + number);
+                if ((first_name != "") && (last_name != "")) {
+                    const number = i + 1;
+                    const relationship_id = $("select#relationships-" + i).find(":selected").val();
+                    //console.log("** TEST: " + i + ":" + inmate_id + "/" + vid + "/" + first_name + "/" + last_name + "/" + number + "/RID " + relationship_id);
 
-                let visitor = new Object();
-                visitor.inmate_id = inmate_id;
-                inmateId = inmateId == -1 ? inmate_id : inmateId;
-                visitor.id = vid != -1 ? vid : null;
-                visitor.visitor_first_name = first_name;
-                visitor.visitor_last_name = last_name;
-                visitor.visitor_number = number;
+                    let visitor = new Object();
+                    visitor.inmate_id = inmate_id;
+                    inmateId = inmateId == -1 ? inmate_id : inmateId;
+                    visitor.id = vid != -1 ? vid : null;
+                    visitor.effective_date = Date.parse(effective_date).toString('yyyy-MM-dd');
+                    let obsolete_date = new Date(effective_date);
+                    obsolete_date.setMonth(obsolete_date.getMonth() + 6);
+                    visitor.obsolete_date = Date.parse(obsolete_date).toString('yyyy-MM-dd');
+                    visitor.visitor_first_name = first_name;
+                    visitor.visitor_last_name = last_name;
+                    visitor.visitor_number = number == null ? number : 1;
+                    visitor.visitor_relationship_id = parseInt(relationship_id);
 
-                visitors.push(visitor);
+                    visitors.push(visitor);
+                }
             }
+            //console.log("Visitors: " + JSON.stringify(visitors));
 
             // Call to update the DB
             var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_inmate_visitors';
@@ -220,7 +245,7 @@
             $.post(url, data)
                 .done(function (response) {
                     const visitor = response.visitor;
-//                    console.log("*** Inmate Visitor after save for inmate_id=" + inmateId + " - " + JSON.stringify(visitor));
+                    //console.log("*** Inmate Visitor after save for inmate_id=" + inmateId + " - " + JSON.stringify(visitor));
                     //instance.inmateVisitors(inmateId);
                 }.bind(this));
         });
@@ -251,7 +276,7 @@
     };
 
     /**
-     * Delete a inmate record from database.
+     * Delete an inmate record from database.
      *
      * @param {Number} id Record id to be deleted.
      */
@@ -629,35 +654,6 @@
                                 ]
                             }),
                         ]
-                    }),
-                    $('<div/>', {
-                        'id': 'inmate-info-visitors',
-                        'class': 'col-md-12',
-                        'style': 'float:left;padding-top:30px;',
-                        'data-id': inmate_id,
-                        'html': [
-                            $('<span>', {
-                                'style': 'font-weight:bold;font-size:+2;',
-                                'text': 'Approved Visitor List'
-                            }),
-                            $('<div/>', {
-                                'id': 'visitor-names',
-                                'style': 'width:350px;',
-                                'html': [
-                                    $('<div/>', {
-                                        'id': 'visitor-fn',
-                                        'style': 'display:inline;width:170px;padding-right:110px;',
-                                        'text': 'First Name'
-                                    }),
-                                    $('<div/>', {
-                                        'id': 'visitor-ln',
-                                        'style': 'display:inline;width:170px;',
-                                        'text': 'Last Name'
-                                    })
-
-                                ]
-                            })
-                        ]
                     })
                 ]
             }).appendTo('#inmate-details-row');
@@ -676,16 +672,35 @@
 
         $.post(url, data)
             .done(function (response) {
+                // Reset existing grid
+                for (let i = 0;i < 5;i++) {
+                    $('#inmate-visitor-' + i).remove();
+                }
+                $('#visitor-button').remove();
+                // now show new / data
+                $('#inmate-info-visitors').show();
+                $('#visitor-ed-datepicker').datepicker();
+                $('#visitor-ed-datepicker').removeAttr('disabled');
+                $('#visitor-save-button').show();
+                $('#visitor-save-button').val("Update / Save");
+                $('#visitor-save-button').removeAttr('disabled');
                 const visitors = response.visitors;
-//                console.log("*** Inmate Visitors for inmate_id=" + inmate_id + " - " + JSON.stringify(visitors));
+                //console.log("*** Inmate Visitors for inmate_id=" + inmate_id + " - " + JSON.stringify(visitors));
+                if ((visitors.length > 0) && (visitors[0].effective_date != null)) {
+                    $('#visitor-ed-datepicker').val(Date.parse(visitors[0].effective_date).toString('MM/dd/yyyy'));
+                    $('#visitor-od-date').val(Date.parse(visitors[0].obsolete_date).toString('MM/dd/yyyy'));
+                } else {
+                    $('#visitor-ed-datepicker').val(new Date().toString('MM/dd/yyyy'));
+                }
                 for (let i = 0; i < 5; i++) {
                     if (visitors[i]) {
                         const visitor = visitors[i];
-                        instance.displayInmateVisitors(inmate_id, visitor,i);
+                        instance.displayInmateVisitors(inmate_id, visitor, i);
                     } else {
-                        instance.displayInmateVisitors(inmate_id,null,i);
+                        instance.displayInmateVisitors(inmate_id,null, i);
                     }
                 }
+
             }.bind(this));
             
     };
@@ -721,6 +736,10 @@
                         'size': 20,
                         'style': 'margin:4px'
                     }),
+                    // Relationship
+                    $('<div/>', {
+                        'style': 'margin:4px;padding-right:30px;float:right;'
+                    }).append(this.relationshipSelect(index)),
                     // inmate_id (hidden)
                     $('<input/>', {
                         'id': 'visitor-inmate-id-' + index,
@@ -738,7 +757,7 @@
                         'value': (index + 1)
                     })
                 ]
-            }).appendTo('#inmate-details-row');
+            }).appendTo('#inmate-info-visitors');
         } else {
             const vis_id = visitor.id;
             $('<div/>', {
@@ -765,6 +784,10 @@
                         'value': visitor.visitor_last_name,
                         'style': 'margin:4px'
                     }),
+                    // Relationship
+                    $('<div/>', {
+                        'style': 'margin:4px;padding-right:30px;float:right;'
+                    }).append(this.relationshipSelect(index)),
                     // inmate_id (hidden)
                     $('<input/>', {
                         'id': 'visitor-inmate-id-' + index,
@@ -783,7 +806,12 @@
 
                     })
                 ]
-            }).appendTo('#inmate-details-row');
+            }).appendTo('#inmate-info-visitors');
+            // Set the selected relationship value
+            const relId = "select#relationships-" + index + " option";
+            $(`${relId}`).filter(function () {
+                return this.value == visitor.visitor_relationship_id;
+            }).attr('selected', true);
         }
         if (index == 4) {
             $('<div/>', {
@@ -799,7 +827,7 @@
                         'value': 'Update / Save'
                     })
                 ]
-            }).appendTo('#inmate-details-row');            
+            }).appendTo('#inmate-info-visitors');
         }
     };
     

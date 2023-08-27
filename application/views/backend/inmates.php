@@ -1,3 +1,4 @@
+<script src="<?= asset_url('assets/ext/jquery-fullcalendar/fullcalendar.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/jquery-ui/jquery-ui-timepicker-addon.min.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_inmates_helper.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_inmates.js') ?>"></script>
@@ -8,6 +9,7 @@
         timeFormat: <?= json_encode($time_format) ?>,
         baseUrl: <?= json_encode($base_url) ?>,
         inmates: <?= json_encode($inmates) ?>,
+        relationships: <?= json_encode($relationships) ?>,
         timezones: <?= json_encode($timezones) ?>,
         user: {
             id: <?= $user_id ?>,
@@ -67,6 +69,22 @@
                     <h3>Inmate <?= lang('details') ?></h3>
 
                     <div id="inmate-details-row"></div>
+
+                    <div id="inmate-info-visitors" class="col-md-12" style="float:left;padding-top:30px;display:none;">
+                        <span style="font-weight:bold;font-size:+2;">Approved Visitor List</span>
+                        <div id="visitor-dates" style="width:450px;padding:10px;">
+                            <div id="visitor-ed" style="display:inline;width:170px;padding-left:10px;padding-right:30px;">Effective Date:</div>
+                            <input id="visitor-ed-datepicker" type="text" />
+                            <br/>
+                            <div id="visitor-od" style="display:inline;width:170px;padding-left:10px;padding-right:30px;">Obsolete Date:</div>
+                            <div id="visitor-od-date" style="display:inline;width:200px;"></div>
+                        </div>
+                        <div id="visitor-names" style="width:800px;">
+                            <div id="visitor-fn" style="display:inline;width:170px;padding-right:110px;">First Name</div>
+                            <div id="visitor-ln" style="display:inline;width:170px;padding-right:120px;">Last Name</div>
+                            <div id="visitor-ln" style="display:inline;width:380px;">Relationship to Inmate</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

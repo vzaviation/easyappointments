@@ -32,6 +32,7 @@ class Backend extends EA_Controller {
         $this->load->model('customers_model');
         $this->load->model('visitors_model');
         $this->load->model('inmates_model');
+        $this->load->model('inmate_visitor_model');
         $this->load->model('settings_model');
         $this->load->model('roles_model');
         $this->load->model('user_model');
@@ -296,6 +297,7 @@ class Backend extends EA_Controller {
         $view['require_phone_number'] = $this->settings_model->get_setting('require_phone_number');
         $view['timezones'] = $this->timezones->to_array();
         $view['inmates'] = $this->inmates_model->get_all();
+        $view['relationships'] = $this->inmate_visitor_model->get_all_relationships();
 
         $this->set_user_data($view);
 

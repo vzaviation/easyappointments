@@ -30,6 +30,7 @@ class Appointments extends EA_Controller {
         $this->load->model('providers_model');
         $this->load->model('visitors_model');
         $this->load->model('inmates_model');
+        $this->load->model('inmate_visitor_model');
         $this->load->model('admins_model');
         $this->load->model('secretaries_model');
         $this->load->model('services_model');
@@ -442,7 +443,7 @@ class Appointments extends EA_Controller {
             $match = false;
 
             // Pull the list of visitors given the inmate_id
-            $visitors = $this->inmates_model->get_inmate_visitors($inmate_id);
+            $visitors = $this->inmate_visitor_model->get_inmate_visitors($inmate_id);
             foreach ($visitors as $visitor) {
                 if ( (strtolower($visitor["visitor_first_name"]) == strtolower($first_name)) &&
                      (strtolower($visitor["visitor_last_name"]) == strtolower($last_name)) ) {

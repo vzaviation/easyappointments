@@ -152,7 +152,7 @@ class Appointments_model extends EA_Model {
      *
      * @throws Exception If appointment record could not be inserted.
      */
-    protected function insert($appointment)
+    public function insert($appointment)
     {
         $appointment['book_datetime'] = date('Y-m-d H:i:s');
         $appointment['hash'] = $this->generate_hash();

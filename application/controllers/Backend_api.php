@@ -41,6 +41,7 @@ class Backend_api extends EA_Controller {
         $this->load->model('customers_model');
         $this->load->model('visitors_model');
         $this->load->model('inmates_model');
+        $this->load->model('inmate_visitor_model');
         $this->load->model('providers_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
@@ -1290,7 +1291,7 @@ class Backend_api extends EA_Controller {
             $inmate_id = json_decode($this->input->post('inmate_id'), TRUE);
 
             // Pull the list of visitors given the inmate_id
-            $visitors = $this->inmates_model->get_inmate_visitors($inmate_id);
+            $visitors = $this->inmate_visitor_model->get_inmate_visitors($inmate_id);
             $response = [
                 'visitors' => $visitors
             ];
@@ -1321,11 +1322,10 @@ class Backend_api extends EA_Controller {
             {
                 throw new Exception('You do not have the required privileges for this task.');
             }
-
             // Loop through and update
             foreach ($visitors as $visitor)
             {
-                $this->inmates_model->add_inmate_visitor($visitor);
+                $this->inmate_visitor_model->add_inmate_visitor($visitor);
             }
 
             $response = [
