@@ -688,7 +688,7 @@
                 //console.log("*** Inmate Visitors for inmate_id=" + inmate_id + " - " + JSON.stringify(visitors));
                 if ((visitors.length > 0) && (visitors[0].effective_date != null)) {
                     $('#visitor-ed-datepicker').val(Date.parse(visitors[0].effective_date).toString('MM/dd/yyyy'));
-                    $('#visitor-od-date').val(Date.parse(visitors[0].obsolete_date).toString('MM/dd/yyyy'));
+                    $('#visitor-od-date').text(Date.parse(visitors[0].obsolete_date).toString('MM/dd/yyyy'));
                 } else {
                     $('#visitor-ed-datepicker').val(new Date().toString('MM/dd/yyyy'));
                 }
