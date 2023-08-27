@@ -18,7 +18,7 @@
  *
  * @package Models
  */
-class Inmate_Visitor_model extends EA_Model {
+class Inmate_visitor_model extends EA_Model {
     /**
      * Constructor.
      */
