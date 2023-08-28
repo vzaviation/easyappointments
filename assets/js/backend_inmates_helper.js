@@ -200,12 +200,10 @@
          * Save the inmate visitors
          */
         $('#inmate-info-visitors').on('click', '#visitor-button', function () {
-            const instance = this;
             // There are 5 form field rows
             // Loop through and build a visitor object array from each
             let visitors = new Array();
             let inmateId = -1;
-            let effective_date = $('#visitor-ed-datepicker').val();
             for (let i = 0; i < 5; i++) {
                 const inmate_id = $('#visitor-inmate-id-' + i).val();
                 const vid = $('#visitor-inmate-id-' + i).data('id');
@@ -215,6 +213,7 @@
                     const number = i + 1;
                     const relationship_id = $("select#relationships-" + i).find(":selected").val();
                     //console.log("** TEST: " + i + ":" + inmate_id + "/" + vid + "/" + first_name + "/" + last_name + "/" + number + "/RID " + relationship_id);
+                    let effective_date = $('#visitor-ed-datepicker-' + i).val();
 
                     let visitor = new Object();
                     visitor.inmate_id = inmate_id;
@@ -246,8 +245,36 @@
                 .done(function (response) {
                     const visitor = response.visitor;
                     //console.log("*** Inmate Visitor after save for inmate_id=" + inmateId + " - " + JSON.stringify(visitor));
-                    //instance.inmateVisitors(inmateId);
+                    // refresh visitor list
+                    instance.inmateVisitors(inmateId);
                 }.bind(this));
+        });
+
+        /**
+         * Event: Visitor delete
+         */
+        $('#inmate-info-visitors').on('click', '[name="visitor-delete"]', function () {
+            const visitorId = $(this).data('id');
+            const inmateId = $(this).data('inmateid');
+            console.log("IID: " + inmateId + " VID: " + visitorId);
+
+            // Call to update the DB
+            var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_delete_inmate_visitor';
+
+            var data = {
+                csrfToken: GlobalVariables.csrfToken,
+                visitor_id: visitorId
+            };
+
+            $.post(url, data)
+                .done(function (response) {
+                        console.log("DEL VIS: " + JSON.stringify(response));
+
+                    // refresh the visitor list
+                    instance.inmateVisitors(inmateId);
+
+                }.bind(this));
+            //
         });
     };
 
@@ -679,26 +706,31 @@
                 $('#visitor-button').remove();
                 // now show new / data
                 $('#inmate-info-visitors').show();
-                $('#visitor-ed-datepicker').datepicker();
-                $('#visitor-ed-datepicker').removeAttr('disabled');
                 $('#visitor-save-button').show();
                 $('#visitor-save-button').val("Update / Save");
                 $('#visitor-save-button').removeAttr('disabled');
                 const visitors = response.visitors;
                 //console.log("*** Inmate Visitors for inmate_id=" + inmate_id + " - " + JSON.stringify(visitors));
+                /* KPB 2023-08-28 comment out for per-visitor dates
                 if ((visitors.length > 0) && (visitors[0].effective_date != null)) {
                     $('#visitor-ed-datepicker').val(Date.parse(visitors[0].effective_date).toString('MM/dd/yyyy'));
                     $('#visitor-od-date').text(Date.parse(visitors[0].obsolete_date).toString('MM/dd/yyyy'));
                 } else {
                     $('#visitor-ed-datepicker').val(new Date().toString('MM/dd/yyyy'));
                 }
+                */
                 for (let i = 0; i < 5; i++) {
                     if (visitors[i]) {
                         const visitor = visitors[i];
                         instance.displayInmateVisitors(inmate_id, visitor, i);
+                        $('#visitor-ed-datepicker-' + i).val(Date.parse(visitors[i].effective_date).toString('MM/dd/yyyy'));
+                        $('#visitor-od-date-' + i).text(Date.parse(visitors[i].obsolete_date).toString('MM/dd/yyyy'));
                     } else {
                         instance.displayInmateVisitors(inmate_id,null, i);
+                        $('#visitor-ed-datepicker-' + i).val(new Date().toString('MM/dd/yyyy'));
                     }
+                    $('#visitor-ed-datepicker-' + i).datepicker();
+                    $('#visitor-ed-datepicker-' + i).removeAttr('disabled');
                 }
 
             }.bind(this));
@@ -716,30 +748,85 @@
             // display a blank form
             $('<div/>', {
                 'id': 'inmate-visitor-' + index,
-                'class': 'col-md-12',
+                'style': 'width:800px;',
                 'html': [
+                    $('<span/>', {
+                        'id': 'visitor-index-' + index,
+                        'name': 'visitor-index-' + index,
+                        'data-id': vis_id,
+                        'text': (index + 1) + ". "
+                    }),
                     // First Name
+                    $('<span/>', {
+                        'id': 'visitor-fn-label-' + index,
+                        'name': 'visitor-fn-label-' + index,
+                        'data-id': vis_id,
+                        'text': "First Name: "
+                    }),
                     $('<input/>', {
                         'id': 'visitor-first-name-' + index,
                         'name': 'visitor-first-name-' + index,
                         'data-id': vis_id,
                         'type': 'text',
-                        'size': 20,
-                        'style': 'margin:4px'
+                        'size': 12,
+                        'style': 'margin-left:6px;margin-right:10px;'
                     }),
                     // Last Name
+                    $('<span/>', {
+                        'id': 'visitor-ln-label-' + index,
+                        'name': 'visitor-ln-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Last Name: "
+                    }),
                     $('<input/>', {
                         'id': 'visitor-last-name-' + index,
                         'name': 'visitor-last-name-' + index,
                         'data-id': vis_id,
                         'type': 'text',
                         'size': 20,
-                        'style': 'margin:4px'
+                        'style': 'margin-left:6px;margin-right:10px;'
                     }),
                     // Relationship
-                    $('<div/>', {
-                        'style': 'margin:4px;padding-right:30px;float:right;'
+                    $('<span/>', {
+                        'id': 'visitor-rel-label-' + index,
+                        'name': 'visitor-rel-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Relationship: "
+                    }),
+                    $('<span/>', {
+                        'style': 'margin:4px;'
                     }).append(this.relationshipSelect(index)),
+                    $('<br/>'),
+                    // Effective Date
+                    $('<span/>', {
+                        'id': 'visitor-ed-label-' + index,
+                        'name': 'visitor-ed-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Effective: ",
+                        'style': 'margin-left:198px;'
+                    }),
+                    $('<input/>', {
+                        'id': 'visitor-ed-datepicker-' + index,
+                        'name': 'visitor-ed-datepicker-' + index,
+                        'data-id': vis_id,
+                        'type': 'text',
+                        'size': 10,
+                        'style': 'margin:6px;'
+                    }),
+                    // Obsolete Date
+                    $('<span/>', {
+                        'id': 'visitor-od-label-' + index,
+                        'name': 'visitor-od-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Obsolete: ",
+                        'style': 'margin-left:6px;margin-right:10px;'
+                    }),
+                    $('<span/>', {
+                        'id': 'visitor-od-date-' + index,
+                        'name': 'visitor-od-date-' + index,
+                        'data-id': vis_id,
+                        'text': ""
+                    }),
                     // inmate_id (hidden)
                     $('<input/>', {
                         'id': 'visitor-inmate-id-' + index,
@@ -762,19 +849,37 @@
             const vis_id = visitor.id;
             $('<div/>', {
                 'id': 'inmate-visitor-' + index,
-                'class': 'col-md-12',
+                'style': 'width:800px;',
                 'html': [
+                    $('<span/>', {
+                        'id': 'visitor-index-' + index,
+                        'name': 'visitor-index-' + index,
+                        'data-id': vis_id,
+                        'text': (index + 1) + ". "
+                    }),
                     // First Name
+                    $('<span/>', {
+                        'id': 'visitor-fn-label-' + index,
+                        'name': 'visitor-fn-label-' + index,
+                        'data-id': vis_id,
+                        'text': "First Name: "
+                    }),
                     $('<input/>', {
                         'id': 'visitor-first-name-' + index,
                         'name': 'visitor-first-name-' + index,
                         'data-id': vis_id,
                         'type': 'text',
-                        'size': 20,
+                        'size': 12,
                         'value': visitor.visitor_first_name,
-                        'style': 'margin:4px'
+                        'style': 'margin-left:6px;margin-right:10px;'
                     }),
                     // Last Name
+                    $('<span/>', {
+                        'id': 'visitor-ln-label-' + index,
+                        'name': 'visitor-ln-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Last Name: "
+                    }),
                     $('<input/>', {
                         'id': 'visitor-last-name-' + index,
                         'name': 'visitor-last-name-' + index,
@@ -782,12 +887,59 @@
                         'type': 'text',
                         'size': 20,
                         'value': visitor.visitor_last_name,
-                        'style': 'margin:4px'
+                        'style': 'margin-left:6px;margin-right:10px;'
                     }),
                     // Relationship
-                    $('<div/>', {
-                        'style': 'margin:4px;padding-right:30px;float:right;'
+                    $('<span/>', {
+                        'id': 'visitor-rel-label-' + index,
+                        'name': 'visitor-rel-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Relationship: "
+                    }),
+                    $('<span/>', {
+                        'style': 'margin:4px;'
                     }).append(this.relationshipSelect(index)),
+                    // Delete
+                    $('<a/>', {
+                        'id': 'visitor-delete-' + index,
+                        'name': 'visitor-delete',
+                        'href': '#',
+                        'data-id': vis_id,
+                        'data-inmateid': inmate_id,
+                        'text': "X",
+                        'style': 'padding-left:10px;font-weight:bold;color:darkred;'
+                    }),
+                    $('<br/>'),
+                    // Effective Date
+                    $('<span/>', {
+                        'id': 'visitor-ed-label-' + index,
+                        'name': 'visitor-ed-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Effective: ",
+                        'style': 'margin-left:198px;'
+                    }),
+                    $('<input/>', {
+                        'id': 'visitor-ed-datepicker-' + index,
+                        'name': 'visitor-ed-datepicker-' + index,
+                        'data-id': vis_id,
+                        'type': 'text',
+                        'size': 10,
+                        'style': 'margin:6px;'
+                    }),
+                    // Obsolete Date
+                    $('<span/>', {
+                        'id': 'visitor-od-label-' + index,
+                        'name': 'visitor-od-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Obsolete: ",
+                        'style': 'margin-left:6px;margin-right:10px;'
+                    }),
+                    $('<span/>', {
+                        'id': 'visitor-od-date-' + index,
+                        'name': 'visitor-od-date-' + index,
+                        'data-id': vis_id,
+                        'text': ""
+                    }),
                     // inmate_id (hidden)
                     $('<input/>', {
                         'id': 'visitor-inmate-id-' + index,

@@ -1022,3 +1022,12 @@ body {
     white-space: nowrap;
     padding-left: 6px;
 }
+
+#inmate-info-visitors {
+    float:left;
+    padding-top:20px;
+    padding-bottom: 10px;
+    width:800px;
+    white-space:nowrap;
+    font-size:12px;
+}

@@ -69,22 +69,23 @@
                     <h3>Inmate <?= lang('details') ?></h3>
 
                     <div id="inmate-details-row"></div>
-
-                    <div id="inmate-info-visitors" class="col-md-12" style="float:left;padding-top:30px;display:none;">
-                        <span style="font-weight:bold;font-size:+2;">Approved Visitor List</span>
-                        <div id="visitor-dates" style="width:450px;padding:10px;">
-                            <div id="visitor-ed" style="display:inline;width:170px;padding-left:10px;padding-right:30px;">Effective Date:</div>
-                            <input id="visitor-ed-datepicker" type="text" />
-                            <br/>
-                            <div id="visitor-od" style="display:inline;width:170px;padding-left:10px;padding-right:30px;">Obsolete Date:</div>
-                            <div id="visitor-od-date" style="display:inline;width:200px;"></div>
-                        </div>
-                        <div id="visitor-names" style="width:800px;">
-                            <div id="visitor-fn" style="display:inline;width:170px;padding-right:110px;">First Name</div>
-                            <div id="visitor-ln" style="display:inline;width:170px;padding-right:120px;">Last Name</div>
-                            <div id="visitor-ln" style="display:inline;width:380px;">Relationship to Inmate</div>
-                        </div>
+                </div>
+                <div id="inmate-info-visitors" style="display:none;">
+                    <span style="font-weight:bold;font-size:+2;">Approved Visitor List</span>
+                    <!-- KPB 2023-08-28 Change to Eff Date per visitor
+                    <div id="visitor-dates" style="width:450px;padding:10px;">
+                        <div id="visitor-ed" style="display:inline;width:170px;padding-left:10px;padding-right:30px;">Effective Date:</div>
+                        <input id="visitor-ed-datepicker" type="text" />
+                        <br/>
+                        <div id="visitor-od" style="display:inline;width:170px;padding-left:10px;padding-right:30px;">Obsolete Date:</div>
+                        <div id="visitor-od-date" style="display:inline;width:200px;"></div>
                     </div>
+                    <div id="visitor-info-1" style="width:800px;">
+                        <div id="visitor-fn" style="display:inline;width:170px;padding-right:110px;">First Name</div>
+                        <div id="visitor-ln" style="display:inline;width:170px;padding-right:120px;">Last Name</div>
+                        <div id="visitor-rel" style="display:inline;width:380px;">Relationship to Inmate</div>
+                    </div>
+                    -->
                 </div>
             </div>
         </div>

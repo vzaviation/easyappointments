@@ -34,11 +34,18 @@ class Inmate_visitor_model extends EA_Model {
      */
     public function get_inmate_visitors($inmate_id) {
 
+        /* KPB 2023-08-28 Query for one effective date per inmate list
         $this->db
             ->select('iv.id,iv.visitor_first_name,iv.visitor_last_name,iv.visitor_number,iv.visitor_relationship_id,i.approved_visitor_list_effective_date as "effective_date",i.approved_visitor_list_obsolete_date as "obsolete_date"')
             ->from('ea_inmates i')
             ->join('ea_inmate_visitor iv','iv.inmate_id = i.ID')
             ->where('i.ID='.$inmate_id)
+            ->order_by('iv.visitor_number ASC');
+        */
+        $this->db
+            ->select('iv.id,iv.visitor_first_name,iv.visitor_last_name,iv.visitor_number,iv.visitor_relationship_id,iv.effective_date as "effective_date",iv.obsolete_date as "obsolete_date"')
+            ->from('ea_inmate_visitor iv')
+            ->where('iv.inmate_id = '.$inmate_id)
             ->order_by('iv.visitor_number ASC');
 
         $visitors = $this->db->get()->result_array();
@@ -74,7 +81,7 @@ class Inmate_visitor_model extends EA_Model {
 
     public function insert_inmate_visitor($visitor)
     {
-        // First add the effective_date to the inmate record
+        /* First add the effective_date to the inmate record
         $inmateId = $visitor["inmate_id"];
         $effective_date = $visitor["effective_date"];
         $obsolete_date = $visitor["obsolete_date"];
@@ -86,6 +93,7 @@ class Inmate_visitor_model extends EA_Model {
         // Clear out extraneous values
         unset($visitor["effective_date"]);
         unset($visitor["obsolete_date"]);
+        */
         if ( ! $this->db->insert('ea_inmate_visitor', $visitor))
         {
             throw new Exception('Could not insert visitor into the database.');
@@ -95,7 +103,7 @@ class Inmate_visitor_model extends EA_Model {
 
     public function update_inmate_visitor($visitor)
     {
-        // First add the effective_date to the inmate record
+        /* First add the effective_date to the inmate record
         $inmateId = $visitor["inmate_id"];
         $effective_date = $visitor["effective_date"];
         $obsolete_date = $visitor["obsolete_date"];
@@ -107,6 +115,7 @@ class Inmate_visitor_model extends EA_Model {
         // Clear out extraneous values
         unset($visitor["effective_date"]);
         unset($visitor["obsolete_date"]);
+        */
         $this->db->where('id', $visitor['id']);
         if ( ! $this->db->update('ea_inmate_visitor', $visitor))
         {
@@ -114,6 +123,16 @@ class Inmate_visitor_model extends EA_Model {
         }
 
         return (int)$visitor['id'];
+    }
+
+    public function delete_inmate_visitor($visitor_id)
+    {
+        $this->db->where('id', $visitor_id);
+        if ( ! $this->db->delete('ea_inmate_visitor') )
+        {
+            throw new Exception('Could not delete visitor from the database.');
+        }
+        return 1;
     }
 
     public function get_all_relationships() {

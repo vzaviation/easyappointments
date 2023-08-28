@@ -1348,6 +1348,37 @@ class Backend_api extends EA_Controller {
             ->set_output(json_encode($response));
     }
 
+    public function ajax_delete_inmate_visitor()
+    {
+        try
+        {
+            $visitor_id = $this->input->post('visitor_id');
+
+            if ($this->privileges[PRIV_INMATES]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $this->inmate_visitor_model->delete_inmate_visitor($visitor_id);
+            $response = [
+                'deleted' => $visitor_id
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+            $response = [
+                'deleted' => 0,
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
     /**
      * Save (insert or update) service record.
      */
