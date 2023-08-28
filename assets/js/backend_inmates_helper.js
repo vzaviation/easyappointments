@@ -703,7 +703,7 @@
                 for (let i = 0;i < 5;i++) {
                     $('#inmate-visitor-' + i).remove();
                 }
-                $('#visitor-button').remove();
+                $('#inmate-visitor-save').remove();
                 // now show new / data
                 $('#inmate-info-visitors').show();
                 $('#visitor-save-button').show();
