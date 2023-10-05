@@ -38,6 +38,7 @@ class Backend extends EA_Controller {
         $this->load->model('user_model');
         $this->load->model('secretaries_model');
         $this->load->model('admins_model');
+        $this->load->model('agency_admins_model');
         $this->load->library('timezones');
         $this->load->library('migration');
     }
@@ -365,6 +366,7 @@ class Backend extends EA_Controller {
         $view['time_format'] = $this->settings_model->get_setting('time_format');
         $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
         $view['admins'] = $this->admins_model->get_batch();
+        $view['agency_admins'] = $this->agency_admins_model->get_batch();
         $view['providers'] = $this->providers_model->get_batch();
         $view['secretaries'] = $this->secretaries_model->get_batch();
         $view['services'] = $this->services_model->get_batch();

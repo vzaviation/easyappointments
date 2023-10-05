@@ -48,6 +48,7 @@ define('FOPEN_READ_WRITE_CREATE_STRICT', 'x+b');
 define('DB_SLUG_CUSTOMER', 'customer');
 define('DB_SLUG_PROVIDER', 'provider');
 define('DB_SLUG_ADMIN', 'admin');
+define('DB_SLUG_AGENCY_ADMIN', 'agency_admin');
 define('DB_SLUG_SECRETARY', 'secretary');
 
 define('FILTER_TYPE_PROVIDER', 'provider');

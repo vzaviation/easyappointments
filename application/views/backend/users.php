@@ -1,6 +1,7 @@
 <script src="<?= asset_url('assets/js/backend_users_admins.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_users_providers.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_users_secretaries.js') ?>"></script>
+<script src="<?= asset_url('assets/js/backend_users_agency_admins.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_users.js') ?>"></script>
 <script src="<?= asset_url('assets/js/working_plan.js') ?>"></script>
 <script src="<?= asset_url('assets/js/working_plan_exceptions_modal.js') ?>"></script>
@@ -14,6 +15,7 @@
         firstWeekday: <?= json_encode($first_weekday); ?>,
         timeFormat: <?= json_encode($time_format) ?>,
         admins: <?= json_encode($admins) ?>,
+        agency_admins: <?= json_encode($agency_admins) ?>,
         providers: <?= json_encode($providers) ?>,
         secretaries: <?= json_encode($secretaries) ?>,
         services: <?= json_encode($services) ?>,
@@ -38,17 +40,22 @@
 
     <!-- PAGE NAVIGATION -->
     <ul class="nav nav-pills">
-        <li class="nav-item">
-            <a class="nav-link active" href="#providers" data-toggle="tab">
+        <li class="nav-item nav-item-providers" style="display:none;">
+            <a class="nav-link" href="#providers" data-toggle="tab">
                 <?= lang('providers') ?>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#secretaries" data-toggle="tab">
+        <li class="nav-item nav-item-secretaries">
+            <a class="nav-link active" href="#secretaries" data-toggle="tab">
                 <?= lang('secretaries') ?>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item nav-item-agency-admins">
+            <a class="nav-link" href="#agency-admins" data-toggle="tab">
+                <?= lang('agency_admins') ?>
+            </a>
+        </li>
+        <li class="nav-item nav-item-admins" style="display:none;">
             <a class="nav-link" href="#admins" data-toggle="tab">
                 <?= lang('admins') ?>
             </a>
@@ -59,7 +66,7 @@
 
         <!-- PROVIDERS TAB -->
 
-        <div class="tab-pane active" id="providers">
+        <div class="tab-pane" id="providers">
             <div class="row">
                 <div id="filter-providers" class="filter-records column col-12 col-md-5">
                     <form class="mb-4">
@@ -307,10 +314,6 @@
                                         </label>
                                         <?= render_timezone_dropdown('id="provider-timezone" class="form-control required"') ?>
                                     </div>
-                                    
-                                    
-
-
 
                                     <br>
 
@@ -413,7 +416,7 @@
 
         <!-- SECRETARIES TAB -->
 
-        <div class="tab-pane" id="secretaries">
+        <div class="tab-pane active" id="secretaries">
             <div class="row">
                 <div id="filter-secretaries" class="filter-records column col-12 col-md-5">
                     <form class="mb-4">
@@ -614,7 +617,219 @@
                             <br>
 
                             <h4><?= lang('providers') ?></h4>
+                            <div>
+                                <input type="checkbox" id="check-all-secretary-providers" checked="true">
+                                <label for="check-all-secretary-providers">
+                                    Select All Providers
+                                </label>
+                            </div>
                             <div id="secretary-providers" class="card card-body bg-light border-light"></div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AGENCY ADMINS TAB -->
+
+        <div class="tab-pane" id="agency-admins">
+            <div class="row">
+                <div id="filter-agency-admins" class="filter-records column col-12 col-md-5">
+                    <form class="mb-4">
+                        <div class="input-group">
+                            <input type="text" class="key form-control">
+
+                            <span class="input-group-addon">
+                        <div>
+                            <button class="filter btn btn-outline-secondary" type="submit"
+                                    data-tippy-content="<?= lang('filter') ?>">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="clear btn btn-outline-secondary" type="button"
+                                    data-tippy-content="<?= lang('clear') ?>">
+                                <i class="fas fa-redo-alt"></i>
+                            </button>
+                        </div>
+                    </span>
+                        </div>
+                    </form>
+
+                    <h3><?= lang('agency_admins') ?></h3>
+
+                    <div class="results"></div>
+                </div>
+
+                <div class="record-details column col-12 col-md-7">
+                    <div class="btn-toolbar mb-4">
+                        <div class="add-edit-delete-group btn-group">
+                            <button id="add-agency-admin" class="btn btn-primary">
+                                <i class="fas fa-plus-square mr-2"></i>
+                                <?= lang('add') ?>
+                            </button>
+                            <button id="edit-agency-admin" class="btn btn-outline-secondary" disabled="disabled">
+                                <i class="fas fa-edit mr-2"></i>
+                                <?= lang('edit') ?>
+                            </button>
+                            <button id="delete-agency-admin" class="btn btn-outline-secondary" disabled="disabled">
+                                <i class="fas fa-trash-alt mr-2"></i>
+                                <?= lang('delete') ?>
+                            </button>
+                        </div>
+
+                        <div class="save-cancel-group btn-group" style="display:none;">
+                            <button id="save-agency-admin" class="btn btn-primary">
+                                <i class="fas fa-check-square mr-2"></i>
+                                <?= lang('save') ?>
+                            </button>
+                            <button id="cancel-agency-admin" class="btn btn-outline-secondary">
+                                <i class="fas fa-ban mr-2"></i>
+                                <?= lang('cancel') ?>
+                            </button>
+                        </div>
+                    </div>
+
+                    <h3><?= lang('details') ?></h3>
+
+                    <div class="form-message alert" style="display:none;"></div>
+
+                    <input type="hidden" id="agency-admin-id" class="record-id">
+
+                    <div class="row">
+                        <div class="agency-admin-details col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="agency-admin-first-name">
+                                    <?= lang('first_name') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input id="agency-admin-first-name" class="form-control required" maxlength="256">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-last-name">
+                                    <?= lang('last_name') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input id="agency-admin-last-name" class="form-control required" maxlength="512">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-email">
+                                    <?= lang('email') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input id="agency-admin-email" class="form-control required" maxlength="512">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-phone-number">
+                                    <?= lang('phone_number') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input id="agency-admin-phone-number" class="form-control required" maxlength="128">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-mobile-number">
+                                    <?= lang('mobile_number') ?>
+
+                                </label>
+                                <input id="agency-admin-mobile-number" class="form-control" maxlength="128">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-address">
+                                    <?= lang('address') ?>
+                                </label>
+                                <input id="agency-admin-address" class="form-control" maxlength="256">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-city">
+                                    <?= lang('city') ?>
+
+                                </label>
+                                <input id="agency-admin-city" class="form-control" maxlength="256">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-state">
+                                    <?= lang('state') ?>
+                                </label>
+                                <input id="agency-admin-state" class="form-control" maxlength="128">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-zip-code">
+                                    <?= lang('zip_code') ?>
+
+                                </label>
+                                <input id="agency-admin-zip-code" class="form-control" maxlength="64">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-notes">
+                                    <?= lang('notes') ?>
+                                </label>
+                                <textarea id="agency-admin-notes" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="agency-admin-settings col-12 col-md-6">
+                            <div class="form-group">
+                                <label for="agency-admin-username">
+                                    <?= lang('username') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input id="agency-admin-username" class="form-control required" maxlength="256">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-password">
+                                    <?= lang('password') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="password" id="agency-admin-password" class="form-control required"
+                                       maxlength="512" autocomplete="new-password">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-password-confirm">
+                                    <?= lang('retype_password') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="password" id="agency-admin-password-confirm" class="form-control required"
+                                       maxlength="512" autocomplete="new-password">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-calendar-view">
+                                    <?= lang('calendar') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="agency-admin-calendar-view" class="form-control required">
+                                    <option value="default">Default</option>
+                                    <option value="table">Table</option>
+                                </select>
+                            </div>
+
+
+
+                            <div class="form-group">
+                                <label for="agency-admin-timezone">
+                                    <?= lang('timezone') ?>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <?= render_timezone_dropdown('id="agency-admin-timezone" class="form-control required"') ?>
+                            </div>
+
+                            <br>
+
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="agency-admin-notifications">
+                                <label class="custom-control-label" for="agency-admin-notifications">
+                                    <?= lang('receive_notifications') ?>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -772,7 +772,7 @@
                             }),
                             // Phone
                             $('<div/>', {
-                                'text': visitor.phone
+                                'text': visitor.phone_number
                             }),
                             // Address
                             $('<div/>', {

@@ -45,6 +45,7 @@ class Backend_api extends EA_Controller {
         $this->load->model('providers_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
+        $this->load->model('agency_admins_model');
         $this->load->model('services_model');
         $this->load->model('settings_model');
         $this->load->model('user_model');
@@ -1899,6 +1900,114 @@ class Backend_api extends EA_Controller {
             }
 
             $result = $this->secretaries_model->delete($this->input->post('secretary_id'));
+
+            $response = $result ? AJAX_SUCCESS : AJAX_FAILURE;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Filter agency_admin records with string key.
+     */
+    public function ajax_filter_agency_admins()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $key = $this->db->escape_str($this->input->post('key'));
+
+            $where =
+                '(first_name LIKE "%' . $key . '%" OR last_name LIKE "%' . $key . '%" ' .
+                'OR email LIKE "%' . $key . '%" OR mobile_number LIKE "%' . $key . '%" ' .
+                'OR phone_number LIKE "%' . $key . '%" OR address LIKE "%' . $key . '%" ' .
+                'OR city LIKE "%' . $key . '%" OR state LIKE "%' . $key . '%" ' .
+                'OR zip_code LIKE "%' . $key . '%" OR notes LIKE "%' . $key . '%")';
+
+            $response = $this->agency_admins_model->get_batch($where);
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Save (insert or update) an agency admin record into database.
+     */
+    public function ajax_save_agency_admin()
+    {
+        try
+        {
+            $aadmin = json_decode($this->input->post('agency_admin'), TRUE);
+
+            $required_privileges = ( ! isset($aadmin['id']))
+                ? $this->privileges[PRIV_USERS]['add']
+                : $this->privileges[PRIV_USERS]['edit'];
+            if ($required_privileges == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $aadmin_id = $this->agency_admins_model->add($aadmin);
+
+            $response = [
+                'status' => AJAX_SUCCESS,
+                'id' => $aadmin_id
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Delete an agency admin record from the database.
+     */
+    public function ajax_delete_agency_admin()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['delete'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $result = $this->agency_admins_model->delete($this->input->post('agency_admin_id'));
 
             $response = $result ? AJAX_SUCCESS : AJAX_FAILURE;
         }
