@@ -84,15 +84,14 @@ class Inmates_model extends EA_Model {
             ->from('ea_inmates')
             ->where('ea_inmates.id='.$id);
 
-
-
         $inmates = $this->db->get()->result_array();
 
+        $class_level_or_clause = "(ea_u.inmate_classification_level=".$inmates[0]['inmate_classification_level']." or ea_u.inmate_classification_level LIKE 'Minimum%')";
         $this->db
             ->select('ea_u.id')
             ->from('ea_users ea_u')
             ->join('ea_services_providers ea_sp', 'ea_u.id = ea_sp.id_users', 'left')
-            ->where('ea_u.inmate_classification_level='.$inmates[0]['inmate_classification_level'])
+            ->where($class_level_or_clause)
             ->where('ea_u.id_roles=2')
             ->where('ea_sp.id_services='.$service_id);
 
