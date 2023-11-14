@@ -49,12 +49,21 @@
 
     <div id="header-menu" class="collapse navbar-collapse flex-row-reverse">
         <ul class="navbar-nav">
+            <?php $hidden = ($privileges[PRIV_MESSAGES]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_MESSAGES) ? 'active' : '' ?>
+            <li class="nav-item <?= $active . $hidden ?>">
+                <a href="<?= site_url('backend/messages') ?>" class="nav-link"
+                   data-tippy-content="Alerts / Messages">
+                    <img id="alerts-icon" src="<?= base_url('assets/img/megaphone-icon.png') ?>" width="50"/>
+                </a>
+            </li>
+
             <?php $hidden = ($privileges[PRIV_DASHBOARD]['view'] == TRUE) ? '' : 'd-none' ?>
             <?php $active = ($active_menu == PRIV_DASHBOARD) ? 'active' : '' ?>
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/dashboard') ?>" class="nav-link"
                    data-tippy-content="<?= lang('manage_dashboard_record_hint') ?>">
-                    <i class="fas fa-calendar-alt mr-2"></i>
+                    <i class="fas fa-calendar-alt mr-2"></i><br/>
                     <?= lang('dashboard') ?>
                 </a>
             </li>
@@ -64,7 +73,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend') ?>" class="nav-link"
                    data-tippy-content="<?= lang('manage_appointment_record_hint') ?>">
-                    <i class="fas fa-calendar-alt mr-2"></i>
+                    <i class="fas fa-calendar-alt mr-2"></i><br/>
                     <?= lang('calendar') ?>
                 </a>
             </li>
@@ -74,7 +83,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/customers') ?>" class="nav-link"
                    data-tippy-content="<?= lang('manage_customers_hint') ?>">
-                    <i class="fas fa-user-friends mr-2"></i>
+                    <i class="fas fa-user-friends mr-2"></i><br/>
                     <?= lang('customers') ?>
                 </a>
             </li>
@@ -84,7 +93,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/inmates') ?>" class="nav-link"
                    data-tippy-content="Manage Inmate Information">
-                    <i class="fas fa-user-friends mr-2"></i>
+                    <i class="fas fa-user-friends mr-2"></i><br/>
                     <?= lang('inmates') ?>
                 </a>
             </li>
@@ -94,7 +103,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/services') ?>" class="nav-link"
                    data-tippy-content="<?= lang('manage_services_hint') ?>">
-                    <i class="fas fa-business-time mr-2"></i>
+                    <i class="fas fa-business-time mr-2"></i><br/>
                     <?= lang('services') ?>
                 </a>
             </li>
@@ -104,7 +113,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/users') ?>" class="nav-link"
                    data-tippy-content="<?= lang('manage_users_hint') ?>">
-                    <i class="fas fa-users-cog mr-2"></i>
+                    <i class="fas fa-users-cog mr-2"></i><br/>
                     <?= lang('users') ?>
                 </a>
             </li>
@@ -116,7 +125,7 @@
                    data-tippy-content="Reporting" target="_blank"> -->
                    <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/a0a704b4-db61-499c-aa24-4eef1d355953?directory_alias=tarmactech"
                         class="nav-link" data-tippy-content="Reporting" target="_blank">
-                    <i class="fas fa-cogs mr-2"></i>
+                    <i class="fas fa-cogs mr-2"></i><br/>
                     <?= lang('reporting') ?>
                 </a>
             </li>
@@ -127,7 +136,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/settings') ?>" class="nav-link"
                    data-tippy-content="<?= lang('settings_hint') ?>">
-                    <i class="fas fa-cogs mr-2"></i>
+                    <i class="fas fa-cogs mr-2"></i><br/>
                     <?= lang('settings') ?>
                 </a>
             </li>
@@ -135,7 +144,7 @@
             <li class="nav-item">
                 <a href="<?= site_url('user/logout') ?>" class="nav-link"
                    data-tippy-content="<?= lang('log_out_hint') ?>">
-                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    <i class="fas fa-sign-out-alt mr-2"></i><br/>
                     <?= lang('log_out') ?>
                 </a>
             </li>

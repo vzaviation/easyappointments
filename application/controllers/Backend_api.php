@@ -36,19 +36,20 @@ class Backend_api extends EA_Controller {
         parent::__construct();
 
         $this->load->model('admins_model');
+        $this->load->model('agency_admins_model');
         $this->load->model('appointments_model');
         $this->load->model('consents_model');
         $this->load->model('customers_model');
-        $this->load->model('visitors_model');
-        $this->load->model('inmates_model');
         $this->load->model('inmate_visitor_model');
+        $this->load->model('inmates_model');
+        $this->load->model('messages_model');
         $this->load->model('providers_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
-        $this->load->model('agency_admins_model');
         $this->load->model('services_model');
         $this->load->model('settings_model');
         $this->load->model('user_model');
+        $this->load->model('visitors_model');
         $this->load->library('google_sync');
         $this->load->library('ics_file');
         $this->load->library('notifications');
@@ -2647,4 +2648,41 @@ class Backend_api extends EA_Controller {
             ->set_output(json_encode($response));
     }
 
+    public function ajax_get_messages()
+    {
+        try
+        {
+            $day_span = json_decode($this->input->post('day_span'), TRUE);
+
+            // Get the messages newer than the day span
+            $messages = $this->messages_model->get_all_last_days($day_span);
+
+            // Loop, and for each message, check if there is an upcoming appointment for the inmate
+            foreach ($messages as $key => $message) {
+                $appointments = $this->messages_model->check_upcoming_appointment_by_message_id($message['id']);
+                foreach ($appointments as $appointment) {
+                    if (isset($messages[$key]['appointment_notice'])) {
+                        $messages[$key]['appointment_notice'] = $messages[$key]['appointment_notice'] . "</br>" . "NOTE: This inmate has an upcoming appointment on " . $appointment['start_datetime'] . ' - please verify';
+                    } else {
+                        $messages[$key]['appointment_notice'] = "NOTE: This inmate has an upcoming appointment on " . $appointment['start_datetime'] . ' - please verify';
+                    }
+                }
+            }
+
+            $response = $messages;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
 }

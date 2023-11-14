@@ -26,19 +26,20 @@ class Backend extends EA_Controller {
     {
         parent::__construct();
 
-        $this->load->model('appointments_model');
-        $this->load->model('providers_model');
-        $this->load->model('services_model');
-        $this->load->model('customers_model');
-        $this->load->model('visitors_model');
-        $this->load->model('inmates_model');
-        $this->load->model('inmate_visitor_model');
-        $this->load->model('settings_model');
-        $this->load->model('roles_model');
-        $this->load->model('user_model');
-        $this->load->model('secretaries_model');
         $this->load->model('admins_model');
         $this->load->model('agency_admins_model');
+        $this->load->model('appointments_model');
+        $this->load->model('customers_model');
+        $this->load->model('inmates_model');
+        $this->load->model('inmate_visitor_model');
+        $this->load->model('messages_model');
+        $this->load->model('providers_model');
+        $this->load->model('roles_model');
+        $this->load->model('secretaries_model');
+        $this->load->model('services_model');
+        $this->load->model('settings_model');
+        $this->load->model('visitors_model');
+        $this->load->model('user_model');
         $this->load->library('timezones');
         $this->load->library('migration');
     }
@@ -174,6 +175,53 @@ class Backend extends EA_Controller {
         $view['timezone'] = $this->session->userdata('timezone');
         $view['role_slug'] = $this->session->userdata('role_slug');
         $view['privileges'] = $this->roles_model->get_privileges($this->session->userdata('role_slug'));
+    }
+
+    /**
+     * Displays the backend messages page.
+     *
+     * Display alerts and messages to the admin users
+     *
+     */
+    public function messages()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/messages'));
+
+        if ( ! $this->has_privileges(PRIV_MESSAGES))
+        {
+            return;
+        }
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('messages');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
+        $view['active_menu'] = PRIV_MESSAGES;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+
+        $this->set_user_data($view);
+
+        // fetch all the messages for the last 7 days
+        $today = date('Y-m-d');
+        $view['today'] = $today;
+        $messages = $this->messages_model->get_all_last_days(7);
+        // Loop, and for each message, check if there is an upcoming appointment for the inmate
+        foreach ($messages as $key => $message) {
+            $appointments = $this->messages_model->check_upcoming_appointment_by_message_id($message['id']);
+            foreach ($appointments as $appointment) {
+                if (isset($messages[$key]['appointment_notice'])) {
+                    $messages[$key]['appointment_notice'] = $messages[$key]['appointment_notice'] . "</br>" . "NOTE: This inmate has an upcoming appointment on " . $appointment['start_datetime'] . ' - please verify';
+                } else {
+                    $messages[$key]['appointment_notice'] = "NOTE: This inmate has an upcoming appointment on " . $appointment['start_datetime'] . ' - please verify';
+                }
+            }
+        }
+        $view['messages'] = $messages;
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/messages', $view);
+        $this->load->view('backend/footer', $view);
     }
 
     /**

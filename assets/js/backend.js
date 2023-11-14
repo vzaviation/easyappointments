@@ -59,6 +59,7 @@ window.Backend = window.Backend || {};
     exports.PRIV_DELETE = 8;
 
     exports.PRIV_APPOINTMENTS = 'appointments';
+    exports.PRIV_MESSAGES = 'messages';
     exports.PRIV_DASHBOARD = 'dashboard';
     exports.PRIV_CUSTOMERS = 'customers';
     exports.PRIV_INMATES = 'inmates';

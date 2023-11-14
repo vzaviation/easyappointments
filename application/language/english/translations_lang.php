@@ -95,6 +95,7 @@ $lang['appointment_does_not_exist_in_db'] = 'The appointment you requested does 
 $lang['display_calendar'] = 'Display Calendar';
 $lang['calendar'] = 'Calendar';
 $lang['dashboard'] = 'Check-in';
+$lang['messages'] = 'Alerts / Messages';
 $lang['users'] = 'Users';
 $lang['reporting'] = 'Reporting';
 $lang['settings'] = 'Settings';

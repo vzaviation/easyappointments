@@ -66,6 +66,7 @@ define('PRIV_EDIT', 4);
 define('PRIV_DELETE', 8);
 
 define('PRIV_APPOINTMENTS', 'appointments');
+define('PRIV_MESSAGES', 'messages');
 define('PRIV_DASHBOARD', 'dashboard');
 define('PRIV_CUSTOMERS', 'customers');
 define('PRIV_INMATES', 'inmates');

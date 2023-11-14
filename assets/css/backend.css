@@ -1031,3 +1031,25 @@ body {
     white-space:nowrap;
     font-size:12px;
 }
+
+#messages-details-row {
+    display: table;
+}
+
+.message-row {
+    display:table-row;
+    font-size:14px;
+}
+
+.message-header {
+    display:table-cell;
+    font-size:14px;
+    font-weight: bold;
+    text-align: left;
+    margin-left: 5px;
+}
+
+.message-cell {
+    display:table-cell;
+    font-size:14px;
+}
