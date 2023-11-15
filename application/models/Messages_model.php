@@ -139,7 +139,7 @@ class Messages_model extends EA_Model {
             ->from('ea_appointments ea')
             ->join('ea_inmates ei', 'ei.ID = ea.id_inmate','inner')
             ->join('ea_inmate_data_messages eidm','eidm.inmate_so_num = ei.SO','left')
-            ->where('ea.start_datetime > NOW()')
+            ->where("ea.start_datetime > CONVERT_TZ(NOW(),'SYSTEM','America/Chicago')")
             ->where('eidm.id = ' . $messageId)
             ->get();
 
