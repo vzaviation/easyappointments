@@ -9,16 +9,16 @@
  * @since       v1.0.0
  * ---------------------------------------------------------------------------- */
 
-window.BackendInmates = window.BackendInmates || {};
+window.BackendMessages = window.BackendMessages || {};
 
 /**
- * Backend Inmates
+ * Backend Messages
  *
- * Backend Inmates javascript namespace. Contains the main functionality of the backend inmates
+ * Backend Messages javascript namespace. Contains the main functionality of the backend messages
  * page. If you need to use this namespace in a different page, do not bind the default event handlers
  * during initialization.
  *
- * @module BackendInmates
+ * @module BackendMessages
  */
 (function (exports) {
 
@@ -42,9 +42,8 @@ window.BackendInmates = window.BackendInmates || {};
     exports.initialize = function (defaultEventHandlers) {
         defaultEventHandlers = defaultEventHandlers || false;
 
-        helper = new InmatesHelper();
+        helper = new MessagesHelper();
         helper.resetForm();
-        helper.filter('',true);
         helper.bindEventHandlers();
 
         if (defaultEventHandlers) {
@@ -53,10 +52,10 @@ window.BackendInmates = window.BackendInmates || {};
     };
 
     /**
-     * Default event handlers declaration for backend inmates page.
+     * Default event handlers declaration for backend messages page.
      */
     function bindEventHandlers() {
         //
     }
 
-})(window.BackendInmates);
+})(window.BackendMessages);

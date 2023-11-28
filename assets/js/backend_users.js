@@ -33,7 +33,7 @@ window.BackendUsers = window.BackendUsers || {};
     /**
      * Contains the current tab record methods for the page.
      *
-     * @type {AdminsHelper|ProvidersHelper|SecretariesHelper}
+     * @type {AdminsHelper|ProvidersHelper|SecretariesHelper|AgencyAdminsHelper}
      */
     var helper = {};
 
@@ -56,10 +56,17 @@ window.BackendUsers = window.BackendUsers || {};
         exports.wp.bindEventHandlers();
 
         // Instantiate default helper object (admin).
-        helper = new ProvidersHelper();
+        helper = new SecretariesHelper();
         helper.resetForm();
         helper.filter('');
         helper.bindEventHandlers();
+
+        // Depending on the user login / role, disable certain menu choices
+        const user_role = GlobalVariables.user.role_slug;
+        if (user_role == 'admin') {
+            $('.nav-item-providers').show();
+            $('.nav-item-admins').show();
+        }
 
         // Fill the services and providers list boxes.
         GlobalVariables.services.forEach(function (service) {
@@ -99,7 +106,8 @@ window.BackendUsers = window.BackendUsers || {};
                             $('<input/>', {
                                 'class': 'form-check-input',
                                 'type': 'checkbox',
-                                'data-id': provider.id
+                                'data-id': provider.id,
+                                'checked': true
                             }),
                             $('<label/>', {
                                 'class': 'form-check-label',
@@ -142,6 +150,8 @@ window.BackendUsers = window.BackendUsers || {};
                 helper = new AdminsHelper();
             } else if ($(this).attr('href') === '#providers') {
                 helper = new ProvidersHelper();
+            } else if ($(this).attr('href') === '#agency-admins') {
+                helper = new AgencyAdminsHelper();
             } else if ($(this).attr('href') === '#secretaries') {
                 helper = new SecretariesHelper();
 
@@ -201,7 +211,7 @@ window.BackendUsers = window.BackendUsers || {};
          * When the user leaves the username input field we will need to check if the username
          * is not taken by another record in the system. Usernames must be unique.
          */
-        $('#admin-username, #provider-username, #secretary-username').focusout(function () {
+        $('#admin-username, #provider-username, #secretary-username, #agency-admin-username').focusout(function () {
             var $input = $(this);
 
             if ($input.prop('readonly') === true || $input.val() === '') {

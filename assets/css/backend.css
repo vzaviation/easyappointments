@@ -1022,3 +1022,34 @@ body {
     white-space: nowrap;
     padding-left: 6px;
 }
+
+#inmate-info-visitors {
+    float:left;
+    margin-top:20px;
+    margin-bottom: 10px;
+    width:800px;
+    white-space:nowrap;
+    font-size:12px;
+}
+
+#messages-details-row {
+    display: table;
+}
+
+.message-row {
+    display:table-row;
+    font-size:14px;
+}
+
+.message-header {
+    display:table-cell;
+    font-size:14px;
+    font-weight: bold;
+    text-align: left;
+    margin-left: 5px;
+}
+
+.message-cell {
+    display:table-cell;
+    font-size:14px;
+}

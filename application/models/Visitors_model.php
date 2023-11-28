@@ -568,7 +568,7 @@ class Visitors_model extends EA_Model {
     }
 
     /**
-     * Get by date and inmate
+     * Get appointment visitors by date and inmate
      */
     public function get_appointment_visitors_by_date_inmate($inmate_id, $date = NULL) {
         if ($date == NULL) {

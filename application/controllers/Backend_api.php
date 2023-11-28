@@ -36,17 +36,20 @@ class Backend_api extends EA_Controller {
         parent::__construct();
 
         $this->load->model('admins_model');
+        $this->load->model('agency_admins_model');
         $this->load->model('appointments_model');
         $this->load->model('consents_model');
         $this->load->model('customers_model');
-        $this->load->model('visitors_model');
+        $this->load->model('inmate_visitor_model');
         $this->load->model('inmates_model');
+        $this->load->model('messages_model');
         $this->load->model('providers_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
         $this->load->model('services_model');
         $this->load->model('settings_model');
         $this->load->model('user_model');
+        $this->load->model('visitors_model');
         $this->load->library('google_sync');
         $this->load->library('ics_file');
         $this->load->library('notifications');
@@ -1105,12 +1108,20 @@ class Backend_api extends EA_Controller {
                 throw new Exception('You do not have the required privileges for this task.');
             }
 
+            $housed = $this->input->post('housed');
             $key = $this->db->escape_str($this->input->post('key'));
             $key = strtoupper($key);
 
-            $where =
-                '(inmate_name LIKE upper("%' . $key . '%") OR ' .
-                'inmate_classification_level LIKE upper("%' . $key . '%"))';
+            if ($housed == "true") {
+                $where =
+                    '(booking_status = 1) AND ' .
+                    '(inmate_name LIKE upper("%' . $key . '%") OR ' .
+                    'inmate_classification_level LIKE upper("%' . $key . '%"))';
+            } else {
+                $where =
+                    '(inmate_name LIKE upper("%' . $key . '%") OR ' .
+                    'inmate_classification_level LIKE upper("%' . $key . '%"))';
+            }
 
             $order_by = 'inmate_name ASC';
 
@@ -1282,7 +1293,7 @@ class Backend_api extends EA_Controller {
             $inmate_id = json_decode($this->input->post('inmate_id'), TRUE);
 
             // Pull the list of visitors given the inmate_id
-            $visitors = $this->inmates_model->get_inmate_visitors($inmate_id);
+            $visitors = $this->inmate_visitor_model->get_inmate_visitors($inmate_id);
             $response = [
                 'visitors' => $visitors
             ];
@@ -1313,11 +1324,10 @@ class Backend_api extends EA_Controller {
             {
                 throw new Exception('You do not have the required privileges for this task.');
             }
-
             // Loop through and update
             foreach ($visitors as $visitor)
             {
-                $this->inmates_model->add_inmate_visitor($visitor);
+                $this->inmate_visitor_model->add_inmate_visitor($visitor);
             }
 
             $response = [
@@ -1330,6 +1340,37 @@ class Backend_api extends EA_Controller {
 
             $response = [
                 'visitors' => array(),
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_delete_inmate_visitor()
+    {
+        try
+        {
+            $visitor_id = $this->input->post('visitor_id');
+
+            if ($this->privileges[PRIV_INMATES]['edit'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $this->inmate_visitor_model->delete_inmate_visitor($visitor_id);
+            $response = [
+                'deleted' => $visitor_id
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+            $response = [
+                'deleted' => 0,
                 'message' => $exception->getMessage(),
                 'trace' => config('debug') ? $exception->getTrace() : []
             ];
@@ -1860,6 +1901,114 @@ class Backend_api extends EA_Controller {
             }
 
             $result = $this->secretaries_model->delete($this->input->post('secretary_id'));
+
+            $response = $result ? AJAX_SUCCESS : AJAX_FAILURE;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Filter agency_admin records with string key.
+     */
+    public function ajax_filter_agency_admins()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $key = $this->db->escape_str($this->input->post('key'));
+
+            $where =
+                '(first_name LIKE "%' . $key . '%" OR last_name LIKE "%' . $key . '%" ' .
+                'OR email LIKE "%' . $key . '%" OR mobile_number LIKE "%' . $key . '%" ' .
+                'OR phone_number LIKE "%' . $key . '%" OR address LIKE "%' . $key . '%" ' .
+                'OR city LIKE "%' . $key . '%" OR state LIKE "%' . $key . '%" ' .
+                'OR zip_code LIKE "%' . $key . '%" OR notes LIKE "%' . $key . '%")';
+
+            $response = $this->agency_admins_model->get_batch($where);
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Save (insert or update) an agency admin record into database.
+     */
+    public function ajax_save_agency_admin()
+    {
+        try
+        {
+            $aadmin = json_decode($this->input->post('agency_admin'), TRUE);
+
+            $required_privileges = ( ! isset($aadmin['id']))
+                ? $this->privileges[PRIV_USERS]['add']
+                : $this->privileges[PRIV_USERS]['edit'];
+            if ($required_privileges == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $aadmin_id = $this->agency_admins_model->add($aadmin);
+
+            $response = [
+                'status' => AJAX_SUCCESS,
+                'id' => $aadmin_id
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Delete an agency admin record from the database.
+     */
+    public function ajax_delete_agency_admin()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['delete'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $result = $this->agency_admins_model->delete($this->input->post('agency_admin_id'));
 
             $response = $result ? AJAX_SUCCESS : AJAX_FAILURE;
         }
@@ -2499,4 +2648,41 @@ class Backend_api extends EA_Controller {
             ->set_output(json_encode($response));
     }
 
+    public function ajax_get_messages()
+    {
+        try
+        {
+            $day_span = json_decode($this->input->post('day_span'), TRUE);
+
+            // Get the messages newer than the day span
+            $messages = $this->messages_model->get_all_last_days($day_span);
+
+            // Loop, and for each message, check if there is an upcoming appointment for the inmate
+            foreach ($messages as $key => $message) {
+                $appointments = $this->messages_model->check_upcoming_appointment_by_message_id($message['id']);
+                foreach ($appointments as $appointment) {
+                    if (isset($messages[$key]['appointment_notice'])) {
+                        $messages[$key]['appointment_notice'] = $messages[$key]['appointment_notice'] . "</br>" . "NOTE: This inmate has an upcoming appointment on " . $appointment['start_datetime'] . ' - please verify';
+                    } else {
+                        $messages[$key]['appointment_notice'] = "NOTE: This inmate has an upcoming appointment on " . $appointment['start_datetime'] . ' - please verify';
+                    }
+                }
+            }
+
+            $response = $messages;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
 }

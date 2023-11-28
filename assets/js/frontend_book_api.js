@@ -41,7 +41,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         var serviceId = $('#select-service').val();
 
         // Default value of duration (in minutes).
-        var serviceDuration = 15;
+        var serviceDuration = 20;
 
         var service = GlobalVariables.availableServices.find(function (availableService) {
             return Number(availableService.id) === Number(serviceId);
@@ -57,12 +57,15 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         // Make ajax post request and get the available hours.
         var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_get_available_hours';
 
+        var inmateId = $('#select-inmate').val();
+
         const providerId = $('#select-provider').val() ? $('#select-provider').val() : -1;
         var data = {
             csrfToken: GlobalVariables.csrfToken,
             service_id: serviceId,
             provider_id: providerId,
             selected_date: selectedDate,
+            inmate_id: inmateId,
             service_duration: serviceDuration,
             manage_mode: FrontendBook.manageMode,
             appointment_id: appointmentId
@@ -122,12 +125,37 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                         $('.available-hour:eq(0)').addClass('selected-hour');
                     }
 
-                    FrontendBook.updateConfirmFrame();
+                    //FrontendBook.updateConfirmFrame();
 
                 } else {
                     $('#available-hours').text(EALang.no_available_hours);
                 }
                 $("#loading").css("display", "none");
+            });
+    };
+
+    /**
+     * Check existing appointments by inmate for date
+     *
+     * @param {String} inmate_id
+     * @param {Date} appointment_date
+     */
+    exports.checkExistingAppointmentByInmate = function (inmate_id, start_datetime) {
+        // Make ajax post request and get the available hours.
+        const url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_fetch_appointments_by_date_for_inmate';
+
+        const data = {
+            csrfToken: GlobalVariables.csrfToken,
+            inmate_id: inmate_id,
+            appt_date: start_datetime
+        };
+        console.log('IID: ' + inmate_id + ' date: ' + start_datetime);
+        $.post(url, data)
+            .done(function (response) {
+                return response.appointments;
+            })
+            .fail(function (jqxhr, textStatus, errorThrown) {
+                return null;
             });
     };
 
@@ -299,6 +327,20 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                                     $('#authorize-' + visitor + '-message').text("Please enter your information below");        
                                     $('.' + visitor + '-information').show();
                                     $('#button-next-3').show();
+
+                                    // Attorney Fields
+                                    $('#' + visitor + '-cause-number').val('');
+                                    $('#' + visitor + '-law-firm').val('');
+                                    $('#' + visitor + '-attorney-type').val('');
+                                    if (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) {
+                                        $('#' + visitor + '-law-firm').addClass('required');
+                                        $('#' + visitor + '-attorney-type').addClass('required');
+                                        $('#' + visitor + '-attorney-information').show();
+                                    } else {
+                                        $('#' + visitor + '-law-firm').removeClass('required');
+                                        $('#' + visitor + '-attorney-type').removeClass('required');
+                                        $('#' + visitor + '-attorney-information').hide();
+                                    }
                                 }
                             })
                             .fail(function (jqxhr, textStatus, errorThrown) {

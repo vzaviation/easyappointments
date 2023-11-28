@@ -48,6 +48,10 @@ RUN setcap "cap_net_bind_service=+ep" /usr/bin/php7.4
 
 RUN mkdir /var/www/html/easyappointments
 
+COPY ./xdebug.ini /etc/php/7.4/cli/conf.d/99-xdebug.ini
+COPY ./xdebug.ini /etc/php/7.4/fpm/conf.d/99-xdebug.ini
+#COPY ./error_reporting.ini /etc/php/7.4/cli/conf.d/99-error_reporting.ini
+#COPY ./error_reporting.ini /etc/php/7.4/fpm/conf.d/99-error_reporting.ini
 COPY ./apache_easyappointments.conf /etc/apache2/sites-available/000-default.conf
 COPY ./apache2.conf /etc/apache2/apache2.conf
 ENTRYPOINT service apache2 start && service php7.4-fpm start && bash

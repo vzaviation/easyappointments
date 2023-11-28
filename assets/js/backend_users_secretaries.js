@@ -80,6 +80,16 @@
         }.bind(this));
 
         /**
+         * Event: Select all providers checkbox
+         */
+        $('#secretaries').on('click', '#check-all-secretary-providers', function () {
+            const checked = $('#check-all-secretary-providers').prop('checked');
+            $('#secretary-providers input:checkbox').each(function (index, checkbox) {
+                $(checkbox).prop('checked',checked);
+            });
+        }.bind(this));
+
+        /**
          * Event: Add New Secretary Button "Click"
          */
         $('#secretaries').on('click', '#add-secretary', function () {
@@ -93,6 +103,9 @@
             $('#secretaries .record-details').find('select').prop('disabled', false);
             $('#secretary-password, #secretary-password-confirm').addClass('required');
             $('#secretary-providers input:checkbox').prop('disabled', false);
+            $('#secretary-providers input:checkbox').each(function (index, checkbox) {
+                $(checkbox).prop('checked', true);
+            });
         }.bind(this));
 
         /**

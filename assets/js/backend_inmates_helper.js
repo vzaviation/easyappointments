@@ -26,6 +26,22 @@
         this.pageLimit = 20;
     }
 
+    /*
+     *  Create a relationship select object
+     */
+    InmatesHelper.prototype.relationshipSelect = function (index) {
+        var instance = this;
+        // Set up a relationship select object
+        let relationshipSelect = "<select id='relationships-" + index + "'>";
+        relationshipSelect += "<option value='-1'>-- Please select a relationship --</option>";
+        GlobalVariables.relationships.forEach(function(relationship) {
+            let option = "<option value='" + relationship.id + "'>" + relationship.visitor_relationship + "</option>";
+            relationshipSelect +=  option;
+        });
+        relationshipSelect += "</select>";
+        return relationshipSelect;
+    };
+
     /**
      * Binds the default event handlers of the backend inmates page.
      */
@@ -38,20 +54,37 @@
          * @param {jQuery.Event} event
          */
         $('#inmates').on('submit', '#filter-inmates form', function (event) {
+            const housed = $('#filter-by-housed').is(':checked');
             event.preventDefault();
             var key = $('#filter-inmates .key').val();
             $('#filter-inmates .selected').removeClass('selected');
             instance.resetForm();
-            instance.filter(key);
+            instance.filter(key,housed);
         });
 
         /**
          * Event: Filter Inmates Clear Button "Click"
          */
         $('#inmates').on('click', '#filter-inmates .clear', function () {
+            $('#filter-by-housed').prop('checked',false);
             $('#filter-inmates .key').val('');
             instance.filter('');
             instance.resetForm();
+        });
+
+        /**
+         * Event: Filter by Housed Checkbox
+         *
+         * Display only the inmates that are currently resident
+         */
+        $('#filter-inmates').on('change', '#filter-by-housed', function () {
+            const housed = $(this).is(':checked');
+
+            event.preventDefault();
+            var key = $('#filter-inmates .key').val();
+            $('#filter-inmates .selected').removeClass('selected');
+            instance.resetForm();
+            instance.filter(key,housed);
         });
 
         /**
@@ -81,7 +114,7 @@
 
             instance.inmateVisitors(inmateId);
         });
-    
+
         /**
          * Event: Flag "Click"
          */
@@ -109,10 +142,11 @@
 //                    console.log("I: " + JSON.stringify(inmate));
 
                     // reset the form to get updated data
+                    const housed = $('#filter-by-housed').is(':checked');
                     const key = $('#filter-inmates .key').val();
                     $('#filter-inmates .selected').removeClass('selected');
                     instance.resetForm();
-                    instance.filter(key);
+                    instance.filter(key,housed);
 
                     instance.displayInmate(inmate);
 
@@ -146,10 +180,11 @@
 //                    console.log("OUT I: " + JSON.stringify(inmate));
 
                     // reset the form to get updated data
+                    const housed = $('#filter-by-housed').is(':checked');
                     const key = $('#filter-inmates .key').val();
                     $('#filter-inmates .selected').removeClass('selected');
                     instance.resetForm();
-                    instance.filter(key);
+                    instance.filter(key,housed);
 
                     instance.displayInmate(inmate);
 
@@ -164,9 +199,8 @@
         /*
          * Save the inmate visitors
          */
-        $('#inmate-details').on('click', '#visitor-button', function () {
-            const instance = this;
-            // There are 5 form fields
+        $('#inmate-info-visitors').on('click', '#visitor-button', function () {
+            // There are 5 form field rows
             // Loop through and build a visitor object array from each
             let visitors = new Array();
             let inmateId = -1;
@@ -175,19 +209,29 @@
                 const vid = $('#visitor-inmate-id-' + i).data('id');
                 const first_name = $('#visitor-first-name-' + i).val();
                 const last_name = $('#visitor-last-name-' + i).val();
-                const number = $('#visitor-number-' + i).val();
-//                console.log("** TEST: " + i + ":" + inmate_id + "/" + vid + "/" + first_name + "/" + last_name + "/" + number);
+                if ((first_name != "") && (last_name != "")) {
+                    const number = i + 1;
+                    const relationship_id = $("select#relationships-" + i).find(":selected").val();
+                    //console.log("** TEST: " + i + ":" + inmate_id + "/" + vid + "/" + first_name + "/" + last_name + "/" + number + "/RID " + relationship_id);
+                    let effective_date = $('#visitor-ed-datepicker-' + i).val();
 
-                let visitor = new Object();
-                visitor.inmate_id = inmate_id;
-                inmateId = inmateId == -1 ? inmate_id : inmateId;
-                visitor.id = vid != -1 ? vid : null;
-                visitor.visitor_first_name = first_name;
-                visitor.visitor_last_name = last_name;
-                visitor.visitor_number = number;
+                    let visitor = new Object();
+                    visitor.inmate_id = inmate_id;
+                    inmateId = inmateId == -1 ? inmate_id : inmateId;
+                    visitor.id = vid != -1 ? vid : null;
+                    visitor.effective_date = Date.parse(effective_date).toString('yyyy-MM-dd');
+                    let obsolete_date = new Date(effective_date);
+                    obsolete_date.setMonth(obsolete_date.getMonth() + 6);
+                    visitor.obsolete_date = Date.parse(obsolete_date).toString('yyyy-MM-dd');
+                    visitor.visitor_first_name = first_name;
+                    visitor.visitor_last_name = last_name;
+                    visitor.visitor_number = number == null ? number : 1;
+                    visitor.visitor_relationship_id = parseInt(relationship_id);
 
-                visitors.push(visitor);
+                    visitors.push(visitor);
+                }
             }
+            //console.log("Visitors: " + JSON.stringify(visitors));
 
             // Call to update the DB
             var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_save_inmate_visitors';
@@ -200,9 +244,37 @@
             $.post(url, data)
                 .done(function (response) {
                     const visitor = response.visitor;
-//                    console.log("*** Inmate Visitor after save for inmate_id=" + inmateId + " - " + JSON.stringify(visitor));
-                    //instance.inmateVisitors(inmateId);
+                    //console.log("*** Inmate Visitor after save for inmate_id=" + inmateId + " - " + JSON.stringify(visitor));
+                    // refresh visitor list
+                    instance.inmateVisitors(inmateId);
                 }.bind(this));
+        });
+
+        /**
+         * Event: Visitor delete
+         */
+        $('#inmate-info-visitors').on('click', '[name="visitor-delete"]', function () {
+            const visitorId = $(this).data('id');
+            const inmateId = $(this).data('inmateid');
+            console.log("IID: " + inmateId + " VID: " + visitorId);
+
+            // Call to update the DB
+            var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_delete_inmate_visitor';
+
+            var data = {
+                csrfToken: GlobalVariables.csrfToken,
+                visitor_id: visitorId
+            };
+
+            $.post(url, data)
+                .done(function (response) {
+                        console.log("DEL VIS: " + JSON.stringify(response));
+
+                    // refresh the visitor list
+                    instance.inmateVisitors(inmateId);
+
+                }.bind(this));
+            //
         });
     };
 
@@ -219,17 +291,19 @@
             inmate: JSON.stringify(inmate)
         };
 
+        const housed = $('#filter-by-housed').is(':checked');
+
         $.post(url, data)
             .done(function (response) {
                 Backend.displayNotification(EALang.inmate_saved);
                 this.resetForm();
                 $('#filter-inmates .key').val('');
-                this.filter('', response.id, true);
+                this.filter('', housed, response.id, true);
             }.bind(this));
     };
 
     /**
-     * Delete a inmate record from database.
+     * Delete an inmate record from database.
      *
      * @param {Number} id Record id to be deleted.
      */
@@ -240,12 +314,13 @@
             csrfToken: GlobalVariables.csrfToken,
             inmate_id: id
         };
+        const housed = $('#filter-by-housed').is(':checked');
 
         $.post(url, data)
             .done(function () {
                 Backend.displayNotification(EALang.inmate_deleted);
                 this.resetForm();
-                this.filter($('#filter-inmates .key').val());
+                this.filter($('#filter-inmates .key').val(),housed);
             }.bind(this));
     };
 
@@ -319,21 +394,28 @@
      * Filter inmate records.
      *
      * @param {String} key This key string is used to filter the inmate records.
+     * @param {Boolean} housed Optional (false), if true then only currently resident inmates will be shown
      * @param {Number} selectId Optional, if set then after the filter operation the record with the given
      * ID will be selected (but not displayed).
      * @param {Boolean} display Optional (false), if true then the selected record will be displayed on the form.
      */
-    InmatesHelper.prototype.filter = function (key, selectId, display) {
+    InmatesHelper.prototype.filter = function (key, housed, selectId, display) {
         var instance = this;
 
+        housed = housed || false;
         display = display || false;
+
+        // Clear selected and remove any current data
+        $('#filter-inmates .selected').removeClass('selected');
+        $('#inmate-details-row').empty();
 
         var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_filter_inmates';
 
         var data = {
             csrfToken: GlobalVariables.csrfToken,
             key: key,
-            limit: instance.filterLimit
+            limit: instance.filterLimit,
+            housed
         };
 
         $.post(url, data)
@@ -369,6 +451,7 @@
                     if (a.inmate_name < b.inmate_name) { return -1; }
                     return 0;
                 });
+                const housed = $('#filter-by-housed').is(':checked');
 
                 inmatesSorted.slice(0, this.pageLimit).forEach(function (inmate) {
                     $('#filter-inmates .results')
@@ -389,7 +472,7 @@
                         'text': EALang.load_more,
                         'click': function () {
                             this.pageLimit += this.pageLimit;
-                            this.filter(key, selectId, display);
+                            this.filter(key, housed, selectId, display);
                         }.bind(this)
                     })
                         .appendTo('#filter-inmates .results');
@@ -416,6 +499,7 @@
     InmatesHelper.prototype.getFilterHtml = function (inmate) {
         const id = inmate.ID;
         const name = inmate.inmate_name;
+        const housed = inmate.booking_status == 1 ? "HOUSED" : "";
 
         let info = inmate.gender;
         const dobLen = inmate.DOB.length;
@@ -433,6 +517,10 @@
                 $('<br/>'),
                 $('<span/>', {
                     'text': info
+                }),
+                $('<span/>', {
+                    'style': 'padding-left:10px;text-align:right;color:darkblue;',
+                    'text': housed
                 }),
                 $('<br/>'),
             ]
@@ -593,22 +681,6 @@
                                 ]
                             }),
                         ]
-                    }),
-                    $('<div/>', {
-                        'id': 'inmate-info-visitors',
-                        'class': 'col-md-12',
-                        'style': 'float:left;padding-top:30px;',
-                        'data-id': inmate_id,
-                        'html': [
-                            $('<span>', {
-                                'style': 'font-weight:bold;font-size:+2;',
-                                'text': 'Approved Visitor List'
-                            }),
-                            $('<div/>', {
-                                'id': 'visitor-names',
-                                'class': 'col-md-12'
-                            })
-                        ]
                     })
                 ]
             }).appendTo('#inmate-details-row');
@@ -627,16 +699,40 @@
 
         $.post(url, data)
             .done(function (response) {
+                // Reset existing grid
+                for (let i = 0;i < 5;i++) {
+                    $('#inmate-visitor-' + i).remove();
+                }
+                $('#inmate-visitor-save').remove();
+                // now show new / data
+                $('#inmate-info-visitors').show();
+                $('#visitor-save-button').show();
+                $('#visitor-save-button').val("Update / Save");
+                $('#visitor-save-button').removeAttr('disabled');
                 const visitors = response.visitors;
-//                console.log("*** Inmate Visitors for inmate_id=" + inmate_id + " - " + JSON.stringify(visitors));
+                //console.log("*** Inmate Visitors for inmate_id=" + inmate_id + " - " + JSON.stringify(visitors));
+                /* KPB 2023-08-28 comment out for per-visitor dates
+                if ((visitors.length > 0) && (visitors[0].effective_date != null)) {
+                    $('#visitor-ed-datepicker').val(Date.parse(visitors[0].effective_date).toString('MM/dd/yyyy'));
+                    $('#visitor-od-date').text(Date.parse(visitors[0].obsolete_date).toString('MM/dd/yyyy'));
+                } else {
+                    $('#visitor-ed-datepicker').val(new Date().toString('MM/dd/yyyy'));
+                }
+                */
                 for (let i = 0; i < 5; i++) {
                     if (visitors[i]) {
                         const visitor = visitors[i];
-                        instance.displayInmateVisitors(inmate_id, visitor,i);
+                        instance.displayInmateVisitors(inmate_id, visitor, i);
+                        $('#visitor-ed-datepicker-' + i).val(Date.parse(visitors[i].effective_date).toString('MM/dd/yyyy'));
+                        $('#visitor-od-date-' + i).text(Date.parse(visitors[i].obsolete_date).toString('MM/dd/yyyy'));
                     } else {
-                        instance.displayInmateVisitors(inmate_id,null,i);
+                        instance.displayInmateVisitors(inmate_id,null, i);
+                        $('#visitor-ed-datepicker-' + i).val(new Date().toString('MM/dd/yyyy'));
                     }
+                    $('#visitor-ed-datepicker-' + i).datepicker();
+                    $('#visitor-ed-datepicker-' + i).removeAttr('disabled');
                 }
+
             }.bind(this));
             
     };
@@ -652,25 +748,84 @@
             // display a blank form
             $('<div/>', {
                 'id': 'inmate-visitor-' + index,
-                'class': 'col-md-12',
+                'style': 'width:800px;',
                 'html': [
+                    $('<span/>', {
+                        'id': 'visitor-index-' + index,
+                        'name': 'visitor-index-' + index,
+                        'data-id': vis_id,
+                        'text': (index + 1) + ". "
+                    }),
                     // First Name
+                    $('<span/>', {
+                        'id': 'visitor-fn-label-' + index,
+                        'name': 'visitor-fn-label-' + index,
+                        'data-id': vis_id,
+                        'text': "First Name: "
+                    }),
                     $('<input/>', {
                         'id': 'visitor-first-name-' + index,
                         'name': 'visitor-first-name-' + index,
                         'data-id': vis_id,
                         'type': 'text',
-                        'size': 20,
-                        'style': 'margin:4px'
+                        'size': 12,
+                        'style': 'margin-left:6px;margin-right:10px;'
                     }),
                     // Last Name
+                    $('<span/>', {
+                        'id': 'visitor-ln-label-' + index,
+                        'name': 'visitor-ln-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Last Name: "
+                    }),
                     $('<input/>', {
                         'id': 'visitor-last-name-' + index,
                         'name': 'visitor-last-name-' + index,
                         'data-id': vis_id,
                         'type': 'text',
                         'size': 20,
-                        'style': 'margin:4px'
+                        'style': 'margin-left:6px;margin-right:10px;'
+                    }),
+                    // Relationship
+                    $('<span/>', {
+                        'id': 'visitor-rel-label-' + index,
+                        'name': 'visitor-rel-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Relationship: "
+                    }),
+                    $('<span/>', {
+                        'style': 'margin:4px;'
+                    }).append(this.relationshipSelect(index)),
+                    $('<br/>'),
+                    // Effective Date
+                    $('<span/>', {
+                        'id': 'visitor-ed-label-' + index,
+                        'name': 'visitor-ed-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Effective: ",
+                        'style': 'margin-left:198px;'
+                    }),
+                    $('<input/>', {
+                        'id': 'visitor-ed-datepicker-' + index,
+                        'name': 'visitor-ed-datepicker-' + index,
+                        'data-id': vis_id,
+                        'type': 'text',
+                        'size': 10,
+                        'style': 'margin:6px;'
+                    }),
+                    // Obsolete Date
+                    $('<span/>', {
+                        'id': 'visitor-od-label-' + index,
+                        'name': 'visitor-od-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Obsolete: ",
+                        'style': 'margin-left:6px;margin-right:10px;'
+                    }),
+                    $('<span/>', {
+                        'id': 'visitor-od-date-' + index,
+                        'name': 'visitor-od-date-' + index,
+                        'data-id': vis_id,
+                        'text': ""
                     }),
                     // inmate_id (hidden)
                     $('<input/>', {
@@ -689,24 +844,42 @@
                         'value': (index + 1)
                     })
                 ]
-            }).appendTo('#inmate-details-row');
+            }).appendTo('#inmate-info-visitors');
         } else {
             const vis_id = visitor.id;
             $('<div/>', {
                 'id': 'inmate-visitor-' + index,
-                'class': 'col-md-12',
+                'style': 'width:800px;',
                 'html': [
+                    $('<span/>', {
+                        'id': 'visitor-index-' + index,
+                        'name': 'visitor-index-' + index,
+                        'data-id': vis_id,
+                        'text': (index + 1) + ". "
+                    }),
                     // First Name
+                    $('<span/>', {
+                        'id': 'visitor-fn-label-' + index,
+                        'name': 'visitor-fn-label-' + index,
+                        'data-id': vis_id,
+                        'text': "First Name: "
+                    }),
                     $('<input/>', {
                         'id': 'visitor-first-name-' + index,
                         'name': 'visitor-first-name-' + index,
                         'data-id': vis_id,
                         'type': 'text',
-                        'size': 20,
+                        'size': 12,
                         'value': visitor.visitor_first_name,
-                        'style': 'margin:4px'
+                        'style': 'margin-left:6px;margin-right:10px;'
                     }),
                     // Last Name
+                    $('<span/>', {
+                        'id': 'visitor-ln-label-' + index,
+                        'name': 'visitor-ln-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Last Name: "
+                    }),
                     $('<input/>', {
                         'id': 'visitor-last-name-' + index,
                         'name': 'visitor-last-name-' + index,
@@ -714,7 +887,58 @@
                         'type': 'text',
                         'size': 20,
                         'value': visitor.visitor_last_name,
-                        'style': 'margin:4px'
+                        'style': 'margin-left:6px;margin-right:10px;'
+                    }),
+                    // Relationship
+                    $('<span/>', {
+                        'id': 'visitor-rel-label-' + index,
+                        'name': 'visitor-rel-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Relationship: "
+                    }),
+                    $('<span/>', {
+                        'style': 'margin:4px;'
+                    }).append(this.relationshipSelect(index)),
+                    // Delete
+                    $('<a/>', {
+                        'id': 'visitor-delete-' + index,
+                        'name': 'visitor-delete',
+                        'href': '#',
+                        'data-id': vis_id,
+                        'data-inmateid': inmate_id,
+                        'text': "X",
+                        'style': 'padding-left:10px;font-weight:bold;color:darkred;'
+                    }),
+                    $('<br/>'),
+                    // Effective Date
+                    $('<span/>', {
+                        'id': 'visitor-ed-label-' + index,
+                        'name': 'visitor-ed-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Effective: ",
+                        'style': 'margin-left:198px;'
+                    }),
+                    $('<input/>', {
+                        'id': 'visitor-ed-datepicker-' + index,
+                        'name': 'visitor-ed-datepicker-' + index,
+                        'data-id': vis_id,
+                        'type': 'text',
+                        'size': 10,
+                        'style': 'margin:6px;'
+                    }),
+                    // Obsolete Date
+                    $('<span/>', {
+                        'id': 'visitor-od-label-' + index,
+                        'name': 'visitor-od-label-' + index,
+                        'data-id': vis_id,
+                        'text': "Obsolete: ",
+                        'style': 'margin-left:6px;margin-right:10px;'
+                    }),
+                    $('<span/>', {
+                        'id': 'visitor-od-date-' + index,
+                        'name': 'visitor-od-date-' + index,
+                        'data-id': vis_id,
+                        'text': ""
                     }),
                     // inmate_id (hidden)
                     $('<input/>', {
@@ -734,7 +958,12 @@
 
                     })
                 ]
-            }).appendTo('#inmate-details-row');
+            }).appendTo('#inmate-info-visitors');
+            // Set the selected relationship value
+            const relId = "select#relationships-" + index + " option";
+            $(`${relId}`).filter(function () {
+                return this.value == visitor.visitor_relationship_id;
+            }).attr('selected', true);
         }
         if (index == 4) {
             $('<div/>', {
@@ -750,7 +979,7 @@
                         'value': 'Update / Save'
                     })
                 ]
-            }).appendTo('#inmate-details-row');            
+            }).appendTo('#inmate-info-visitors');
         }
     };
     
