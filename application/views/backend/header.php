@@ -39,7 +39,7 @@
 <body>
 <nav id="header" class="navbar navbar-expand-md navbar-dark">
     <div id="header-logo" class="navbar-brand">
-        <h4 style="padding-left: 10px;">Anderson County Sheriff's Office</h4>
+        <h4 style="padding-left: 10px;">Your Jurisdiction's Office</h4>
     </div>
 
     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#header-menu">

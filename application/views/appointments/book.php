@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/bootstrap/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/jquery-ui/jquery-ui.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/ext/cookieconsent/cookieconsent.min.css') ?>">
-    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend-andersonco.css') ?>">
+    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/frontend-demo.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/general.css') ?>">
 
     <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
@@ -510,9 +510,9 @@
                 <span id="company-name">
                     <?= $company_name ?><br />
                     <span class="company-address">
-                        1200 East Lacy St<br />
-                        Palestine, TX 75801<br />
-                        (903) 729-6069
+                        123 Law Enforcement St<br />
+                        Your City, TX 12345<br />
+                        (999) 123-4567
                     </span>
                 </span>
 
