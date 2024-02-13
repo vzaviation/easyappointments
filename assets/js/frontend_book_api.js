@@ -184,8 +184,8 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             .done(function (response) {
                 const authResult = response.check_visitor_authorization;
                 //console.log("*** Response from check_visitor_authorization: " + authResult);
-                if ( (authResult) || (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) ) {
-//                if ((true) || (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID())) { // authResult always true if approved visitor lists not in place
+//                if ( (authResult) || (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID()) ) {  // uncomment when all authorized visitor data is available
+                if ((true) || (service_id == GeneralFunctions.ATTORNEY_SERVICE_ID())) { // authResult always true if approved visitor lists not in place
                     // visitor is on inmates list of allowed visitors - yay
                     // Using the name and email, check for the visitor record in the DB
                     const visitorUrl = GlobalVariables.baseUrl + '/index.php/appointments/ajax_fetch_visitor_information';
