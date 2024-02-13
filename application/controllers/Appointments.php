@@ -863,6 +863,13 @@ class Appointments extends EA_Controller {
                 }
                 // Now check inmate's age - if 17 (or younger) - also restrict
                 $dob = DateTime::createFromFormat('mdY', $inmate["DOB"]);
+                // NOTE: At some point (around 2024-02-12) the DOB and Booking Date fields in the
+                //  incoming data file changed format from mdY to m/d/Y 12:00:00 AM
+                //   (ex. "9/28/1982 12:00:00 A" or "11/28/1982 12:00:00 " - the field width is capped at 20 chars)
+                //  Try to handle both formats here to gracefully transition
+                if ($dob == false) {  // The format is wrong / changed
+                    $dob = DateTime::createFromFormat('n/j/Y H:i:s+', $inmate["DOB"]);
+                }
                 $age = $dob->diff(new DateTime('now'))->y;
                 if ($age <= 17) {
                     $response[] = "restricted";

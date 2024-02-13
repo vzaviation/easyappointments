@@ -503,7 +503,8 @@
 
         let info = inmate.gender;
         const dobLen = inmate.DOB.length;
-        const dob = dobLen === 8 ? inmate.DOB.substring(0,2) + "/" + inmate.DOB.substring(2,4) + "/" + inmate.DOB.substring(dobLen - 4, dobLen) : '';
+        const dob = dobLen === 8 ? inmate.DOB.substring(0,2) + "/" + inmate.DOB.substring(2,4) + "/" + inmate.DOB.substring(dobLen - 4, dobLen) :
+            dobLen > 8 ? inmate.DOB.substring(0,(inmate.DOB.indexOf(' 12:'))) : '';
 
         info = dob != '' ? info + ' DOB: ' + dob : info;
 
