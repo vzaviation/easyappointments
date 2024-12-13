@@ -861,7 +861,7 @@ class Appointments extends EA_Controller {
                         ->set_output(json_encode($response));
                     return;
                 }
-                // Now check inmate's age - if 17 (or younger) - also restrict
+                // Now check inmate's age - if 16 (or younger) - also restrict
                 $dob = DateTime::createFromFormat('mdY', $inmate["DOB"]);
                 // NOTE: At some point (around 2024-02-12) the DOB and Booking Date fields in the
                 //  incoming data file changed format from mdY to m/d/Y 12:00:00 AM
@@ -871,8 +871,8 @@ class Appointments extends EA_Controller {
                     $dob = DateTime::createFromFormat('n/j/Y H:i:s+', $inmate["DOB"]);
                 }
                 $age = $dob->diff(new DateTime('now'))->y;
-                if ($age <= 17) {
-                    $response[] = "restricted";
+                if ($age <= 16) {
+                    $response[] = "age restricted";
                     $this->output
                         ->set_content_type('application/json')
                         ->set_output(json_encode($response));

@@ -623,8 +623,12 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         })
             .done(function (response) {
                 // Check for restricted and handle
-                if ((response.length === 1) && (response[0] == "restricted")) {
-                    showRestriction(selectedDateString);
+                if (response.length === 1) {
+                    if (response[0] == "restricted") {
+                        showRestriction(selectedDateString);
+                    } else if (response[0] == "age restricted") {
+                        showRestriction(selectedDateString, true);
+                    }
                 } else {
                     unavailableDatesBackup = response;
                     selectedDateStringBackup = selectedDateString;
@@ -637,7 +641,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         applyUnavailableDates(unavailableDatesBackup, selectedDateStringBackup);
     };
 
-    function showRestriction(selectedDateString) {
+    function showRestriction(selectedDateString, age = false) {
         processingUnavailabilities = true;
 
         // Grey out unavailable dates.
@@ -649,7 +653,11 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         });
 
         // Show restricted message
-        $('#available-hours').text("You cannot schedule a visitation with this inmate at this time.  Please contact the jurisdiction for information.");
+        if (age) {
+            $('#available-hours').text("We are showing this inmate's age as 16 or younger.  Please contact the jurisdiction to schedule visitation.");
+        } else {
+            $('#available-hours').text("You cannot schedule a visitation with this inmate at this time.  Please contact the jurisdiction for information.");
+        }
 
         // Disable the Next button
         $('#button-next-2').hide();
