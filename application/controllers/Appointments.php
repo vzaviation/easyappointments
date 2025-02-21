@@ -65,6 +65,8 @@ class Appointments extends EA_Controller {
             $available_services = $this->services_model->get_available_services();
             $available_providers = $this->providers_model->get_available_providers();
             $company_name = $this->settings_model->get_setting('company_name');
+            $company_address = $this->settings_model->get_setting('company_address_html');
+            $company_phone = $this->settings_model->get_setting('company_phone');
             $book_advance_timeout = $this->settings_model->get_setting('book_advance_timeout');
             $date_format = $this->settings_model->get_setting('date_format');
             $time_format = $this->settings_model->get_setting('time_format');
@@ -166,6 +168,8 @@ class Appointments extends EA_Controller {
                 'available_providers' => $available_providers,
                 'available_inmates' => $available_inmates,
                 'company_name' => $company_name,
+                'company_address' => $company_address,
+                'company_phone' => $company_phone,
                 'manage_mode' => $manage_mode,
                 'customer_token' => $customer_token,
                 'date_format' => $date_format,

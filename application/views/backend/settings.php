@@ -38,19 +38,14 @@
                 <a class="nav-link" href="#general" data-toggle="tab"><?= lang('general') ?></a>
             </li>
         <?php endif ?>
-        <?php if ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE): ?>
+        <?php if ($privileges[PRIV_USER_SETTINGS]['view'] == TRUE): ?>
             <li class="nav-item">
-                <a class="nav-link" href="#business-logic" data-toggle="tab"><?= lang('business_logic') ?></a>
-            </li>
-        <?php endif ?>
-        <?php if ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE): ?>
-            <li class="nav-item">
-                <a class="nav-link" href="#legal-contents" data-toggle="tab"><?= lang('legal_contents') ?></a>
+                <a class="nav-link" href="#current-user" data-toggle="tab"><?= lang('current_user') ?></a>
             </li>
         <?php endif ?>
         <?php if ($privileges[PRIV_USER_SETTINGS]['view'] == TRUE): ?>
             <li class="nav-item">
-                <a class="nav-link" href="#current-user" data-toggle="tab"><?= lang('current_user') ?></a>
+                <a class="nav-link" href="<?= site_url('backend/resources'); ?>"><?= lang('resources') ?></a>
             </li>
         <?php endif ?>
         <li class="nav-item" style="display:none;">
@@ -85,6 +80,16 @@
                                 <span class="form-text text-muted">
                                     <?= lang('company_name_hint') ?>
                                 </span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="company-address"><?= lang('company_address') ?> *</label>
+                                <input id="company-address" data-field="company_address_html" class="required form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="company-phone"><?= lang('company_phone') ?> *</label>
+                                <input id="company-phone" data-field="company_phone" class="required form-control">
                             </div>
 
                             <div class="form-group">
@@ -206,174 +211,6 @@
                                 <span class="help-block">
                                     <?= lang('display_any_provider_hint') ?>
                                 </span>
-                            </div>
-                        </div>
-                    </div>
-                </fieldset>
-            </form>
-        </div>
-
-        <!-- BUSINESS LOGIC TAB -->
-
-        <?php $hidden = ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE) ? '' : 'd-none' ?>
-        <div class="tab-pane <?= $hidden ?>" id="business-logic">
-            <form>
-                <fieldset>
-                    <legend class="border-bottom mb-4">
-                        <?= lang('business_logic') ?>
-                        <?php if ($privileges[PRIV_SYSTEM_SETTINGS]['edit'] == TRUE): ?>
-                            <button type="button" class="save-settings btn btn-primary btn-sm mb-2"
-                                    data-tippy-content="<?= lang('save') ?>">
-                                <i class="fas fa-check-square mr-2"></i>
-                                <?= lang('save') ?>
-                            </button>
-                        <?php endif ?>
-                    </legend>
-
-                    <div class="row">
-                        <div class="col-12 col-sm-7 working-plan-wrapper">
-                            <h4><?= lang('working_plan') ?></h4>
-                            <span class="form-text text-muted mb-4">
-                                <?= lang('edit_working_plan_hint') ?>
-                            </span>
-
-                            <table class="working-plan table table-striped">
-                                <thead>
-                                <tr>
-                                    <th><?= lang('day') ?></th>
-                                    <th><?= lang('start') ?></th>
-                                    <th><?= lang('end') ?></th>
-                                </tr>
-                                </thead>
-                                <tbody><!-- Dynamic Content --></tbody>
-                            </table>
-
-                            <div class="text-right">
-                                <button class="btn btn-outline-secondary" id="apply-global-working-plan" type="button">
-                                    <i class="fas fa-check"></i>
-                                    <?= lang('apply_to_all_providers') ?>
-                                </button>
-                            </div>
-
-                            <br>
-
-                            <h4><?= lang('book_advance_timeout') ?></h4>
-                            <div class="form-group">
-                                <label for="book-advance-timeout"
-                                       class="control-label"><?= lang('timeout_minutes') ?></label>
-                                <input id="book-advance-timeout" data-field="book_advance_timeout" class="form-control"
-                                       type="number" min="15">
-                                <p class="form-text text-muted">
-                                    <?= lang('book_advance_timeout_hint') ?>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-5 breaks-wrapper">
-                            <h4><?= lang('breaks') ?></h4>
-
-                            <span class="form-text text-muted">
-                                <?= lang('edit_breaks_hint') ?>
-                            </span>
-
-                            <div class="mt-2">
-                                <button type="button" class="add-break btn btn-primary">
-                                    <i class="fas fa-plus-square"></i>
-                                    <?= lang('add_break'); ?>
-                                </button>
-                            </div>
-
-                            <br>
-
-                            <table class="breaks table table-striped">
-                                <thead>
-                                <tr>
-                                    <th><?= lang('day') ?></th>
-                                    <th><?= lang('start') ?></th>
-                                    <th><?= lang('end') ?></th>
-                                    <th><?= lang('actions') ?></th>
-                                </tr>
-                                </thead>
-                                <tbody><!-- Dynamic Content --></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </fieldset>
-            </form>
-        </div>
-
-        <!-- LEGAL CONTENTS TAB -->
-
-        <?php $hidden = ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE) ? '' : 'd-none' ?>
-        <div class="tab-pane <?= $hidden ?>" id="legal-contents">
-            <form>
-                <fieldset>
-                    <legend class="border-bottom mb-4">
-                        <?= lang('legal_contents') ?>
-                        <?php if ($privileges[PRIV_SYSTEM_SETTINGS]['edit'] == TRUE): ?>
-                            <button type="button" class="save-settings btn btn-primary btn-sm mb-2"
-                                    data-tippy-content="<?= lang('save') ?>">
-                                <i class="fas fa-check-square mr-2"></i>
-                                <?= lang('save') ?>
-                            </button>
-                        <?php endif ?>
-                    </legend>
-
-                    <div class="row">
-                        <div class="col-12 col-sm-11 col-md-10 col-lg-9">
-                            <h4><?= lang('cookie_notice') ?></h4>
-
-                            <div class="form-group">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" id="display-cookie-notice">
-                                    <label class="custom-control-label" for="display-cookie-notice">
-                                        <?= lang('display_cookie_notice') ?>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label><?= lang('cookie_notice_content') ?></label>
-                                <textarea id="cookie-notice-content" cols="30" rows="10" class="form-group"></textarea>
-                            </div>
-
-                            <br>
-
-                            <h4><?= lang('terms_and_conditions') ?></h4>
-
-                            <div class="form-group">
-                                <div class="form-group">
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox"
-                                               id="display-terms-and-conditions">
-                                        <label class="custom-control-label" for="display-terms-and-conditions">
-                                            <?= lang('display_terms_and_conditions') ?>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label><?= lang('terms_and_conditions_content') ?></label>
-                                <textarea id="terms-and-conditions-content" cols="30" rows="10"
-                                          class="form-group"></textarea>
-                            </div>
-
-                            <h4><?= lang('privacy_policy') ?></h4>
-
-                            <div class="form-group">
-                                <div class="form-group">
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" id="display-privacy-policy">
-                                        <label class="custom-control-label" for="display-privacy-policy">
-                                            <?= lang('display_privacy_policy') ?>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label><?= lang('privacy_policy_content') ?></label>
-                                <textarea id="privacy-policy-content" cols="30" rows="10" class="form-group"></textarea>
                             </div>
                         </div>
                     </div>

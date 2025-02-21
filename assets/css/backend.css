@@ -13,11 +13,7 @@
  * BACKEND CSS FILE FOR EASY!APPOINTMENTS
  */
 
- :root {
-    --light-tan: #D1B48C;
-    --medium-tan: #8C785C;
-    --dark-tan: #4D4232;    
-}
+@import url('site-colors.css');
 
 root {
     display: block;
@@ -27,7 +23,7 @@ root {
    -------------------------------------------------------------------- */
 
 #header {
-    background-color: var(--light-tan);
+    background-color: var(--site-color-1);
     box-shadow: none;
     border-radius: 0;
     padding: 0;
@@ -72,11 +68,11 @@ root {
 }
 
 #header #header-menu .nav-item:hover {
-    background: var(--medium-tan);
+    background: var(--site-color-2);
 }
 
 #header #header-menu .nav-item.active {
-    background: var(--dark-tan);
+    background: var(--site-color-3);
 }
 
 #footer {
@@ -154,7 +150,7 @@ body .modal .modal-title {
 
 body .modal-header {
     padding: 20px 15px;
-    background: var(--medium-tan);
+    background: var(--site-color-2);
 }
 
 body .modal-header h3 {
@@ -260,8 +256,8 @@ body legend {
 }
 
 .backend-page .filter-records .results .entry.selected {
-    background-color: var(--light-tan);
-    border-right: 5px solid var(--medium-tan);
+    background-color: var(--site-color-1);
+    border-right: 5px solid var(--site-color-2);
 }
 
 .backend-page .filter-records .results hr {
@@ -452,7 +448,7 @@ body legend {
 }
 
 #existing-customers-list div:hover {
-    background: var(--medium-tan);
+    background: var(--site-color-2);
     font-weight: bold;
     color: #FFF;
     cursor: pointer;
@@ -557,7 +553,7 @@ body .form-horizontal .controls {
 }
 
 #calendar .calendar-view .date-column .provider-column .event.unavailability {
-    background: var(--medium-tan);
+    background: var(--site-color-2);
     color: #fff;
 
 }
@@ -885,7 +881,7 @@ body .form-horizontal .controls {
 #visitors-page .visitor-details {
     max-width: 800px;
     margin-bottom: 20px;
-    background-color: var(--medium-tan);
+    background-color: var(--site-color-2);
 }
 
 #visitors-page #visitor-appointments {
@@ -900,7 +896,7 @@ body .form-horizontal .controls {
 
 #visitors-page #visitor-appointments .appointment-row {
     padding: 7px;
-    border-bottom: 1px solid var(--dark-tan);
+    border-bottom: 1px solid var(--site-color-3);
     border-right: none;
 }
 
@@ -975,7 +971,7 @@ body {
 
 .appointments-title {
     padding-bottom: 8px;
-    border-bottom: var(--medium-tan) 4px solid;
+    border-bottom: var(--site-color-2) 4px solid;
 }
 
 .appointment-row {
@@ -983,17 +979,17 @@ body {
 }
 
 .appointment-row.selected {
-    background-color: var(--light-tan);
+    background-color: var(--site-color-1);
 }
 
 #appointment-visitor-row {
-    border: var(--medium-tan) 2px solid;
+    border: var(--site-color-2) 2px solid;
 }
 
 .visitor-info {
     float: left;
     padding-bottom: 8px;
-    border-bottom: var(--dark-tan) 2px solid;
+    border-bottom: var(--site-color-3) 2px solid;
 }
 
 .visitor-id {

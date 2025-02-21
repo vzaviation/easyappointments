@@ -472,6 +472,109 @@ class Backend extends EA_Controller {
         $this->load->view('backend/footer', $view);
     }
 
+    public function resources()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/resources'));
+        if ( ! $this->has_privileges(PRIV_SYSTEM_SETTINGS, FALSE)
+            && ! $this->has_privileges(PRIV_USER_SETTINGS))
+        {
+            return;
+        }
+
+        $this->load->model('Resources_model');
+
+        // Check for specific action
+        $action = $this->input->post('action');
+        $thisId = $this->input->post('resid');
+        if ($action == "update") {
+            if ($thisId) {
+                $resource['resource_id'] = $thisId;
+                $resource['resource_name'] = $this->input->post('resource_name_' . $thisId);
+                $resource['description'] = $this->input->post('description_' . $thisId);
+                if ($resource['resource_name']) {
+                    $this->Resources_model->update_resource($resource);
+                }
+            }
+        } else if ($action == "delete") {
+            if ($thisId) {
+                $this->Resources_model->delete_resource_by_id($thisId);
+            }
+        } else if ($action == "add") {
+            // Add a new resource, delete one, or update all current
+            $delete = $this->input->post('delete_0');
+            $newResource['resource_name'] = $this->input->post('resource_name_0');
+            $newResource['description'] = $this->input->post('resource_description_0');
+            if ((isset($newResource['resource_name'])) && ($newResource['resource_name'] != "")) {
+                // insert new
+                $res = $this->Resources_model->update_resource($newResource);
+            }
+        }
+
+        $view['resources'] = $this->Resources_model->get_all_resources();
+
+        $user_id = $this->session->userdata('user_id');
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('settings');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($user_id);
+        $view['active_menu'] = PRIV_SYSTEM_SETTINGS;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['role_slug'] = $this->session->userdata('role_slug');
+        $view['system_settings'] = $this->settings_model->get_settings();
+        $view['user_settings'] = $this->user_model->get_user($user_id);
+        $view['timezones'] = $this->timezones->to_array();
+
+        // book_advance_timeout preview
+        $book_advance_timeout = $this->settings_model->get_setting('book_advance_timeout');
+        $hours = floor($book_advance_timeout / 60);
+        $minutes = $book_advance_timeout % 60;
+        $view['book_advance_timeout_preview'] = sprintf('%02d:%02d', $hours, $minutes);
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/resources', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
+    /**
+     * Display the inmate data_feed monitoring and management screen.
+     *
+     */
+    public function data_feed()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/data_feed'));
+        if ( ! $this->has_privileges(PRIV_DATA_FEED, FALSE)
+            && ! $this->has_privileges(PRIV_SYSTEM_SETTINGS))
+        {
+            return;
+        }
+
+        $user_id = $this->session->userdata('user_id');
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('data_feed');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($user_id);
+        $view['active_menu'] = PRIV_DATA_FEED;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['role_slug'] = $this->session->userdata('role_slug');
+        $view['system_settings'] = $this->settings_model->get_settings();
+        $view['user_settings'] = $this->user_model->get_user($user_id);
+        $view['timezones'] = $this->timezones->to_array();
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/settings', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
     /**
      * This method will update the installation to the latest available version in the server.
      *

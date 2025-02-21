@@ -136,8 +136,8 @@ window.BackendSettings = window.BackendSettings || {};
 
         // Apply Privileges
         if (GlobalVariables.user.privileges.system_settings.edit === false) {
-            $('#general, #business-logic').find('select, input, textarea').prop('readonly', true);
-            $('#general, #business-logic').find('button').prop('disabled', true);
+            $('#general, #resources').find('select, input, textarea').prop('readonly', true);
+            $('#general, #resources').find('button').prop('disabled', true);
         }
 
         if (GlobalVariables.user.privileges.user_settings.edit === false) {
@@ -166,7 +166,7 @@ window.BackendSettings = window.BackendSettings || {};
 
             if (href === '#general') {
                 settings = new SystemSettings();
-            } else if (href === '#business-logic') {
+            } else if (href === '#resources') {
                 settings = new SystemSettings();
             } else if (href === '#legal-contents') {
                 settings = new SystemSettings();

@@ -50,6 +50,7 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default']['hostname'] = Config::DB_HOST;
+$db['default']['port'] = Config::DB_PORT;
 $db['default']['username'] = Config::DB_USERNAME;
 $db['default']['password'] = Config::DB_PASSWORD;
 $db['default']['database'] = Config::DB_NAME;

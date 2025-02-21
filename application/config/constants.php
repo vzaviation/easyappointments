@@ -74,6 +74,7 @@ define('PRIV_SERVICES', 'services');
 define('PRIV_USERS', 'users');
 define('PRIV_REPORTING', 'reporting');
 define('PRIV_SYSTEM_SETTINGS', 'system_settings');
+define('PRIV_DATA_FEED', 'data_feed');
 define('PRIV_USER_SETTINGS', 'user_settings');
 
 define('DATE_FORMAT_DMY', 'DMY');

@@ -39,7 +39,7 @@
 <body>
 <nav id="header" class="navbar navbar-expand-md navbar-dark">
     <div id="header-logo" class="navbar-brand">
-        <h4 style="padding-left: 10px;">Anderson County Sheriff's Office</h4>
+        <h4 style="padding-left: 10px;">Waller County Sheriff's Office</h4>
     </div>
 
     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#header-menu">
@@ -63,7 +63,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/dashboard') ?>" class="nav-link"
                    data-tippy-content="<?= lang('manage_dashboard_record_hint') ?>">
-                    <i class="fas fa-calendar-alt mr-2"></i><br/>
+                    <i class="fas fa-calendar-check mr-2"></i><br/>
                     <?= lang('dashboard') ?>
                 </a>
             </li>
@@ -83,7 +83,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/customers') ?>" class="nav-link"
                    data-tippy-content="<?= lang('manage_customers_hint') ?>">
-                    <i class="fas fa-user-friends mr-2"></i><br/>
+                    <i class="fas fa-users mr-2"></i><br/>
                     <?= lang('customers') ?>
                 </a>
             </li>
@@ -93,7 +93,7 @@
             <li class="nav-item <?= $active . $hidden ?>">
                 <a href="<?= site_url('backend/inmates') ?>" class="nav-link"
                    data-tippy-content="Manage Inmate Information">
-                    <i class="fas fa-user-friends mr-2"></i><br/>
+                    <i class="fas fa-user-lock mr-2"></i><br/>
                     <?= lang('inmates') ?>
                 </a>
             </li>
@@ -125,7 +125,7 @@
                    data-tippy-content="Reporting" target="_blank"> -->
                    <a href="https://us-east-2.quicksight.aws.amazon.com/sn/accounts/573199273448/dashboards/a0a704b4-db61-499c-aa24-4eef1d355953?directory_alias=tarmactech"
                         class="nav-link" data-tippy-content="Reporting" target="_blank">
-                    <i class="fas fa-cogs mr-2"></i><br/>
+                    <i class="fas fa-chart-bar mr-2"></i><br/>
                     <?= lang('reporting') ?>
                 </a>
             </li>
@@ -138,6 +138,17 @@
                    data-tippy-content="<?= lang('settings_hint') ?>">
                     <i class="fas fa-cogs mr-2"></i><br/>
                     <?= lang('settings') ?>
+                </a>
+            </li>
+
+            <?php $hidden = ($privileges[PRIV_DATA_FEED]['view'] == TRUE
+                || $privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE) ? '' : 'd-none' ?>
+            <?php $active = ($active_menu == PRIV_DATA_FEED) ? 'active' : '' ?>
+            <li class="nav-item <?= $active . $hidden ?>">
+                <a href="<?= site_url('backend/data_feed') ?>" class="nav-link"
+                   data-tippy-content="<?= lang('data_feed_hint') ?>">
+                    <i class="fas fa-file-import mr-2"></i><br/>
+                    <?= lang('data_feed') ?>
                 </a>
             </li>
 

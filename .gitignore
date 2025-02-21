@@ -33,3 +33,4 @@ package-lock.json
 composer.lock
 .project
 /target
+.env
