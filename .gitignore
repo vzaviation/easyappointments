@@ -34,3 +34,7 @@ composer.lock
 .project
 /target
 .env
+*.iml
+vl-data-update/node_modules
+vl-data-update/**/*.log
+

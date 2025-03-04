@@ -64,12 +64,12 @@
     <ul class="nav nav-pills">
         <?php if ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE): ?>
             <li class="nav-item">
-                <a class="nav-link active" href="#resources" data-toggle="tab"><?= lang('resources') ?></a>
+                <a class="nav-link" href="<?= site_url('backend/resources'); ?>"><?= lang('resources') ?></a>
             </li>
         <?php endif ?>
         <?php if ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE): ?>
             <li class="nav-item">
-                <a class="nav-link" href="<?= site_url('backend/cells'); ?>"><?= lang('cells_title') ?></a>
+                <a class="nav-link active" href="#cells" data-toggle="tab"><?= lang('cells_title') ?></a>
             </li>
         <?php endif ?>
         <?php if ($privileges[PRIV_USER_SETTINGS]['view'] == TRUE): ?>
@@ -80,60 +80,71 @@
     </ul>
 
     <div class="tab-content">
-
-        <!-- RESOURCE MANAGEMENT TAB -->
-
         <?php $hidden = ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE) ? '' : 'd-none' ?>
-        <div class="tab-pane active <?= $hidden ?>" id="resources">
+        <div class="tab-pane active <?= $hidden ?>" id="cells">
                 <fieldset>
                     <legend class="border-bottom mb-4">
-                        <?= lang('resources') ?>
+                        <?= lang('cells_title') ?>
                     </legend>
 
                     <div class="row">
                         <div class="col-12 col-sm-7 resources-wrapper">
-                            <h4><?= lang('resources_title') ?></h4>
+                            <h4><?= lang('cells') ?></h4>
                             <span class="form-text text-muted mb-4">
-                                <?= lang('resources_hint') ?>
+                                <?= lang('cells_hint') ?>
                             </span>
-                            <form action="<?= site_url('backend/resources'); ?>" method="post" id="resource_update_form">
+                            <form action="<?= site_url('backend/cells'); ?>" method="post" id="cells_update_form">
                                 <input type="hidden" id="action" name="action" value="" />
                                 <input type="hidden" id="resid" name="resid" value="" />
-                            <table class="resources table table-striped">
+                            <table class="cell-range table table-striped">
                                 <thead>
                                 <tr>
-                                    <th><?= lang('resource_name') ?></th>
-                                    <th><?= lang('resource_description') ?></th>
+                                    <th><?= lang('cell_name') ?></th>
+                                    <th><?= lang('cell_description') ?></th>
+                                    <th><?= lang('cell_range') ?></th>
+                                    <th><?= lang('inmate_classification_level') ?></th>
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <input type="text" size="20" name="resource_name_0" value="" />
+                                            <input type="text" size="20" name="cell_0" value="" />
                                         </td>
                                         <td>
-                                            <input type="text" size="50" name="resource_description_0" value="" />
+                                            <input type="text" size="35" name="description_0" value="" />
+                                        </td>
+                                        <td>
+                                            <input type="text" size="20" name="cell_range_0" value="" />
+                                        </td>
+                                        <td>
+                                            <input type="text" size="35" name="inmate_classification_level_0" value="" />
                                         </td>
                                         <td>
                                             <div style="width:150px;">
-                                                <button type="submit" id="add_button" name="add" class="btn btn-primary btn-sm mb-2">Add Resource</button>
+                                                <button type="submit" id="add_button" name="add" class="btn btn-primary btn-sm mb-2">Add <?= lang('cell') ?></button>
                                             </div>
                                         </td>
                                     </tr>
                                 <?php
-                                foreach (@$resources as $resource) {
+                                foreach ($cells as $cell) {
                                 ?>
                                     <tr>
                                         <td>
-                                            <input type="text" size="20" name="<?= 'resource_name_'. @$resource['resource_id'] ?>" value="<?= @$resource['resource_name'] ?>" />
+                                            <input type="text" size="20" name="<?= 'cell_'. $cell['cell_lookup_id'] ?>" value="<?= $cell['cell'] ?>" />
                                         </td>
                                         <td>
-                                            <input type="text" size="50" name="<?= 'description_'. @$resource['resource_id'] ?>" value="<?= @$resource['resource_description'] ?>" />
+                                            <input type="text" size="35" name="<?= 'description_'. $cell['cell_lookup_id'] ?>" value="<?= $cell['description'] ?>" />
                                         </td>
                                         <td>
-                                            <button type="submit" id="update_button" name="update" class="btn btn-secondary btn-sm mb-2" data-id="<?= @$resource['resource_id'] ?>">Update</button>
-                                            <button type="submit" id="delete_button" name="delete" class="btn btn-warning btn-sm mb-2" data-id="<?= @$resource['resource_id'] ?>">Delete</button>
+                                            <input type="text" size="20" name="<?= 'cell_range_'. $cell['cell_lookup_id'] ?>" value="<?= $cell['cell_range'] ?>" />
+                                        </td>
+                                        <td>
+                                            <input type="text" size="35" name="<?= 'inmate_classification_level_'. $cell['cell_lookup_id'] ?>" value="<?= $cell['inmate_classification_level'] ?>" />
+                                        </td>
+                                        <td>
+                                            <button type="submit" id="update_button" name="update" class="btn btn-secondary btn-sm mb-2" data-id="<?= @$cell['cell_lookup_id'] ?>">Update</button>
+                                            <button type="submit" id="delete_button" name="delete" class="btn btn-warning btn-sm mb-2" data-id="<?= @$cell['cell_lookup_id'] ?>">Delete</button>
                                         </td>
                                     </tr>
                                 <?php

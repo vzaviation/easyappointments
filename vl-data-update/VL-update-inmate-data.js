@@ -19,7 +19,7 @@ import fs from 'fs';
 import moment from 'moment';
 import util, { promisify } from 'util';
 
-import { CellLookupData } from './CellLookupData.js';
+import { DBCellLookupData } from './DBCellLookupData.js';
 import { DBEAInmates } from './DBEAInmates.js';
 import { FTPOps } from './FTPOps.js';
 import { InmateDataIn } from './InmateDataIn.js';
@@ -61,8 +61,9 @@ const getLatestUnprocessedFilesList = async () => {
     //  - Retrieve the inmates table from the DB before processing for later comparison
     //  - Compare and download any files that have not yet been processed
     try {
-        const cellLookup = new CellLookupData("WallerCtyTX-CellLookup.csv");
-        const [cellCount, cellLookupMap] = await cellLookup.readAndParse();
+//        const cellLookup = new CellLookupData("WallerCtyTX-CellLookup.csv");
+        const cellLookup = new DBCellLookupData(writerLog);
+        const [cellCount, cellLookupMap] = await cellLookup.getAllRecords();
         Utility.Log(writerLog,"*** MAIN: Cell Lookup data loaded");
 
         const procFile = new ProcessedFile("processed-files.txt");
@@ -131,7 +132,7 @@ const processInmateFile = async (cellLookupMap, filename) => {
             const inmateSoList = Array.from(inmateFileMap.keys());
             Utility.Log(writerLog, "*** MAIN: " + inmateSoList.length + " inmates loaded from file: " + filename);
             // Parse filename for update date
-            const filenameRegex = /.*-(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2}).csv/gm;
+            const filenameRegex = /.*[-_](\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2}).csv/gm;
             const dtArr = filenameRegex.exec(filename);
             const fileDateTimeStr = dtArr[1] + "-" + dtArr[2] + "-" + dtArr[3] + " " + dtArr[4] + ":" + dtArr[5] + ":" + dtArr[6] + ".000+00:00";
             const fileDateTime = new Date(fileDateTimeStr);
@@ -240,9 +241,9 @@ const processInmateFile = async (cellLookupMap, filename) => {
                             }
                         }
                     }
-                    let messageObjArr = [];
-                    messageObjArr[0] = fileTime;
                     for (const insArr of insertList) {
+                        let messageObjArr = [];
+                        messageObjArr[0] = fileTime;
                         messageObjArr[1] = insArr[1];
                         messageObjArr[2] = "Inmate: " + insArr[2] + " / " + insArr[1] + " || New As Of " + fileTime;
                         messageArr.push(messageObjArr);

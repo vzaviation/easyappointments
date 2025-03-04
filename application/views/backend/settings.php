@@ -45,7 +45,12 @@
         <?php endif ?>
         <?php if ($privileges[PRIV_USER_SETTINGS]['view'] == TRUE): ?>
             <li class="nav-item">
-                <a class="nav-link" href="<?= site_url('backend/resources'); ?>"><?= lang('resources') ?></a>
+                <a class="nav-link" href="<?= site_url('backend/resources'); ?>"><?= lang('resource_and_cell_title') ?></a>
+            </li>
+        <?php endif ?>
+        <?php if ($privileges[PRIV_USER_SETTINGS]['view'] == TRUE): ?>
+            <li class="nav-item">
+                <a class="nav-link" href="<?= site_url('backend/service_groups'); ?>"><?= lang('service_groups_and_schedules') ?></a>
             </li>
         <?php endif ?>
         <li class="nav-item" style="display:none;">

@@ -490,7 +490,7 @@ class Backend extends EA_Controller {
             if ($thisId) {
                 $resource['resource_id'] = $thisId;
                 $resource['resource_name'] = $this->input->post('resource_name_' . $thisId);
-                $resource['description'] = $this->input->post('description_' . $thisId);
+                $resource['resource_description'] = $this->input->post('description_' . $thisId);
                 if ($resource['resource_name']) {
                     $this->Resources_model->update_resource($resource);
                 }
@@ -500,10 +500,9 @@ class Backend extends EA_Controller {
                 $this->Resources_model->delete_resource_by_id($thisId);
             }
         } else if ($action == "add") {
-            // Add a new resource, delete one, or update all current
-            $delete = $this->input->post('delete_0');
+            // Add a new resource
             $newResource['resource_name'] = $this->input->post('resource_name_0');
-            $newResource['description'] = $this->input->post('resource_description_0');
+            $newResource['resource_description'] = $this->input->post('resource_description_0');
             if ((isset($newResource['resource_name'])) && ($newResource['resource_name'] != "")) {
                 // insert new
                 $res = $this->Resources_model->update_resource($newResource);
@@ -537,6 +536,238 @@ class Backend extends EA_Controller {
 
         $this->load->view('backend/header', $view);
         $this->load->view('backend/resources', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
+    public function cells()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/cells'));
+        if ( ! $this->has_privileges(PRIV_SYSTEM_SETTINGS, FALSE)
+            && ! $this->has_privileges(PRIV_USER_SETTINGS))
+        {
+            return;
+        }
+
+        $this->load->model('Cells_model');
+
+        // Check for specific action
+        $action = $this->input->post('action');
+        $thisId = $this->input->post('resid');
+        if ($action == "update") {
+            if ($thisId) {
+                $item['cell_lookup_id'] = $thisId;
+                $item['cell'] = $this->input->post('cell_' . $thisId);
+                $item['description'] = $this->input->post('description_' . $thisId);
+                $item['cell_range'] = $this->input->post('cell_range_' . $thisId);
+                $item['inmate_classification_level'] = $this->input->post('inmate_classification_level_' . $thisId);
+                if ($item['cell']) {
+                    $this->Cells_model->update_cell_lookup($item);
+                }
+            }
+        } else if ($action == "delete") {
+            if ($thisId) {
+                $this->Cells_model->delete_cell_lookup_by_id($thisId);
+            }
+        } else if ($action == "add") {
+            // Add a new item
+            $newItem['cell'] = $this->input->post('cell_0');
+            $newItem['description'] = $this->input->post('description_0');
+            $newItem['cell_range'] = $this->input->post('cell_range_0');
+            $newItem['inmate_classification_level'] = $this->input->post('inmate_classification_level_0' . $thisId);
+            if ((isset($newItem['cell'])) && ($newItem['cell'] != "")) {
+                // insert new
+                $res = $this->Cells_model->update_cell_lookup($newItem);
+            }
+        }
+
+        $view['cells'] = $this->Cells_model->get_all_cell_lookups();
+
+        $user_id = $this->session->userdata('user_id');
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('cells_title');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($user_id);
+        $view['active_menu'] = PRIV_SYSTEM_SETTINGS;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['system_settings'] = $this->settings_model->get_settings();
+        $view['user_settings'] = $this->user_model->get_user($user_id);
+        $view['timezones'] = $this->timezones->to_array();
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/cells', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
+    public function service_groups()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/service_groups'));
+        if ( ! $this->has_privileges(PRIV_SYSTEM_SETTINGS, FALSE)
+            && ! $this->has_privileges(PRIV_USER_SETTINGS))
+        {
+            return;
+        }
+
+        $this->load->model('Service_group_model');
+        $this->load->model('Services_model');
+
+        // Check for specific action
+        $action = $this->input->post('action');
+        $thisId = $this->input->post('resid');
+        if ($action == "update") {
+            if ($thisId) {
+                $item['service_group_id'] = $thisId;
+                $item['group_name'] = $this->input->post('group_name_' . $thisId);
+                $item['group_description'] = $this->input->post('group_description_' . $thisId);
+                $item['service_id'] = $this->input->post('service_id_' . $thisId);
+                if ($item['group_name']) {
+                    $this->Service_group_model->update_service_group($item);
+                }
+            }
+        } else if ($action == "delete") {
+            if ($thisId) {
+                $this->Service_group_model->delete_service_group_by_id($thisId);
+            }
+        } else if ($action == "add") {
+            // Add a new item
+            $newItem['group_name'] = $this->input->post('group_name_0');
+            $newItem['group_description'] = $this->input->post('group_description_0');
+            $newItem['service_id'] = $this->input->post('service_id_0');
+            if ((isset($newItem['group_name'])) && ($newItem['group_name'] != "")) {
+                // insert new
+                $res = $this->Service_group_model->update_service_group($newItem);
+            }
+        }
+
+        $view['service_groups'] = $this->Service_group_model->get_all_service_groups();
+        $view['services'] = $this->Services_model->get_available_services();
+
+        $user_id = $this->session->userdata('user_id');
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('service_groups_title');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($user_id);
+        $view['active_menu'] = PRIV_SYSTEM_SETTINGS;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['role_slug'] = $this->session->userdata('role_slug');
+        $view['system_settings'] = $this->settings_model->get_settings();
+        $view['user_settings'] = $this->user_model->get_user($user_id);
+        $view['timezones'] = $this->timezones->to_array();
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/service_groups', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
+    public function service_group_resources()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/service_group_resources'));
+        if ( ! $this->has_privileges(PRIV_SYSTEM_SETTINGS, FALSE)
+            && ! $this->has_privileges(PRIV_USER_SETTINGS))
+        {
+            return;
+        }
+
+        $this->load->model('Resources_model');
+        $this->load->model('Service_group_model');
+
+        // Check for specific action
+        $action = $this->input->post('action');
+        $thisId = $this->input->post('resid');
+        if ($action == "update") {
+            if ($thisId) {
+                $item['service_group_id'] = $thisId;
+                $item['group_name'] = $this->input->post('group_name_' . $thisId);
+                $item['group_description'] = $this->input->post('group_description_' . $thisId);
+                $item['service_id'] = $this->input->post('service_id_' . $thisId);
+                if ($item['group_name']) {
+                    $this->Service_group_model->update_service_group($item);
+                }
+            }
+        } else if ($action == "delete") {
+            if ($thisId) {
+                $this->Service_group_model->delete_service_group_by_id($thisId);
+            }
+        } else if ($action == "add") {
+            // Add a new item
+            $newItem['group_name'] = $this->input->post('group_name_0');
+            $newItem['group_description'] = $this->input->post('group_description_0');
+            $newItem['service_id'] = $this->input->post('service_id_0');
+            if ((isset($newItem['group_name'])) && ($newItem['group_name'] != "")) {
+                // insert new
+                $res = $this->Service_group_model->update_service_group($newItem);
+            }
+        }
+
+        $view['service_groups'] = $this->Service_group_model->get_service_group_batch();
+        $view['resources'] = $this->Resources_model->get_all_resources();
+
+        $user_id = $this->session->userdata('user_id');
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('service_group_resources_title');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($user_id);
+        $view['active_menu'] = PRIV_SYSTEM_SETTINGS;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['role_slug'] = $this->session->userdata('role_slug');
+        $view['system_settings'] = $this->settings_model->get_settings();
+        $view['user_settings'] = $this->user_model->get_user($user_id);
+        $view['timezones'] = $this->timezones->to_array();
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/service_group_resources', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
+    public function service_group_schedules()
+    {
+        $this->session->set_userdata('dest_url', site_url('backend/cells'));
+        if ( ! $this->has_privileges(PRIV_SYSTEM_SETTINGS, FALSE)
+            && ! $this->has_privileges(PRIV_USER_SETTINGS))
+        {
+            return;
+        }
+
+        $this->load->model('Service_group_model');
+
+        $user_id = $this->session->userdata('user_id');
+
+        $view['base_url'] = config('base_url');
+        $view['page_title'] = lang('settings');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($user_id);
+        $view['active_menu'] = PRIV_SYSTEM_SETTINGS;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
+        $view['time_format'] = $this->settings_model->get_setting('time_format');
+        $view['role_slug'] = $this->session->userdata('role_slug');
+        $view['system_settings'] = $this->settings_model->get_settings();
+        $view['user_settings'] = $this->user_model->get_user($user_id);
+        $view['timezones'] = $this->timezones->to_array();
+
+        // book_advance_timeout preview
+        $book_advance_timeout = $this->settings_model->get_setting('book_advance_timeout');
+        $hours = floor($book_advance_timeout / 60);
+        $minutes = $book_advance_timeout % 60;
+        $view['book_advance_timeout_preview'] = sprintf('%02d:%02d', $hours, $minutes);
+
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/service_group_schedules', $view);
         $this->load->view('backend/footer', $view);
     }
 

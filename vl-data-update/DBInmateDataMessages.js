@@ -10,13 +10,14 @@ export class DBInmateDataMessages {
 
     dbConfig = {
         host: process.env.DBHOST,
+        port: process.env.DBPORT,
         user: process.env.DBUSER,
         password: process.env.DBPASSWORD,
         database: process.env.DATABASE
     };
 
-    inmate_messages_table = "VisitationLink.ea_inmate_data_messages";
-    user_messages_table = "VisitationLink.user_message_status";
+    inmate_messages_table = "ea_inmate_data_messages";
+    user_messages_table = "user_message_status";
 
     writerLog = {};
 

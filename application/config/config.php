@@ -389,7 +389,9 @@ $config['csrf_expire'] = 7200;
 $config['csrf_exclude_uris'] = [
     'api/v1/.*',
     'backend/resources',
-    'backend/resources/edit'
+    'backend/cells',
+    'backend/service_groups',
+    'backend/service_group_resources'
 ];
 
 /*

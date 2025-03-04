@@ -10,12 +10,13 @@ export class DBEAInmates {
 
     dbConfig = {
         host: process.env.DBHOST,
+        port: process.env.DBPORT,
         user: process.env.DBUSER,
         password: process.env.DBPASSWORD,
         database: process.env.DATABASE
     };
 
-    tablename = "VisitationLink.ea_inmates";
+    tablename = "ea_inmates";
 
     writerLog = {};
 

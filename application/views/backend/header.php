@@ -141,6 +141,7 @@
                 </a>
             </li>
 
+<!--
             <?php $hidden = ($privileges[PRIV_DATA_FEED]['view'] == TRUE
                 || $privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE) ? '' : 'd-none' ?>
             <?php $active = ($active_menu == PRIV_DATA_FEED) ? 'active' : '' ?>
@@ -151,7 +152,7 @@
                     <?= lang('data_feed') ?>
                 </a>
             </li>
-
+-->
             <li class="nav-item">
                 <a href="<?= site_url('user/logout') ?>" class="nav-link"
                    data-tippy-content="<?= lang('log_out_hint') ?>">

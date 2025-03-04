@@ -38,15 +38,18 @@ class Backend_api extends EA_Controller {
         $this->load->model('admins_model');
         $this->load->model('agency_admins_model');
         $this->load->model('appointments_model');
+        $this->load->model('cells_model');
         $this->load->model('consents_model');
         $this->load->model('customers_model');
         $this->load->model('inmate_visitor_model');
         $this->load->model('inmates_model');
         $this->load->model('messages_model');
         $this->load->model('providers_model');
+        $this->load->model('resources_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
         $this->load->model('services_model');
+        $this->load->model('service_group_model');
         $this->load->model('settings_model');
         $this->load->model('user_model');
         $this->load->model('visitors_model');
@@ -1795,6 +1798,201 @@ class Backend_api extends EA_Controller {
             $result = $this->providers_model->delete($this->input->post('provider_id'));
 
             $response = $result ? AJAX_SUCCESS : AJAX_FAILURE;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Filter service_group records with string key.
+     */
+    public function ajax_filter_servicegroups()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $key = $this->db->escape_str($this->input->post('key'));
+
+            $where =
+                '(sg.group_name LIKE "%' . $key . '%" ' .
+                'OR sg.group_description LIKE "%' . $key . '%" ' .
+                'OR s.name LIKE "%' . $key . '%")';
+
+            $response = $this->service_group_model->get_service_group_batch($where);
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Get service_group_schedule from service_group_id
+     */
+    public function ajax_get_service_group_schedule_from_service_group_id()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $sgID = $this->db->escape_str($this->input->post('service_group_id'));
+
+            $response = $this->service_group_model->get_service_group_schedule_by_service_group_id($sgID);
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Save (insert or update) a service_group_schedule record into database.
+     */
+    public function ajax_save_service_group_schedule()
+    {
+        try
+        {
+            $schedule = json_decode($this->input->post('schedule'), TRUE);
+
+            $required_privileges = ( ! isset($schedule['service_group_schedule_id']))
+                ? $this->privileges[PRIV_USERS]['add']
+                : $this->privileges[PRIV_USERS]['edit'];
+            if ($required_privileges == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            if (( ! isset($schedule['service_group_id'])) || ( ! isset($schedule['working_plan'])))
+            {
+                $this->output->set_status_header(500);
+
+                $response = [
+                    'message' => 'Must include service_group_id and working_plan',
+                    'trace' => []
+                ];
+            }
+
+            $this->service_group_model->update_service_group_schedules($schedule);
+
+            $response = [
+                'status' => AJAX_SUCCESS,
+                'id' => $schedule['service_group_id']
+            ];
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Get service_group_resources from service_group_id
+     */
+    public function ajax_get_service_group_resources_from_service_group_id()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_USERS]['view'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $sgID = $this->db->escape_str($this->input->post('service_group_id'));
+
+            $response = $this->service_group_model->get_service_group_resources_by_service_group_id($sgID);
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
+     * Save (insert or update) a service_group_resources records into database.
+     */
+    public function ajax_save_service_group_resources()
+    {
+        try
+        {
+            $sgID = $this->db->escape_str($this->input->post('service_group_id'));
+            $resources = json_decode($this->input->post('resources'), TRUE);
+
+            $required_privileges = $this->privileges[PRIV_USERS]['edit'];
+            if ($required_privileges == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            if (( ! isset($sgID)) || ( ! isset($resources)))
+            {
+                $this->output->set_status_header(500);
+
+                $response = [
+                    'message' => 'Must include service_group_id and working_plan',
+                    'trace' => []
+                ];
+            }
+
+            $this->service_group_model->update_service_group_resources($sgID, $resources);
+
+            $response = [
+                'status' => AJAX_SUCCESS,
+                'id' => $sgID
+            ];
         }
         catch (Exception $exception)
         {
