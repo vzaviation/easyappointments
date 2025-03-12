@@ -905,7 +905,8 @@ class Appointments extends EA_Controller {
                     // Past dates become immediately unavailable.
                     $unavailable_dates[] = $current_date->format('Y-m-d');
                     continue;
-                } else if (($service_id != 2) && ($current_date->format('Y-m-d') == new DateTime(date('Y-m-d')))) {
+                } else if (($service_id != 2)
+                        && ($current_date->format('Y-m-d') == (new DateTime())->format('Y-m-d'))) {
                     // No same day booking allowed for inmate visitation
                     // TODO: add in service check - other services may be able to book same day
                     $unavailable_dates[] = $current_date->format('Y-m-d');
