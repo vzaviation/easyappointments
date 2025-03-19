@@ -896,17 +896,20 @@ class Appointments extends EA_Controller {
             // Get the service record.
             $service = $this->services_model->get_row($service_id);
 
+            $default_timezone = "America/Chicago";
+            $today_date = new DateTime(date('Y-m-d 00:00:00'), new DateTimeZone($default_timezone));
+
             for ($i = 1; $i <= $number_of_days_in_month; $i++)
             {
-                $current_date = new DateTime($selected_date->format('Y-m') . '-' . $i);
+                $current_date = new DateTime($selected_date->format('Y-m') . '-' . $i, new DateTimeZone($default_timezone));
 
-                if ($current_date < new DateTime(date('Y-m-d 00:00:00')))
+                if ($current_date < $today_date)
                 {
                     // Past dates become immediately unavailable.
                     $unavailable_dates[] = $current_date->format('Y-m-d');
                     continue;
                 } else if (($service_id != 2)
-                        && ($current_date->format('Y-m-d') == (new DateTime())->format('Y-m-d'))) {
+                    && ($current_date->format('Y-m-d') == $today_date->format('Y-m-d'))) {
                     // No same day booking allowed for inmate visitation
                     // TODO: add in service check - other services may be able to book same day
                     $unavailable_dates[] = $current_date->format('Y-m-d');
