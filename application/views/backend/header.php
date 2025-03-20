@@ -84,7 +84,7 @@
                 <a href="<?= site_url('backend/customers') ?>" class="nav-link"
                    data-tippy-content="<?= lang('manage_customers_hint') ?>">
                     <i class="fas fa-users mr-2"></i><br/>
-                    <?= lang('customers') ?>
+                    <?= lang('visitors') ?>
                 </a>
             </li>
 

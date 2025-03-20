@@ -156,68 +156,137 @@
                             </div>
                         </div>
                         <div class="col-12 col-sm-6">
+<!--
                             <div class="form-group">
                                 <label for="google-analytics-code">
                                     Google Analytics ID</label>
                                 <input id="google-analytics-code" placeholder="UA-XXXXXXXX-XX"
                                        data-field="google_analytics_code" class="form-control">
                                 <span class="help-block">
-                                    <?= lang('google_analytics_code_hint') ?>
+                                    < = lang('google_analytics_code_hint') ?>
                                 </span>
                             </div>
                             <div class="form-group">
                                 <label for="api-token">API Token</label>
                                 <input id="api-token" data-field="api_token" class="form-control">
                                 <span class="help-block">
-                                    <?= lang('api_token_hint') ?>
+                                    < = lang('api_token_hint') ?>
+                                </span>
+                            </div>
+-->
+                            <div class="form-group">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="visitor-notifications">
+                                    <label class="custom-control-label" for="visitor-notifications">
+                                        <?= lang('visitor_notifications') ?>
+                                    </label>
+                                </div>
+                                <span class="form-text text-muted">
+                                    <?= lang('visitor_notifications_hint') ?>
+                                </span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="visitation-rules"><?= lang('visitation_rules') ?> *</label>
+                                <textarea id="visitation-rules" maxlen="500" rows="5" cols="60" data-field="visitation_rules_html" class="form-control"></textarea>
+                                <span class="form-text text-muted">
+                                    <?= lang('visitation_rules_hint') ?>
                                 </span>
                             </div>
 
                             <div class="form-group">
                                 <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="customer-notifications">
-                                    <label class="custom-control-label" for="customer-notifications">
-                                        <?= lang('customer_notifications') ?>
+                                    <input type="checkbox" class="custom-control-input" id="visitor-authorization-flag">
+                                    <label class="custom-control-label" for="visitor-authorization-flag">
+                                        <?= lang('visitor_authorization_flag') ?>
                                     </label>
                                 </div>
                                 <span class="form-text text-muted">
-                                    <?= lang('customer_notifications_hint') ?>
+                                    <?= lang('visitor_authorization_flag_hint') ?>
                                 </span>
                             </div>
+
                             <div class="form-group">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="require-captcha">
-                                    <label class="custom-control-label" for="require-captcha">
-                                        CAPTCHA
-                                    </label>
-                                </div>
+                                <?= lang('visitors_allowed') ?>&nbsp;&nbsp;
+                                <input type="radio" id="visitors-allowed-1" name="visitors-allowed" value="1">
+                                <label for="visitors-allowed-1">1</label>&nbsp;&nbsp;
+                                <input type="radio" id="visitors-allowed-2" name="visitors-allowed" value="2">
+                                <label for="visitors-allowed-2">2</label>&nbsp;&nbsp;
+                                <input type="radio" id="visitors-allowed-3" name="visitors-allowed" value="3">
+                                <label for="visitors-allowed-3">3</label>
                                 <span class="form-text text-muted">
-                                    <?= lang('require_captcha_hint') ?>
+                                    <?= lang('visitors_allowed_hint') ?>
                                 </span>
                             </div>
+
                             <div class="form-group">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="require-phone-number">
-                                    <label class="custom-control-label" for="require-phone-number">
-                                        <?= lang('phone_number') ?>
-                                    </label>
-                                </div>
-                                <span class="help-block">
-                                    <?= lang('require_phone_number_hint') ?>
+                                <?= lang('inmate_restricted_age') ?>&nbsp;&nbsp;
+                                <input type="radio" id="inmate-restricted-age-16" name="inmate-restricted-age" value="16">
+                                <label for="inmate-restricted-age-16">16</label>&nbsp;&nbsp;
+                                <input type="radio" id="inmate-restricted-age-17" name="inmate-restricted-age" value="17">
+                                <label for="inmate-restricted-age-17">17</label>&nbsp;&nbsp;
+                                <input type="radio" id="inmate-restricted-age-18" name="inmate-restricted-age" value="18">
+                                <label for="inmate-restricted-age-18">18</label>
+                                <span class="form-text text-muted">
+                                    <?= lang('inmate_restricted_age_hint') ?>
                                 </span>
                             </div>
+
                             <div class="form-group">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="display-any-provider">
-                                    <label class="custom-control-label" for="display-any-provider">
-                                        <?= lang('any_provider') ?>
-                                    </label>
-                                </div>
-                                <span class="help-block">
-                                    <?= lang('display_any_provider_hint') ?>
+                                <?= lang('inmate_visits_per_week') ?>&nbsp;&nbsp;
+                                <select id="inmate-visits-per-week" name="inmate-visits-per-week">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                                <span class="form-text text-muted">
+                                    <?= lang('inmate_visits_per_week_hint') ?>
                                 </span>
                             </div>
-                        </div>
+
+<!--
+                                                        <div class="form-group">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input" id="require-captcha">
+                                                                <label class="custom-control-label" for="require-captcha">
+                                                                    CAPTCHA
+                                                                </label>
+                                                            </div>
+                                                            <span class="form-text text-muted">
+                                                                < = lang('require_captcha_hint') ?>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input" id="require-phone-number">
+                                                                <label class="custom-control-label" for="require-phone-number">
+                                                                    < = lang('phone_number') ?>
+                                                                </label>
+                                                            </div>
+                                                            <span class="help-block">
+                                                                < = lang('require_phone_number_hint') ?>
+                                                            </span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input" id="display-any-provider">
+                                                                <label class="custom-control-label" for="display-any-provider">
+                                                                    < = lang('any_provider') ?>
+                                                                </label>
+                                                            </div>
+                                                            <span class="help-block">
+                                                                < = lang('display_any_provider_hint') ?>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                            -->
                     </div>
                 </fieldset>
             </form>

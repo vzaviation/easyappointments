@@ -125,7 +125,7 @@ window.FrontendBook = window.FrontendBook || {};
 
             onChangeMonthYear: function (year, month, instance) {
                 var currentDate = new Date(year, month - 1, 1);
-                FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
+                FrontendBookApi.getUnavailableDates($('#select-resource').val(), $('#select-service').val(),
                     currentDate.toString('yyyy-MM-dd'), $('#select-inmate').val());
             }
         });
@@ -140,9 +140,9 @@ window.FrontendBook = window.FrontendBook || {};
         // If the manage mode is true, the appointments data should be loaded by default.
         if (FrontendBook.manageMode) {
             applyAppointmentData(GlobalVariables.appointmentData,
-                GlobalVariables.providerData, GlobalVariables.customerData);
+                GlobalVariables.resourceData, GlobalVariables.visitorData);
         } else {
-            var $selectProvider = $('#select-provider');
+            var $selectResource = $('#select-resource');
             var $selectService = $('#select-service');
             var $selectInmate = $('#select-inmate');
 
@@ -211,14 +211,14 @@ window.FrontendBook = window.FrontendBook || {};
          * Event: Selected Provider "Changed"
          *
          * Whenever the provider changes the available appointment date - time periods must be updated.
-         */
         $('#select-provider').on('change', function () {
             // KPB 2022-11-28 We don't need to get the dates here
             //FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
             //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             //FrontendBook.updateConfirmFrame();
         });
-        
+         */
+
          /**
          * Event: Selected Inmate "Changed"
          *
@@ -228,66 +228,67 @@ window.FrontendBook = window.FrontendBook || {};
             var inmateID = $('#select-inmate').val();
             var inmate;
             var serviceId = $('#select-service').val();
-         
-            
-            $('#select-provider').empty();
-            
-            // Select a inmate of this provider in order to make the provider available in the select box.
-                for (var index in GlobalVariables.availableInmates) {
-                    var myinmate = GlobalVariables.availableInmates[index];
-                    if (inmateID === myinmate.id)
-                    {
-                        inmate=myinmate;
-                        break;
-                        }
-                
-                }
 
-                if (typeof inmate!=="undefined") {
-            GlobalVariables.availableProviders.forEach(function (provider) {
+            // Select an inmate
+            for (var index in GlobalVariables.availableInmates) {
+                var myinmate = GlobalVariables.availableInmates[index];
+                if (inmateID === myinmate.id)
+                {
+                    inmate=myinmate;
+                    break;
+                    }
+
+            }
+
+            /*  OBSOLETE for VisitationLink
+            if (typeof inmate !=="undefined") {
+                GlobalVariables.availableProviders.forEach(function (provider) {
                 // If the current provider is able to provide the selected service, add him to the list box.
                //let filteredarray = provider.services.filter( (provider) =>
-                
-                
+
+
                 var canServeService1 = provider.inmate_classification_level === inmate.inmate_classification_level;
-    
+
                 var canServeService2 = provider.services.filter(function (providerServiceId) {
                     return Number(providerServiceId) === Number(serviceId);
                 }).length > 0;
-                
+
                 //filteredarray.length > 0;
-                
-                
+
+
                 if (canServeService1 && canServeService2) {
                     $('#select-provider').append(new Option(provider.first_name + ' ' + provider.last_name, provider.id));
                 }
-            });
-                }
-                
-                 // Add the "Any Provider" entry.
-            if ($('#select-provider option').length >= 1 && GlobalVariables.displayAnyProvider === '1') {
-                $('#select-provider').prepend(new Option('- ' + EALang.any_provider + ' -', 'any-provider',true,true));
+                });
             }
-            
-            // KPB 2022-11-28 We don't need to get the dates here
-            //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
-            //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
-            //FrontendBook.updateConfirmFrame();
-            //updateServiceDescription(serviceId);
+                
+            // Add the "Any Provider" entry.
+                if ($('#select-provider option').length >= 1 && GlobalVariables.displayAnyProvider === '1') {
+                    $('#select-provider').prepend(new Option('- ' + EALang.any_provider + ' -', 'any-provider',true,true));
+                }
+            */
+
+        // KPB 2022-11-28 We don't need to get the dates here
+        //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
+        //    $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
+        //FrontendBook.updateConfirmFrame();
+        //updateServiceDescription(serviceId);
+
         });
 
 
-        /**
-         * Event: Selected Service "Changed"
-         *
-         * When the user clicks on a service, its available providers should
-         * become visible.
-         */
+    /**
+     * Event: Selected Service "Changed"
+     *
+     * When the user clicks on a service, its available providers should
+     * become visible.
+     */
         $('#select-service').on('change', function () {
             var serviceId = $('#select-service').val();
 
+            /*  OBSOLETE for VisitationLink
+
             $('#select-provider').empty();
-           
 
             GlobalVariables.availableProviders.forEach(function (provider) {
                 // If the current provider is able to provide the selected service, add him to the list box.
@@ -304,7 +305,8 @@ window.FrontendBook = window.FrontendBook || {};
             if ($('#select-provider option').length >= 1 && GlobalVariables.displayAnyProvider === '1') {
                 $('#select-provider').prepend(new Option('- ' + EALang.any_provider + ' -', 'any-provider',true,true));
             }
-            
+             */
+
 
             // KPB 2022-11-28 We don't need to get the dates here
             //FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
@@ -313,9 +315,9 @@ window.FrontendBook = window.FrontendBook || {};
             updateServiceDescription(serviceId);
         });
 
-        /**
-         * Add a "reset" button that just reloads the start page
-         */
+/**
+* Add a "reset" button that just reloads the start page
+*/
         $('.button-reset').on('click', function () {
             window.location.href = window.location.href;
             window.location.reload();
@@ -337,8 +339,8 @@ window.FrontendBook = window.FrontendBook || {};
                         return;
                 } else {
                     // if all good, now we get the unavailable dates
-                    FrontendBookApi.getUnavailableDates($('#select-provider').val(), $('#select-service').val(),
-                        $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'), $('#select-inmate').val());
+                    FrontendBookApi.getUnavailableDates($('#select-service').val(), $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'),
+                        $('#select-inmate').val());
                 }
             }
 
@@ -355,6 +357,7 @@ window.FrontendBook = window.FrontendBook || {};
                     }
                     return;
                 }
+
                 // Reset any visitor data entry fields depending on visitor type
                 const visitor = $(this).data('visitor');
                 const serv_id = $('#select-service').val();
@@ -445,6 +448,12 @@ window.FrontendBook = window.FrontendBook || {};
                 $('#step-' + prevTabIndex).addClass('active-step');
                 $('#wizard-frame-' + prevTabIndex).show('fade');
             });
+        });
+
+        $('#select-date').on('mousedown', '.ui-datepicker-calendar td', function (event) {
+            setTimeout(function () {
+                FrontendBookApi.applyPreviousUnavailableDates(); // New jQuery UI version will replace the td elements.
+            }, 300); // There is no draw event unfortunately.
         });
 
         /**
@@ -572,13 +581,6 @@ window.FrontendBook = window.FrontendBook || {};
         $('.captcha-title button').on('click', function (event) {
             $('.captcha-image').attr('src', GlobalVariables.baseUrl + '/index.php/captcha?' + Date.now());
         });
-
-
-        $('#select-date').on('mousedown', '.ui-datepicker-calendar td', function (event) {
-            setTimeout(function () {
-                FrontendBookApi.applyPreviousUnavailableDates(); // New jQuery UI version will replace the td elements.
-            }, 300); // There is no draw event unfortunately.
-        })
 
     }
 
@@ -762,7 +764,7 @@ window.FrontendBook = window.FrontendBook || {};
             .appendTo('#appointment-details');
 
 
-        $('#customer-details').empty();
+        $('#visitor-details').empty();
         
         // Create sections for the attorney info, if they exist
         let v1AttorneyInfo = "<br/>";
@@ -805,7 +807,7 @@ window.FrontendBook = window.FrontendBook || {};
         $('<div/>', {
             'html': [
                 $('<h4/>)', {
-                    'text': EALang.customers
+                    'text': EALang.visitors
                 }),
                 $('<p/>', {
                     'html': [
@@ -930,7 +932,7 @@ window.FrontendBook = window.FrontendBook || {};
                 })
             ]
         })
-            .appendTo('#customer-details');
+            .appendTo('#visitor-details');
 
 
         // Update appointment form data for submission to server when the user confirms the appointment.
@@ -1013,7 +1015,7 @@ window.FrontendBook = window.FrontendBook || {};
             end_datetime: calculateEndDatetime(),
             notes: $('#notes').val(),
             is_unavailable: false,
-            id_users_provider: $('#select-provider').val(),
+            resource_id: $('#select-resource').val(),
             id_services: $('#select-service').val(),
             id_inmate: $('#select-inmate').val(),
             inmate_name: inmateName
@@ -1023,7 +1025,7 @@ window.FrontendBook = window.FrontendBook || {};
 
         if (FrontendBook.manageMode) {
             data.appointment.id = GlobalVariables.appointmentData.id;
-            data.customer.id = GlobalVariables.customerData.id;
+            data.visitor.id = GlobalVariables.visitorData.id;
         }
         $('input[name="csrfToken"]').val(GlobalVariables.csrfToken);
         $('input[name="post_data"]').val(JSON.stringify(data));
@@ -1063,8 +1065,8 @@ window.FrontendBook = window.FrontendBook || {};
      * that the user can start making changes on an existing record.
      *
      * @param {Object} appointment Selected appointment's data.
-     * @param {Object} provider Selected provider's data.
-     * @param {Object} customer Selected customer's data.
+     * @param {Object} provider Selected provider's data. (unused)
+     * @param {Object} visitor Selected visitor's data. (only visitor 1)
      *
      * @return {Boolean} Returns the operation result.
      */
@@ -1085,22 +1087,17 @@ window.FrontendBook = window.FrontendBook || {};
             $('#visitor-2-name').val(appointment.visitor_2_name);
 
             // Apply Customer's Data
-            $('#visitor-1-last-name').val(customer.last_name);
-            $('#visitor-1-first-name').val(customer.first_name);
-            $('#visitor-1-email').val(customer.email);
-            $('#visitor-1-phone-number').val(customer.phone_number);
-            $('#visitor-1-address').val(customer.address);
-            $('#visitor-1-city').val(customer.city);
-            $('#visitor-1-zip-code').val(customer.zip_code);
+            $('#visitor-1-last-name').val(visitor.last_name);
+            $('#visitor-1-first-name').val(visitor.first_name);
+            $('#visitor-1-email').val(visitor.email);
+            $('#visitor-1-phone-number').val(visitor.phone_number);
+            $('#visitor-1-address').val(visitor.address);
+            $('#visitor-1-city').val(visitor.city);
+            $('#visitor-1-zip-code').val(visitor.zip_code);
            
-            if (customer.timezone) {
-                $('#select-timezone').val(customer.timezone)
-            }
             var appointmentNotes = (appointment.notes !== null)
                 ? appointment.notes : '';
             $('#notes').val(appointmentNotes);
-            
-           
 
             FrontendBook.updateConfirmFrame();
 

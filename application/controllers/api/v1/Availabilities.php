@@ -37,7 +37,7 @@ class Availabilities extends API_V1_Controller {
     /**
      * GET API Method
      *
-     * Provide the "providerId", "serviceId" and "date" GET parameters to get the availabilities for a specific date.
+     * Provide the "resourceId", "serviceId" and "date" GET parameters to get the availabilities for a specific date.
      * If no "date" was provided then the current date will be used.
      */
     public function get()

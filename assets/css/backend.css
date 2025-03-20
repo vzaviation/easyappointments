@@ -823,7 +823,7 @@ body .form-horizontal .controls {
 }
 
 #settings-page #user-notifications,
-#settings-page #customer-notifications,
+#settings-page #visitor-notifications,
 #settings-page #display-any-provider,
 #settings-page #require-phone-number,
 #settings-page #require-captcha {
@@ -831,7 +831,7 @@ body .form-horizontal .controls {
 }
 
 #settings-page #user-notifications.active,
-#settings-page #customer-notifications.active,
+#settings-page #visitor-notifications.active,
 #settings-page #display-any-provider.active,
 #settings-page #require-phone-number.active,
 #settings-page #require-captcha.active {

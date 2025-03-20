@@ -42,7 +42,7 @@ $(document).ready(function () {
 
             // The user has granted access, add the appointment to his calendar. Before making the event.insert request
             // the the event resource data must be prepared.
-            var providerData = GlobalVariables.providerData;
+            var resourceData = GlobalVariables.resourceData;
 
             var appointmentData = GlobalVariables.appointmentData;
 
@@ -51,16 +51,16 @@ $(document).ready(function () {
                 summary: GlobalVariables.serviceData.name,
                 location: GlobalVariables.companyName,
                 start: {
-                    dateTime: moment.tz(appointmentData.start_datetime, providerData.timezone).format()
+                    dateTime: moment.tz(appointmentData.start_datetime, resourceData.timezone).format()
                 },
                 end: {
-                    dateTime: moment.tz(appointmentData.end_datetime, providerData.timezone).format()
+                    dateTime: moment.tz(appointmentData.end_datetime, resourceData.timezone).format()
                 },
                 attendees: [
                     {
-                        email: GlobalVariables.providerData.email,
-                        displayName: GlobalVariables.providerData.first_name + ' '
-                            + GlobalVariables.providerData.last_name
+                        email: GlobalVariables.visitorData.email,
+                        displayName: GlobalVariables.visitorData.first_name + ' '
+                            + GlobalVariables.visitorData.last_name
                     }
                 ]
             };

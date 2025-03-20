@@ -26,8 +26,11 @@ class Appointments extends EA_Controller {
 
         $this->load->helper('installation');
         $this->load->helper('google_analytics');
+
         $this->load->model('appointments_model');
-        $this->load->model('providers_model');
+//        $this->load->model('providers_model');
+        $this->load->model('service_group_model');
+        $this->load->model('resources_model');
         $this->load->model('visitors_model');
         $this->load->model('inmates_model');
         $this->load->model('inmate_visitor_model');
@@ -37,6 +40,7 @@ class Appointments extends EA_Controller {
 //        $this->load->model('customers_model');
         $this->load->model('visitors_model');
         $this->load->model('settings_model');
+
         $this->load->library('timezones');
         $this->load->library('synchronization');
         $this->load->library('notifications');
@@ -63,7 +67,6 @@ class Appointments extends EA_Controller {
             }
 
             $available_services = $this->services_model->get_available_services();
-            $available_providers = $this->providers_model->get_available_providers();
             $company_name = $this->settings_model->get_setting('company_name');
             $company_address = $this->settings_model->get_setting('company_address_html');
             $company_phone = $this->settings_model->get_setting('company_phone');
@@ -78,24 +81,8 @@ class Appointments extends EA_Controller {
             $terms_and_conditions_content = $this->settings_model->get_setting('terms_and_conditions_content');
             $display_privacy_policy = $this->settings_model->get_setting('display_privacy_policy');
             $privacy_policy_content = $this->settings_model->get_setting('privacy_policy_content');
-            $display_any_provider = $this->settings_model->get_setting('display_any_provider');
             $timezones = $this->timezones->to_array();
             $available_inmates = $this->inmates_model->get_available_inmates();
-            
-
-            // Remove the data that are not needed inside the $available_providers array.
-            foreach ($available_providers as $index => $provider)
-            {
-                $stripped_data = [
-                    'id' => $provider['id'],
-                    'first_name' => $provider['first_name'],
-                    'last_name' => $provider['last_name'],
-                    'services' => $provider['services'],
-                    'timezone' => $provider['timezone'],
-                    'inmate_classification_level' => $provider['inmate_classification_level']
-                ];
-                $available_providers[$index] = $stripped_data;
-            }
 
             // If an appointment hash is provided then it means that the customer is trying to edit a registered
             // appointment record.
@@ -142,30 +129,32 @@ class Appointments extends EA_Controller {
                 }
 
                 $appointment = $results[0];
-                $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+                $resource = $this->resources_model->get_full_resource_by_service_group_and_id($appointment['service_group_id'], $appointment['resource_id']);
+
+                /*
                 $customer = $this->customers_model->get_row($appointment['id_users_customer']);
 
                 $customer_token = md5(uniqid(mt_rand(), TRUE));
 
                 // Save the token for 10 minutes.
                 $this->cache->save('customer-token-' . $customer_token, $customer['id'], 600);
+                */
             }
             else
             {
-                // The customer is going to book a new appointment so there is no need for the manage functionality to
+                // The visitor is going to book a new appointment so there is no need for the manage functionality to
                 // be initialized.
                 $manage_mode = FALSE;
                 $customer_token = FALSE;
                 $appointment = [];
-                $provider = [];
-                $customer = [];
+                $resource = [];
+                $visitors = [];
                 $inmate =[];
             }
 
             // Load the book appointment view.
             $variables = [
                 'available_services' => $available_services,
-                'available_providers' => $available_providers,
                 'available_inmates' => $available_inmates,
                 'company_name' => $company_name,
                 'company_address' => $company_address,
@@ -177,16 +166,15 @@ class Appointments extends EA_Controller {
                 'first_weekday' => $first_weekday,
                 'require_phone_number' => $require_phone_number,
                 'appointment_data' => $appointment,
-                'provider_data' => $provider,
-                'customer_data' => $customer,
+                'resource_data' => $resource,
+                'visitor_data' => $visitors,
                 'display_cookie_notice' => $display_cookie_notice,
                 'cookie_notice_content' => $cookie_notice_content,
                 'display_terms_and_conditions' => $display_terms_and_conditions,
                 'terms_and_conditions_content' => $terms_and_conditions_content,
                 'display_privacy_policy' => $display_privacy_policy,
                 'privacy_policy_content' => $privacy_policy_content,
-                'timezones' => $timezones,
-                'display_any_provider' => $display_any_provider,
+                'timezones' => $timezones
             ];
         }
         catch (Exception $exception)
@@ -219,9 +207,9 @@ class Appointments extends EA_Controller {
             }
 
             $appointment = $appointments[0];
-            $provider = $this->providers_model->get_row($appointment['id_users_provider']);
-            $customer = $this->customers_model->get_row($appointment['id_users_customer']);
+            $resource = $this->resources_model->get_full_resource_by_service_group_and_id($appointment['service_group_id'],$appointment['resource_id']);
             $service = $this->services_model->get_row($appointment['id_services']);
+            $visitors = $this->visitors_model->get_appointment_visitors($appointment['id']);
 
             $settings = [
                 'company_name' => $this->settings_model->get_setting('company_name'),
@@ -237,8 +225,8 @@ class Appointments extends EA_Controller {
                 throw new Exception('Appointment could not be deleted from the database.');
             }
 
-            $this->synchronization->sync_appointment_deleted($appointment, $provider);
-            $this->notifications->notify_appointment_deleted($appointment, $service, $provider, $customer, $settings);
+            //$this->synchronization->sync_appointment_deleted($appointment, $provider);
+            $this->notifications->notify_appointment_deleted($appointment, $service, $resource, $visitors, $settings);
         }
         catch (Exception $exception)
         {
@@ -284,7 +272,7 @@ class Appointments extends EA_Controller {
         //$customer = $this->customers_model->get_row($appointment['id_users_customer']);
         $visitors = $this->visitors_model->get_appointment_visitors($appointment['id']);
 
-        $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+        $resource = $this->resources_model->get_full_resource_by_service_group_and_id($appointment['service_group_id'],$appointment['resource_id']);
 
         $service = $this->services_model->get_row($appointment['id_services']);
 
@@ -295,12 +283,11 @@ class Appointments extends EA_Controller {
 
         $view = [
             'appointment_data' => $appointment,
-            'provider_data' => [
-                'id' => $provider['id'],
-                'first_name' => $provider['first_name'],
-                'last_name' => $provider['last_name'],
-                'email' => $provider['email'],
-                'timezone' => $provider['timezone'],
+            'resource_data' => [
+                'id' => $resource['resource_id'],
+                'name' => $resource['resource_name'],
+                'description' => $resource['resource_description'],
+                'timezone' => $resource['timezone'],
             ],
             'visitor_data' => [
                 'id' => $visitors[0]['id'],
@@ -318,116 +305,6 @@ class Appointments extends EA_Controller {
         }
 
         $this->load->view('appointments/book_success', $view);
-    }
-
-    /**
-     * Get the available appointment hours for the given date.
-     *
-     * This method answers to an AJAX request. It calculates the available hours for the given service, provider and
-     * date.
-     *
-     * Outputs a JSON string with the availabilities.
-     */
-    public function ajax_get_available_hours_orig()
-    {
-        try
-        {
-            $provider_id = $this->input->post('provider_id');
-            $service_id = $this->input->post('service_id');
-            $selected_date = $this->input->post('selected_date');
-
-            // Do not continue if there was no provider selected (more likely there is no provider in the system).
-            if (empty($provider_id))
-            {
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_output(json_encode([]));
-
-                return;
-            }
-
-            // If manage mode is TRUE then the following we should not consider the selected appointment when
-            // calculating the available time periods of the provider.
-            $exclude_appointment_id = $this->input->post('manage_mode') === 'true' ? $this->input->post('appointment_id') : NULL;
-
-            // If the user has selected the "any-provider" option then we will need to search for an available provider
-            // that will provide the requested service.
-            if ($provider_id === ANY_PROVIDER)
-            {
-                $provider_id = $this->search_any_provider($selected_date, $service_id);
-
-                if ($provider_id === NULL)
-                {
-                    $this->output
-                        ->set_content_type('application/json')
-                        ->set_output(json_encode([]));
-
-                    return;
-                }
-            }
-
-            $service = $this->services_model->get_row($service_id);
-
-            $provider = $this->providers_model->get_row($provider_id);
-
-            $response = $this->availability->get_available_hours($selected_date, $service, $provider, $exclude_appointment_id);
-        }
-        catch (Exception $exception)
-        {
-            $this->output->set_status_header(500);
-
-            $response = [
-                'message' => $exception->getMessage(),
-                'trace' => config('debug') ? $exception->getTrace() : []
-            ];
-        }
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($response));
-    }
-
-    /**
-     * Search for any provider that can handle the requested service.
-     *
-     * This method will return the database ID of the provider with the most available periods.
-     *
-     * @param string $date The date to be searched (Y-m-d).
-     * @param int $service_id The requested service ID.
-     *
-     * @return int Returns the ID of the provider that can provide the service at the selected date.
-     *
-     * @throws Exception
-     */
-    protected function search_any_provider($date, $service_id)
-    {
-        $available_providers = $this->providers_model->get_available_providers();
-
-        $service = $this->services_model->get_row($service_id);
-
-        $provider_id = NULL;
-
-        $max_hours_count = 0;
-
-        foreach ($available_providers as $provider)
-        {
-            foreach ($provider['services'] as $provider_service_id)
-            {
-                if ($provider_service_id == $service_id)
-                {
-                    // Check if the provider is available for the requested date.
-                    $available_hours = $this->availability->get_available_hours($date, $service, $provider);
-
-                    if (count($available_hours) > $max_hours_count)
-                    {
-                        $provider_id = $provider['id'];
-                        $max_hours_count = count($available_hours);
-                    }
-                }
-            }
-        }
-
-        return $provider_id;
     }
 
     /**
@@ -663,11 +540,12 @@ class Appointments extends EA_Controller {
             // Otherwise, find first available provider for this inmate's provider block
             $appointment = $this->check_datetime_availability();
 
-            if (empty($appointment['id_users_provider'])) {
+            if ((empty($appointment['service_group_id'])) || (empty($appointment['resource_id'])))
+            {
                 throw new Exception(lang('requested_hour_is_unavailable'));
             }
 
-            $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+            $resource = $this->resources_model->get_full_resource_by_service_group_and_id($appointment['service_group_id'],$appointment['resource_id']);
             $service = $this->services_model->get_row($appointment['id_services']);
 
             $require_captcha = $this->settings_model->get_setting('require_captcha');
@@ -736,8 +614,7 @@ class Appointments extends EA_Controller {
                 'time_format' => $this->settings_model->get_setting('time_format')
             ];
 
-            $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $visitors, $settings, $manage_mode);
-            $this->notifications->notify_appointment_saved($appointment, $service, $provider, $visitors, $settings, $manage_mode);
+            $this->notifications->notify_appointment_saved($appointment, $service, $resource, $visitors, $settings, $manage_mode);
 
             $response = [
                 'appointment_id' => $appointment['id'],
@@ -761,8 +638,7 @@ class Appointments extends EA_Controller {
 
     /* *****************************************************************
      *  New Appointment scheduling
-     *    This should be based around inmate in addition to provider, as any open provider can
-     *    be used, and is selected at time of appointment at the jail
+     *    This should be based around inmate
      * 
      *  So, all of the associated functions will be refactored to use the inmate
      *    and will disallow double-booking
@@ -782,18 +658,19 @@ class Appointments extends EA_Controller {
         if (! empty($existing_appt)) {
             return $existing_appt;
         } else {
-            if ((!isset($appointment['id_users_provider'])) ||
-                ($appointment['id_users_provider'] == NULL) ||
-                ($appointment['id_users_provider'] === ANY_PROVIDER)) {
+            if ((!isset($appointment['resource_id'])) ||
+                ($appointment['resource_id'] == NULL) ||
+                ($appointment['resource_id'] === ANY_PROVIDER)) {
                 $service_id = $appointment['id_services'];
-                $provider_ids = $this->search_providers_by_inmates($inmate_id, $service_id);
+                $resources = $this->search_resources_by_inmate($inmate_id, $service_id);
 
                 // Check for existing appointments on this date at this time
                 // Grab the first provider that is not already spoken for
-                $providers_used = $this->search_providers_in_use($appointment['start_datetime']);
-                foreach ($provider_ids as $provider_id) {
-                    if (!in_array($provider_id, $providers_used, true)) {
-                        $appointment['id_users_provider'] = $provider_id;
+                $resources_used = $this->search_resources_in_use($appointment['start_datetime']);
+                foreach ($resources as $searchResource) {
+                    if (!in_array($searchResource['resource_id'], $resources_used, true)) {
+                        $appointment['service_group_id'] = $searchResource['service_group_id'];
+                        $appointment['resource_id'] = $searchResource['resource_id'];
                         break;
                     }
                 }
@@ -805,9 +682,9 @@ class Appointments extends EA_Controller {
 
             $exclude_appointment_id = isset($appointment['id']) ? $appointment['id'] : NULL;
 
-            $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+            $resource = $this->resources_model->get_full_resource_by_service_group_and_id($appointment['service_group_id'],$appointment['resource_id']);
 
-            $available_hours = $this->availability->get_available_hours($date, $service, $provider, $exclude_appointment_id);
+            $available_hours = $this->availability->get_available_hours($date, $service, $resource, $exclude_appointment_id);
 
             $is_still_available = FALSE;
 
@@ -828,7 +705,6 @@ class Appointments extends EA_Controller {
     {
         try
         {
-            $provider_id = $this->input->get('provider_id');
             $service_id = $this->input->get('service_id');
             $appointment_id = $this->input->get_post('appointment_id');
             $manage_mode = $this->input->get_post('manage_mode');
@@ -840,18 +716,19 @@ class Appointments extends EA_Controller {
             $unavailable_dates = [];
             $appointment_ids = [];
 
+            $default_timezone = $this->settings_model->get_setting('default_timezone');
+            $inmate_restricted_age = $this->settings_model->get_setting('inmate_restricted_age');
+            $visitors_allowed = $this->settings_model->get_setting('visitors_allowed');
+
             //  Attorney Visits - $service_id = ATTORNEY_SERVICE_ID
+            //  Other services != VISITATION_SERVICE_ID
             //  Handle these differently - all dates and times available except when inmate has existing appointment
-            if ($service_id == ATTORNEY_SERVICE_ID) {
-                // Get the valid providers for the service type
-                $provider_ids = $provider_id === ANY_PROVIDER
-                ? $this->search_providers_by_service($service_id)
-                : [$provider_id];
+            if ($service_id != VISITATION_SERVICE_ID) {
+                // Get the valid resources for the service type
+                $resources = $this->search_resources_by_service($service_id);
             } else {
-                // Get the valid providers for this inmate
-                $provider_ids = $provider_id === ANY_PROVIDER
-                ? $this->search_providers_by_inmates($inmate_id, $service_id)
-                : [$provider_id];            
+                // Get the valid resources (and associated data) for this inmate
+                $resources = $this->search_resources_by_inmate($inmate_id);
             }
 
             if ($inmate_id) {
@@ -874,9 +751,10 @@ class Appointments extends EA_Controller {
                 if ($dob == false) {  // The format is wrong / changed
                     $dob = DateTime::createFromFormat('n/j/Y H:i:s+', $inmate["DOB"]);
                 }
-                $age = $dob->diff(new DateTime('now'))->y;
-                if ($age <= 17) {
-                    $response[] = "restricted";
+
+                $age = $dob->diff(new DateTime('now', new DateTimeZone($default_timezone)))->y;
+                if ($age <= $inmate_restricted_age) {
+                    $response[] = "age_restricted";
                     $this->output
                         ->set_content_type('application/json')
                         ->set_output(json_encode($response));
@@ -894,37 +772,37 @@ class Appointments extends EA_Controller {
                 $exclude_appointment_ids = [];
             } else {
                 // Skip the call if there is no inmate chosen
-                $provider_ids = [];
+                $resource_ids = [];
             }
     
             // Get the service record.
             $service = $this->services_model->get_row($service_id);
+            $today_date = new DateTime(date('Y-m-d 00:00:00'), new DateTimeZone($default_timezone));
 
             for ($i = 1; $i <= $number_of_days_in_month; $i++)
             {
-                $current_date = new DateTime($selected_date->format('Y-m') . '-' . $i);
+                $loop_date = new DateTime($selected_date->format('Y-m') . '-' . $i, new DateTimeZone($default_timezone));
 
-                if ($current_date < new DateTime(date('Y-m-d 00:00:00')))
+                if ($loop_date < $today_date)
                 {
                     // Past dates become immediately unavailable.
-                    $unavailable_dates[] = $current_date->format('Y-m-d');
+                    $unavailable_dates[] = $loop_date->format('Y-m-d');
                     continue;
-                } else if (($service_id != 2) && ($current_date->format('Y-m-d') == new DateTime(date('Y-m-d')))) {
+                } else if (($service_id == VISITATION_SERVICE_ID)
+                        && ($loop_date->format('Y-m-d') == $today_date->format('Y-m-d'))) {
                     // No same day booking allowed for inmate visitation
                     // TODO: add in service check - other services may be able to book same day
-                    $unavailable_dates[] = $current_date->format('Y-m-d');
+                    $unavailable_dates[] = $loop_date->format('Y-m-d');
                     continue;
                 }
 
                 // Finding at least one slot of availability.
-                foreach ($provider_ids as $current_provider_id)
+                foreach ($resources as $resource)
                 {
-                    $provider = $this->providers_model->get_row($current_provider_id);
-
                     $available_hours = $this->availability->get_available_hours(
-                        $current_date->format('Y-m-d'),
+                        $loop_date->format('Y-m-d'),
                         $service,
-                        $provider,
+                        $resource,
                         $exclude_appointment_ids
                     );
 
@@ -934,22 +812,22 @@ class Appointments extends EA_Controller {
                     }
                 }
 
-                // No availability amongst all the providers.
+                // No availability amongst all the resources.
                 if (empty($available_hours)) {
-                    $unavailable_dates[] = $current_date->format('Y-m-d');
+                    $unavailable_dates[] = $loop_date->format('Y-m-d');
                 } else {
-                    // Check if the inmate already has 3 appointment-visitor slots filled up for the day
+                    // Check if the inmate already has visitors_allowed appointment-visitor slots filled up for the day
                     // If so, no go (for non-attorney visits)
-                    if ($service_id != 2) {
+                    if ($service_id == VISITATION_SERVICE_ID) {
                         $visitorSlotsForDate = 0;
                         foreach ($appointments as $appt) {
                             $startDate = new DateTime($appt["start_datetime"]);
-                            if ($startDate->format('Y-m-d') == $current_date->format('Y-m-d')) {
+                            if ($startDate->format('Y-m-d') == $loop_date->format('Y-m-d')) {
                                 $visitorSlotsForDate++;
                             }
                         }
-                        if ($visitorSlotsForDate >= 3) {
-                            $unavailable_dates[] = $current_date->format('Y-m-d');
+                        if ($visitorSlotsForDate >= $visitors_allowed) {
+                            $unavailable_dates[] = $loop_date->format('Y-m-d');
                         }
                     }
                 }
@@ -976,13 +854,12 @@ class Appointments extends EA_Controller {
     {
         try
         {
-            $provider_id = $this->input->post('provider_id');
             $service_id = $this->input->post('service_id');
             $selected_date = $this->input->post('selected_date');
             $inmate_id = $this->input->post('inmate_id');
 
-            // Do not continue if there was no provider selected (more likely there is no provider in the system).
-            if (empty($provider_id))
+            // Do not continue if there was no inmate selected
+            if (empty($inmate_id))
             {
                 $this->output
                     ->set_content_type('application/json')
@@ -991,33 +868,58 @@ class Appointments extends EA_Controller {
                 return;
             }
 
+            $inmate = $this->inmates_model->get_row($inmate_id);
+
             // If manage mode is TRUE then the following we should not consider the selected appointment when
             // calculating the available time periods of the provider.
             $exclude_appointment_id = $this->input->post('manage_mode') === 'true' ? $this->input->post('appointment_id') : NULL;
 
-            // If the user has selected the "any-provider" option then we will need to search for an available provider
-            // that will provide the requested service.
-            if (($provider_id === ANY_PROVIDER) || ($provider_id == -1))
-            {
-                //$provider_id = $this->search_any_provider($selected_date, $service_id);
-                $provider_ids = $this->search_providers_by_inmates($inmate_id, $service_id);
-                if (empty ($provider_ids))
-                {
-                    $this->output
-                        ->set_content_type('application/json')
-                        ->set_output(json_encode([]));
+            // Find the resources available to the inmate or service
+            //  Attorney Visits - $service_id = ATTORNEY_SERVICE_ID
+            //  Other services != VISITATION_SERVICE_ID
+            //  Handle these differently - all dates and times available except when inmate has existing appointment
+            if ($service_id != VISITATION_SERVICE_ID) {
+                // Get the valid resources for the service type
+                $resources = $this->search_resources_by_service($service_id);
+            } else {
+                // Get the valid resources (and associated data) for this inmate
+                $resources = $this->search_resources_by_inmate($inmate_id);
+            }
 
-                    return;
-                } else {
-                    $provider_id = array_values($provider_ids)[0];
-                }
+            if (empty ($resources))
+            {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode([]));
+
+                return;
             }
 
             $service = $this->services_model->get_row($service_id);
 
-            $provider = $this->providers_model->get_row($provider_id);
+            // Finding at least one slot of availability.
+            foreach ($resources as $resource)
+            {
+                $response = $this->availability->get_available_hours(
+                    $selected_date,
+                    $service,
+                    $resource,
+                    $exclude_appointment_id
+                );
 
-            $response = $this->availability->get_available_hours($selected_date, $service, $provider, $exclude_appointment_id);
+                if ( ! empty($response))
+                {
+                    break;
+                }
+            }
+
+            //    We now should have *all* available hour slots
+            //    Remove slots based on:
+            //    1:  Any special handling (such as inmate classification conflicts with existing appointments from other
+            //        inmates
+            //    2:  Make sure all resources are not engaged for each available_hour period
+            $response = $this->availability->special_hours_handling($inmate,$selected_date,$response);
+            $response = $this->availability->check_resource_availability($resources,$selected_date,$response);
         }
         catch (Exception $exception)
         {
@@ -1078,205 +980,38 @@ class Appointments extends EA_Controller {
      */
 
     /**
-     * Check whether the provider is still available in the selected appointment date.
+     * Search for any resource that can handle the requested service.
      *
-     * It might be times where two or more customers select the same appointment date and time. This shouldn't be
-     * allowed to happen, so one of the two customers will eventually get the preferred date and the other one will have
-     * to choose for another date. Use this method just before the customer confirms the appointment details. If the
-     * selected date was taken in the mean time, the customer must be prompted to select another time for his
-     * appointment.
-     *
-     * @return int Returns the ID of the provider that is available for the appointment.
-     *
-     * @throws Exception
-     */
-    protected function check_datetime_availability_orig()
-    {
-        $post_data = $this->input->post('post_data');
-
-        $appointment = $post_data['appointment'];
-
-        $date = date('Y-m-d', strtotime($appointment['start_datetime']));
-
-        if ($appointment['id_users_provider'] === ANY_PROVIDER)
-        {
-
-            $appointment['id_users_provider'] = $this->search_any_provider($date, $appointment['id_services']);
-
-            return $appointment['id_users_provider'];
-        }
-
-        $service = $this->services_model->get_row($appointment['id_services']);
-
-        $exclude_appointment_id = isset($appointment['id']) ? $appointment['id'] : NULL;
-
-        $provider = $this->providers_model->get_row($appointment['id_users_provider']);
-
-        $available_hours = $this->availability->get_available_hours($date, $service, $provider, $exclude_appointment_id);
-
-        $is_still_available = FALSE;
-
-        $appointment_hour = date('H:i', strtotime($appointment['start_datetime']));
-
-        foreach ($available_hours as $available_hour)
-        {
-            if ($appointment_hour === $available_hour)
-            {
-                $is_still_available = TRUE;
-                break;
-            }
-        }
-
-        return $is_still_available ? $appointment['id_users_provider'] : NULL;
-    }
-
-    /**
-     * Get Unavailable Dates
-     *
-     * Get an array with the available dates of a specific provider, service and month of the year. Provide the
-     * "provider_id", "service_id" and "selected_date" as GET parameters to the request. The "selected_date" parameter
-     * must have the Y-m-d format.
-     *
-     * Outputs a JSON string with the unavailable dates. that are unavailable.
-     */
-    public function ajax_get_unavailable_dates_orig()
-    {
-        try
-        {
-            $provider_id = $this->input->get('provider_id');
-            $service_id = $this->input->get('service_id');
-            $appointment_id = $this->input->get_post('appointment_id');
-            $manage_mode = $this->input->get_post('manage_mode');
-            $selected_date_string = $this->input->get('selected_date');
-            $selected_date = new DateTime($selected_date_string);
-
-            $number_of_days_in_month = (int)$selected_date->format('t');
-	        $inmate_id = $this->input->get_post('selectedInmateId');
-            $unavailable_dates = [];
-
-    	    if ($inmate_id){
-                $provider_ids = $provider_id === ANY_PROVIDER
-                    ? $this->search_providers_by_inmates($inmate_id, $service_id)
-                    : [$provider_id];
-            } else {
-                /* Skip the call if there is no inmate chosen - it just takes too long
-               	$provider_ids = $provider_id === ANY_PROVIDER
-                    ? $this->search_providers_by_service($service_id)
-                    : [$provider_id];
-                    */
-                $provider_ids = [];
-            }
-            $exclude_appointment_id = $manage_mode ? $appointment_id : NULL;
-
-            // Get the service record.
-            $service = $this->services_model->get_row($service_id);
-
-            for ($i = 1; $i <= $number_of_days_in_month; $i++)
-            {
-                $current_date = new DateTime($selected_date->format('Y-m') . '-' . $i);
-
-                if ($current_date < new DateTime(date('Y-m-d 00:00:00')))
-                {
-                    // Past dates become immediately unavailable.
-                    $unavailable_dates[] = $current_date->format('Y-m-d');
-                    continue;
-                }
-
-                // Finding at least one slot of availability.
-                foreach ($provider_ids as $current_provider_id)
-                {
-                    $provider = $this->providers_model->get_row($current_provider_id);
-
-                    $available_hours = $this->availability->get_available_hours(
-                        $current_date->format('Y-m-d'),
-                        $service,
-                        $provider,
-                        $exclude_appointment_id
-                    );
-
-                    if ( ! empty($available_hours))
-                    {
-                        break;
-                    }
-                }
-
-                // No availability amongst all the provider.
-                if (empty($available_hours))
-                {
-                    $unavailable_dates[] = $current_date->format('Y-m-d');
-                }
-            }
-
-            $response = $unavailable_dates;
-        }
-        catch (Exception $exception)
-        {
-            $this->output->set_status_header(500);
-
-            $response = [
-                'message' => $exception->getMessage(),
-                'trace' => config('debug') ? $exception->getTrace() : []
-            ];
-        }
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($response));
-    }
-
-    /**
-     * Search for any provider that can handle the requested service.
-     *
-     * This method will return the database ID of the providers affected to the requested service.
+     * This method will return the database IDs of the resources attached to that service through service groups
      *
      * @param int $service_id The requested service ID.
      *
-     * @return array Returns the ID of the provider that can provide the requested service.
+     * @return array Returns the IDs of the resources that can provide the requested service.
      */
-    protected function search_providers_by_service($service_id)
+    protected function search_resources_by_service($service_id)
     {
-        $available_providers = $this->providers_model->get_available_providers();
-        $provider_list = [];
-
-        foreach ($available_providers as $provider)
-        {
-            foreach ($provider['services'] as $provider_service_id)
-            {
-                if ($provider_service_id === $service_id)
-                {
-                    // Check if the provider is affected to the selected service.
-                    $provider_list[] = $provider['id'];
-                }
-            }
-        }
-
-        return $provider_list;
+        $resources_list = $this->resources_model->get_resources_by_service_id($service_id);
+        return $resources_list;
     }
 
-    protected function search_providers_by_inmates($inmate_id, $service_id)
+    protected function search_resources_by_inmate($inmate_id)
     {
-        $available_providers = $this->inmates_model->get_providers_by_inmates($inmate_id, $service_id);
-        $provider_list = [];
+        $available_resources = $this->inmates_model->search_resources_by_inmate($inmate_id);
 
-        foreach ($available_providers as $provider)
-        {
-            $provider_list[] = $provider['id'];
-        }
-
-        return $provider_list;
+        return $available_resources;
     }
 
-    protected function search_providers_in_use($appointment_start_time)
+    protected function search_resources_in_use($appointment_start_time)
     {
-        $available_providers = $this->appointments_model->get_by_date($appointment_start_time);
-        $provider_list = [];
+        $available_resources = $this->appointments_model->get_by_date($appointment_start_time);
+        $resource_list = [];
 
-        foreach ($available_providers as $provider)
+        foreach ($available_resources as $resource)
         {
-            $provider_list[] = $provider['id'];
+            $resource_list[] = $resource['resource_id'];
         }
 
-        return $provider_list;
+        return $resource_list;
     }
 
     public function ajax_upload_document() {

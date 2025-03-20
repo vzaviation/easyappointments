@@ -78,6 +78,22 @@ class Inmates_model extends EA_Model {
         return $inmates;
     }
 
+    public function search_resources_by_inmate($id) {
+
+        $this->db->where('ei.ID', $id);
+        $this->db->select('esg.service_group_id,esg.group_name,esg.service_id,es.name as "service_name",es.duration,er.resource_id,er.resource_name,esg.timezone,esg.working_plan,esg.working_plan_exceptions');
+        $this->db->from('ea_inmates ei');
+        $this->db->join('ea_cell_lookup ecl','ecl.description = ei.cell','left');
+        $this->db->join('ea_service_group esg','esg.group_name = ecl.cell_range','left');
+        $this->db->join('ea_services es','es.id = esg.service_id','left');
+        $this->db->join('ea_service_group_resource esgr','esgr.service_group_id = esg.service_group_id','left');
+        $this->db->join('ea_resource er','er.resource_id = esgr.resource_id','left');
+        $resources = $this->db->get()->result_array();
+
+        // Return provider records.
+        return $resources;
+    }
+
     public function get_providers_by_inmates($id, $service_id) {
         $this->db
             ->select('ea_inmates.id, ea_inmates.inmate_name, ea_inmates.inmate_classification_level')

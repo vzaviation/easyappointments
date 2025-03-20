@@ -23,14 +23,14 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
     'use strict';
 
     function updateTimezone() {
-        var providerId = $('#select-provider').val();
+        var resourceId = $('#select-resource').val();
 
-        var provider = GlobalVariables.availableProviders.find(function (availableProvider) {
-            return Number(availableProvider.id) === Number(providerId);
+        var resource = GlobalVariables.availableResources.find(function (availableResource) {
+            return Number(availableResource.resource_id) === Number(resourceId);
         });
 
-        if (provider && provider.timezone) {
-            $('.provider-timezone').text(GlobalVariables.timezones[provider.timezone]);
+        if (resource && resource.timezone) {
+            $('.resource-timezone').text(GlobalVariables.timezones[resource.timezone]);
         }
     }
 
@@ -57,7 +57,7 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
 
             var appointment = {
                 id_services: $dialog.find('#select-service').val(),
-                id_users_provider: $dialog.find('#select-provider').val(),
+                resource_id: $dialog.find('#select-resource').val(),
                 start_datetime: startDatetime,
                 end_datetime: endDatetime,
                 location: $dialog.find('#appointment-location').val(),
@@ -142,16 +142,16 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
             var $dialog = $('#manage-appointment');
 
             // Set the selected filter item and find the next appointment time as the default modal values.
-            if ($('#select-filter-item option:selected').attr('type') === 'provider') {
-                var providerId = $('#select-filter-item').val();
+            if ($('#select-filter-item option:selected').attr('type') === 'resource') {
+                var resourceId = $('#select-filter-item').val();
 
-                var providers = GlobalVariables.availableProviders.filter(function (provider) {
-                    return Number(provider.id) === Number(providerId);
+                var resources = GlobalVariables.availableResources.filter(function (resource) {
+                    return Number(resource.resource_id) === Number(resourceId);
                 });
 
-                if (providers.length) {
-                    $dialog.find('#select-service').val(providers[0].services[0]).trigger('change');
-                    $dialog.find('#select-provider').val(providerId);
+                if (resources.length) {
+                    $dialog.find('#select-service').val(resources[0].service).trigger('change');
+                    $dialog.find('#select-resource').val(resourceId);
                 }
             } else if ($('#select-filter-item option:selected').attr('type') === 'service') {
                 $dialog.find('#select-service option[value="' + $('#select-filter-item').val() + '"]')
@@ -321,13 +321,13 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
         /**
          * Event: Selected Service "Change"
          *
-         * When the user clicks on a service, its available providers should become visible. Also we need to
+         * When the user clicks on a service, its available resources should become visible. Also we need to
          * update the start and end time of the appointment.
          */
         $('#select-service').on('change', function () {
             var serviceId = $('#select-service').val();
 
-            $('#select-provider').empty();
+            $('#select-resource').empty();
 
             // Automatically update the service duration.
             var service = GlobalVariables.availableServices.find(function (availableService) {
@@ -339,8 +339,8 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
             var start = $('#start-datetime').datetimepicker('getDate');
             $('#end-datetime').datetimepicker('setDate', new Date(start.getTime() + duration * 60000));
 
-            // Update the providers select box.
-
+            // Update the resources select box. -- OBSOLETE for VisitationLink
+            /*
             GlobalVariables.availableProviders.forEach(function (provider) {
                 provider.services.forEach(function (providerServiceId) {
                     if (GlobalVariables.user.role_slug === Backend.DB_SLUG_PROVIDER && Number(provider.id) !== GlobalVariables.user.id) {
@@ -358,14 +358,15 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                     }
                 });
             });
+             */
         });
 
         /**
          * Event: Provider "Change"
-         */
         $('#select-provider').on('change', function () {
             updateTimezone();
         });
+        */
 
         /**
          * Event: Enter New Customer Button "Click"
@@ -395,6 +396,7 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
 
         // Fill the providers listbox with providers that can serve the appointment's
         // service and then select the user's provider.
+        /*  OBSOLETE FOR VisitationLink
         $dialog.find('#select-provider').empty();
         GlobalVariables.availableProviders.forEach(function (provider, index) {
             var canProvideService = false;
@@ -410,6 +412,7 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                     .append(new Option(provider.first_name + ' ' + provider.last_name, provider.id));
             }
         });
+        */
 
         // Close existing customers-filter frame.
         $('#existing-customers-list').slideUp('slow');

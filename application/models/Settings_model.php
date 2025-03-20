@@ -143,11 +143,12 @@ class Settings_model extends EA_Model {
 
         foreach ($settings as $setting)
         {
-            $this->db->where('name', $setting['name']);
-            if ( ! $this->db->update('settings', ['value' => $setting['value']]))
-            {
-                throw new Exception('Could not save setting (' . $setting['name']
-                    . ' - ' . $setting['value'] . ')');
+            if ((isset($setting['name'])) && (isset($setting['value']))) {
+                $this->db->where('name', $setting['name']);
+                if (!$this->db->update('settings', ['value' => $setting['value']])) {
+                    throw new Exception('Could not save setting (' . $setting['name']
+                        . ' - ' . $setting['value'] . ')');
+                }
             }
         }
 

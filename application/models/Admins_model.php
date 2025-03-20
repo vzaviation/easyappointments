@@ -280,6 +280,27 @@ class Admins_model extends EA_Model {
         return (int)$this->db->get_where('roles', ['slug' => DB_SLUG_ADMIN])->row()->id;
     }
 
+    public function get_agency_admins()
+    {
+        $role_names = array('Agency Staff','Agency Admin');
+        $this->db->where_in('name', $role_names);
+        $this->db->select('roles.id');
+        $roles = $this->db->get('roles')->row_array();
+
+        $this->db->where_in('id_roles', $roles);
+        $batch = $this->db->get('users')->result_array();
+
+        // Get every admin settings.
+        foreach ($batch as &$admin)
+        {
+            $admin['settings'] = $this->db->get_where('user_settings',
+                ['id_users' => $admin['id']])->row_array();
+            unset($admin['settings']['id_users']);
+        }
+
+        return $batch;
+    }
+
     /**
      * Update an existing admin record in the database.
      *

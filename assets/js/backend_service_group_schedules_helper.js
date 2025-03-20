@@ -88,7 +88,6 @@
          */
         $('#servicegroups').on('click', '#save-servicegroupschedule', function () {
             const schedule = {
-                service_group_schedule_id: $('#service-group-schedule-id').val(),
                 service_group_id: $('#service-group-id').val(),
                 working_plan: JSON.stringify(BackendServiceGroupSchedules.wp.get()),
                 working_plan_exceptions: JSON.stringify(BackendServiceGroupSchedules.wp.getWorkingPlanExceptions())

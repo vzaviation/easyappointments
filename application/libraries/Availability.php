@@ -43,24 +43,30 @@ class Availability {
      *
      * @param string $date Selected date (Y-m-d).
      * @param array $service Service record.
-     * @param array $provider Provider record.
+     * @param array $resource Resource record
      * @param array|null $exclude_appointment_ids Exclude any existing appointments from the availability generation.
      *
      * @return array
      *
      * @throws Exception
      */
-    public function get_available_hours($date, $service, $provider, $exclude_appointment_ids = NULL)
+    public function get_available_hours($date, $service, $resource, $exclude_appointment_ids = NULL)
     {
-        $available_periods = $this->get_available_periods($date, $provider, $exclude_appointment_ids);
+        $available_periods = $this->get_available_periods($date, $resource, $exclude_appointment_ids);
         $available_hours = $this->generate_available_hours($date, $service, $available_periods);
 
+        /*
         if ($service['attendants_number'] > 1)
         {
-            $available_hours = $this->consider_multiple_attendants($date, $service, $provider, $exclude_appointment_ids);
+            $available_hours = $this->consider_multiple_attendants($date, $service, $resource, $exclude_appointment_ids);
         }
 
-        return $this->consider_book_advance_timeout($date, $available_hours, $provider);
+        return $this->consider_book_advance_timeout($date, $available_hours, $resource);
+        */
+
+        $available_hours = array_values($available_hours);
+        sort($available_hours, SORT_STRING);
+        return array_values($available_hours);
     }
 
     /**
@@ -71,7 +77,7 @@ class Availability {
      * values that have the start and the end time of an available time period.
      *
      * @param string $date Select date string.
-     * @param array $provider Provider record.
+     * @param array $resource Resource record.
      * @param array of int|null $exclude_appointment_ids Exclude any existing appointments from the availability generation.
      *
      * @return array Returns an array with the available time periods of the provider.
@@ -80,20 +86,21 @@ class Availability {
      */
     protected function get_available_periods(
         $date,
-        $provider,
+        $resource,
         $exclude_appointment_ids = NULL
     )
     {
+        // Find the first available resource that has periods open
         // Set the timezone to the provider timezone
-        date_default_timezone_set($provider['timezone']);
+        date_default_timezone_set($resource['timezone']);
         // Get the service, provider's working plan and provider appointments.
-        $working_plan = json_decode($provider['settings']['working_plan'], TRUE);
+        $working_plan = json_decode($resource['working_plan'], TRUE);
 
         // Get the provider's working plan exceptions.
-        $working_plan_exceptions = json_decode($provider['settings']['working_plan_exceptions'], TRUE);
+        $working_plan_exceptions = json_decode($resource['working_plan_exceptions'], TRUE);
 
         $conditions = [
-            'id_users_provider' => $provider['id'],
+            'resource_id' => $resource['resource_id'],
         ];
 
         // Sometimes it might be necessary to exclude an appointment from the calculation (e.g. when editing an
@@ -110,7 +117,7 @@ class Availability {
             }
         }
 
-        $appointments = $this->CI->appointments_model->get_batch($conditions);
+        //$appointments = $this->CI->appointments_model->get_batch($conditions);
 
         // Find the empty spaces on the plan. The first split between the plan is due to a break (if any). After that
         // every reserved appointment is considered to be a taken space in the plan.
@@ -197,6 +204,9 @@ class Availability {
             }
         }
 
+        /*   2025-03-20 KPB - Just return *all* available periods
+         *    We will screen out for resources and existing appointments
+         *    in a different place
         // Break the empty periods with the reserved appointments.
         foreach ($appointments as $appointment)
         {
@@ -215,7 +225,7 @@ class Availability {
 
                 if ($appointment_start <= $period_start && $appointment_end <= $period_end && $appointment_end <= $period_start)
                 {
-                    // The appointment does not belong in this time period, so we  will not change anything.
+                    // The appointment does not belong in this time period, so we will not change anything.
                     continue;
                 }
                 else
@@ -278,6 +288,7 @@ class Availability {
                 }
             }
         }
+        */
 
         return array_values($periods);
     }
@@ -344,19 +355,19 @@ class Availability {
     protected function consider_multiple_attendants(
         $date,
         $service,
-        $provider,
+        $resource,
         $exclude_appointment_id = NULL
     )
     {
         $unavailability_events = $this->CI->appointments_model->get_batch([
             'is_unavailable' => TRUE,
             'DATE(start_datetime)' => $date,
-            'id_users_provider' => $provider['id']
+            'resource_id' => $resource['resource_id']
         ]);
 
-        $working_plan = json_decode($provider['settings']['working_plan'], TRUE);
+        $working_plan = json_decode($resource['working_plan'], TRUE);
 
-        $working_plan_exceptions = json_decode($provider['settings']['working_plan_exceptions'], TRUE);
+        $working_plan_exceptions = json_decode($resource['working_plan_exceptions'], TRUE);
 
         $working_day = strtolower(date('l', strtotime($date)));
 
@@ -402,7 +413,7 @@ class Availability {
                     $slot_start,
                     $slot_end,
                     $service['id'],
-                    $provider['id'],
+                    $resource['resource_id'],
                     $exclude_appointment_id
                 );
 
@@ -418,7 +429,7 @@ class Availability {
                     $slot_start,
                     $slot_end,
                     $service['id'],
-                    $provider['id'],
+                    $resource['resource_id'],
                     $exclude_appointment_id
                 );
 
@@ -595,4 +606,72 @@ class Availability {
         sort($available_hours, SORT_STRING);
         return array_values($available_hours);
     }
+
+    public function check_resource_availability($resources, $date, $hour_list) {
+        $hour_list_out = [];
+        $used_resource_ids = [];
+
+        $resource_count = count($resources);
+
+        foreach ($hour_list as $hour_block) {
+            $start_datetime = $date . " " . $hour_block;
+            $appointments = $this->CI->appointments_model->get_by_start_datetime($start_datetime);
+
+            foreach ($appointments as $appt) {
+                $used_resource_ids[] = $appt['resource_id'];
+            }
+
+            if (count($used_resource_ids) < $resource_count) {
+                $hour_list_out[] = $hour_block;
+            }
+        }
+
+        return $hour_list_out;
+    }
+
+    public function special_hours_handling($inmate, $date, $hour_list) {
+        // Apply any special rules for a particular site here
+        // The following is for Waller Cty, TX
+        $hour_list_out = $hour_list;
+
+        $inmate_class = strtolower($inmate['inmate_classification_level']);
+        $inmate_gender = strtolower($inmate['gender']);
+
+        foreach ($hour_list as $hour_block) {
+            $start_datetime = $date . " " . $hour_block;
+            $appointments = $this->CI->appointments_model->get_by_start_datetime($start_datetime);
+
+            foreach ($appointments as $appt) {
+                $appt_class = strtolower($appt['inmate_classification_level']);
+                $appt_gender = strtolower($appt['gender']);
+
+                // Check gender
+                if ($inmate_gender == $appt_gender) {
+                    // Now check inmate classification level
+                    if (($inmate_class == "minimum") || ($inmate_class == "99")) {
+                        if ($appt_class == "maximum") {
+                            if (($key = array_search($hour_block, $hour_list_out)) !== false) {
+                                unset($hour_list_out[$key]);
+                            }
+                        }
+                    } else if ($inmate_class == "medium") {
+                        // Do Nothing - all inmates can group with a medium
+                    } else if ($inmate_class == "maximum") {
+                        if (($appt_class == "minimum")
+                            || ($appt_class == "99")) {
+                            if (($key = array_search($hour_block, $hour_list_out)) !== false) {
+                                unset($hour_list_out[$key]);
+                            }
+                        }
+                    }
+                } else {
+                    if (($key = array_search($hour_block, $hour_list_out)) !== false) {
+                        unset($hour_list_out[$key]);
+                    }
+                }
+            }
+        }
+        return $hour_list_out;
+    }
+
 }

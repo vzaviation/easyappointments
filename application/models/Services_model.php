@@ -345,6 +345,8 @@ class Services_model extends EA_Model {
     /**
      * This method returns all the services from the database.
      *
+     * NOTE: If there is not a service_group set up using the service, do not return
+     *
      * @return array Returns an object array with all the database services.
      */
     public function get_available_services()
@@ -353,9 +355,9 @@ class Services_model extends EA_Model {
         return $this->db
             ->select('services.*, service_categories.name AS category_name, '
                 . 'service_categories.id AS category_id')
-            ->from('services')
-            ->join('services_providers',
-                'services_providers.id_services = services.id', 'inner')
+            ->from('service_group')
+            ->join('services',
+                'services.id = service_group.service_id', 'inner')
             ->join('service_categories',
                 'service_categories.id = services.id_service_categories', 'left')
             ->order_by('name ASC')

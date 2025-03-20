@@ -79,52 +79,6 @@ class Service_group_model extends EA_Model {
         return $batch;
     }
 
-    function get_all_service_group_schedules()
-    {
-        $query = $this->db->get('service_group_schedule');
-        return $query->result_array();
-    }
-
-    function get_service_group_schedule_by_id($id)
-    {
-        $this->db->where('service_group_schedule_id', $id);
-        $query = $this->db->get('service_group_schedule');
-        return $query->first_row();
-    }
-
-    function get_service_group_schedule_by_service_group_id($service_group_id)
-    {
-        $this->db->where('service_group_id', $service_group_id);
-        $query = $this->db->get('service_group_schedule');
-        return $query->first_row();
-    }
-
-    // Checks for existing id - if already in table, does update
-    // If new, does insert
-    function update_service_group_schedules($record)
-    {
-        if ((isset($record['service_group_schedule_id']))
-           && ($record['service_group_schedule_id'] != "")) {
-            $this->db->where('service_group_schedule_id', $record['service_group_schedule_id']);
-            $query = $this->db->get('service_group_schedule')->row();
-        }
-
-        if (@$query) {
-            $this->db->where('service_group_schedule_id', $record['service_group_schedule_id']);
-            $update = $this->db->update('service_group_schedule', $record);
-        } else {
-            unset($record['service_group_schedule_id']);
-            $insert = $this->db->insert('service_group_schedule', $record);
-        }
-
-        return true;
-    }
-
-    function delete_service_group_schedules_by_id($id = '') {
-        $this->db->where('service_group_schedule_id', $id);
-        $delete = $this->db->delete('service_group_schedule');
-    }
-
     function get_service_group_resources_by_service_group_id($service_group_id)
     {
         $this->db->where('service_group_id', $service_group_id);

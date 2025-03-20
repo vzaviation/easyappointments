@@ -122,7 +122,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 $dialog.find('.modal-header h3').text(EALang.edit_appointment_title);
                 $dialog.find('#appointment-id').val(appointment.id);
                 $dialog.find('#select-service').val(appointment.id_services).trigger('change');
-                $dialog.find('#select-provider').val(appointment.id_users_provider);
+                $dialog.find('#select-provider').val(appointment.resource_id);
 
                 // Set the start and end datetime of the appointment.
                 startDatetime = Date.parseExact(appointment.start_datetime, 'yyyy-MM-dd HH:mm:ss');
@@ -212,7 +212,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 $dialog.find('.modal-header h3').text('Edit Unavailable Period');
                 $dialog.find('#unavailable-start').datetimepicker('setDate', startDatetime);
                 $dialog.find('#unavailable-id').val(unavailable.id);
-                $dialog.find('#unavailable-provider').val(unavailable.id_users_provider);
+                $dialog.find('#unavailable-provider').val(unavailable.resource_id);
                 $dialog.find('#unavailable-end').datetimepicker('setDate', endDatetime);
                 $dialog.find('#unavailable-notes').val(unavailable.notes);
                 $dialog.modal('show');
@@ -797,7 +797,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 id: event.data.id,
                 start_datetime: event.start.format('YYYY-MM-DD HH:mm:ss'),
                 end_datetime: event.end.format('YYYY-MM-DD HH:mm:ss'),
-                id_users_provider: event.data.id_users_provider
+                resource_id: event.data.resource_id
             };
 
             event.data.end_datetime = unavailable.end_datetime;
@@ -965,7 +965,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 id: event.data.id,
                 start_datetime: event.start.format('YYYY-MM-DD HH:mm:ss'),
                 end_datetime: event.end.format('YYYY-MM-DD HH:mm:ss'),
-                id_users_provider: event.data.id_users_provider
+                resource_id: event.data.resource_id
             };
 
             successCallback = function () {
@@ -1647,7 +1647,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             $dialog.find('.modal-header h3').text(EALang.edit_appointment_title);
             $dialog.find('#appointment-id').val(appointment.id);
             $dialog.find('#select-service').val(appointment.id_services).trigger('change');
-            $dialog.find('#select-provider').val(appointment.id_users_provider);
+            $dialog.find('#select-resource').val(appointment.resource_id);
 
             // Set the start and end datetime of the appointment.
             var startDatetime = Date.parseExact(appointment.start_datetime, 'yyyy-MM-dd HH:mm:ss');

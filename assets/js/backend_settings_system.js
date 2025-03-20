@@ -83,8 +83,33 @@
         });
 
         settings.push({
-            name: 'customer_notifications',
-            value: $('#customer-notifications').prop('checked') ? '1' : '0'
+            name: 'visitor_notifications',
+            value: $('#visitor-notifications').prop('checked') ? '1' : '0'
+        });
+
+        settings.push({
+            name: 'visitation_rules_html',
+            value: $('#visitation-rules').val()
+        });
+
+        settings.push({
+            name: 'visitor_authorization_flag',
+            value: $('#visitor-authorization-flag').prop('checked') ? '1' : '0'
+        });
+
+        settings.push({
+            name: 'visitors_allowed',
+            value: $('input[name="visitors-allowed"]:checked').val()
+        });
+
+        settings.push({
+            name: 'inmate_restricted_age',
+            value: $('input[name="inmate-restricted-age"]:checked').val()
+        });
+
+        settings.push({
+            name: 'inmate_visits_per_week',
+            value: $('#inmate-visits-per-week').val()
         });
 
         settings.push({

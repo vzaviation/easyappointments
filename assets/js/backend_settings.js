@@ -62,8 +62,30 @@ window.BackendSettings = window.BackendSettings || {};
                 workingPlan = $.parseJSON(setting.value);
             }
 
-            if (setting.name === 'customer_notifications') {
-                $('#customer-notifications').prop('checked', Boolean(Number(setting.value)));
+            if (setting.name === 'visitor_notifications') {
+                $('#visitor-notifications').prop('checked', Boolean(Number(setting.value)));
+            }
+
+            if (setting.name === 'visitation_rules_html') {
+                $('#visitation-rules').trumbowyg('html', setting.value);
+            }
+
+            if (setting.name === 'visitor_authorization_flag') {
+                $('#visitor-authorization-flag').prop('checked', Boolean(Number(setting.value)));
+            }
+
+            if (setting.name === 'visitors_allowed') {
+                const vaid = '#visitors-allowed-' + setting.value;
+                $(vaid).prop('checked', true);
+            }
+
+            if (setting.name === 'inmate_restricted_age') {
+                const iraid = '#inmate-restricted-age-' + setting.value;
+                $(iraid).prop('checked', true);
+            }
+
+            if (setting.name === 'inmate_visits_per_week') {
+                $('#inmate-visits-per-week').val(setting.value);
             }
 
             if (setting.name === 'require_captcha') {

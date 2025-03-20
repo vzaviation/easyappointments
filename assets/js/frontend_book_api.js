@@ -59,11 +59,9 @@ window.FrontendBookApi = window.FrontendBookApi || {};
 
         var inmateId = $('#select-inmate').val();
 
-        const providerId = $('#select-provider').val() ? $('#select-provider').val() : -1;
         var data = {
             csrfToken: GlobalVariables.csrfToken,
             service_id: serviceId,
-            provider_id: providerId,
             selected_date: selectedDate,
             inmate_id: inmateId,
             service_duration: serviceDuration,
@@ -73,30 +71,15 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         $("#loading").css("display", "");
         $.post(url, data)
             .done(function (response) {
-                // The response contains the available hours for the selected provider and
+                // The response contains the available hours for the selected inmate and
                 // service. Fill the available hours div with response data.
                 if (response.length > 0) {
-                    var providerId = $('#select-provider').val();
-
-                    if ((!providerId) || (providerId === 'any-provider')) {
-                        providerId = GlobalVariables.availableProviders[0].id; // Use first available provider.
-                    }
-
-                    var provider = GlobalVariables.availableProviders.find(function (availableProvider) {
-                        return Number(providerId) === Number(availableProvider.id);
-                    });
-
-                    if (!provider) {
-                        throw new Error('Could not find provider.');
-                    }
-
-                    var providerTimezone = provider.timezone;
                     var selectedTimezone = $('#select-timezone').val();
                     var timeFormat = GlobalVariables.timeFormat === 'regular' ? 'h:mm a' : 'HH:mm';
 
                     response.forEach(function (availableHour) {
                         var availableHourMoment = moment
-                            .tz(selectedDate + ' ' + availableHour + ':00', providerTimezone)
+                            .tz(selectedDate + ' ' + availableHour + ':00', selectedTimezone)
                             .tz(selectedTimezone);
 
                         $('#available-hours').append(
@@ -572,25 +555,21 @@ window.FrontendBookApi = window.FrontendBookApi || {};
     };
 
     /**
-     * Get the unavailable dates of a provider.
+     * Get the unavailable dates of a resource.
      *
-     * This method will fetch the unavailable dates of the selected provider and service and then it will
+     * This method will fetch the unavailable dates of the selected resource for a service_group and service and then it will
      * select the first available date (if any). It uses the "FrontendBookApi.getAvailableHours" method to
      * fetch the appointment* hours of the selected date.
      *
-     * @param {Number} providerId The selected provider ID.
      * @param {Number} serviceId The selected service ID.
      * @param {String} selectedDateString Y-m-d value of the selected date.
+     * @param {Number} selectedInmateId The selected inmate ID
      */
-    exports.getUnavailableDates = function (providerId, serviceId, selectedDateString, selectedInmateId = null) {
+    exports.getUnavailableDates = function (serviceId, selectedDateString, selectedInmateId = null) {
         if (processingUnavailabilities) {
             return;
         }
 
-        if (!providerId) {
-            providerId = 'any-provider';
-        }
-        
         if (!serviceId) {
             return;
         }
@@ -600,13 +579,12 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_get_unavailable_dates';
 
         var data = {
-            provider_id: providerId,
             service_id: serviceId,
             selected_date: encodeURIComponent(selectedDateString),
             csrfToken: GlobalVariables.csrfToken,
             manage_mode: FrontendBook.manageMode,
             appointment_id: appointmentId,
-            selectedInmateId
+            selectedInmateId: selectedInmateId
         };
 
         $.ajax({
@@ -625,6 +603,8 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 // Check for restricted and handle
                 if ((response.length === 1) && (response[0] == "restricted")) {
                     showRestriction(selectedDateString);
+                } else if ((response.length === 1) && (response[0] == "age_restricted")) {
+                    showAgeRestriction(selectedDateString);
                 } else {
                     unavailableDatesBackup = response;
                     selectedDateStringBackup = selectedDateString;
@@ -649,7 +629,27 @@ window.FrontendBookApi = window.FrontendBookApi || {};
         });
 
         // Show restricted message
-        $('#available-hours').text("You cannot schedule a visitation with this inmate at this time.  Please contact the jurisdiction for information.");
+        $('#available-hours').text("Visitations with this inmate are restricted at this time.  Please contact the jurisdiction for information.");
+
+        // Disable the Next button
+        $('#button-next-2').hide();
+
+        processingUnavailabilities = false;
+    }
+
+    function showAgeRestriction(selectedDateString) {
+        processingUnavailabilities = true;
+
+        // Grey out unavailable dates.
+        var selectedDate = Date.parse(selectedDateString);
+        var numberOfDays = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate();
+        $('#select-date .ui-datepicker-calendar td:not(.ui-datepicker-other-month)').each(function (index, td) {
+            selectedDate.set({ day: index + 1 });
+            $(td).addClass('ui-datepicker-unselectable ui-state-disabled');
+        });
+
+        // Show restricted message
+        $('#available-hours').text("Because of this inmate's age, you cannot schedule a visitation through this application.  Please contact the jurisdiction for information.");
 
         // Disable the Next button
         $('#button-next-2').hide();

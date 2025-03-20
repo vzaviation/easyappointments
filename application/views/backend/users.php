@@ -40,11 +40,13 @@
 
     <!-- PAGE NAVIGATION -->
     <ul class="nav nav-pills">
+        <!--
         <li class="nav-item nav-item-providers" style="display:none;">
             <a class="nav-link" href="#providers" data-toggle="tab">
                 <?= lang('providers') ?>
             </a>
         </li>
+        -->
         <li class="nav-item nav-item-secretaries">
             <a class="nav-link active" href="#secretaries" data-toggle="tab">
                 <?= lang('secretaries') ?>
@@ -616,7 +618,8 @@
 
                             <br>
 
-                            <h4><?= lang('providers') ?></h4>
+                            <!--
+                            <h4>< lang('providers') ></h4>
                             <div>
                                 <input type="checkbox" id="check-all-secretary-providers" checked="true">
                                 <label for="check-all-secretary-providers">
@@ -624,7 +627,7 @@
                                 </label>
                             </div>
                             <div id="secretary-providers" class="card card-body bg-light border-light"></div>
-
+                            -->
                         </div>
                     </div>
                 </div>

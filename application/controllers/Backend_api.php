@@ -427,10 +427,10 @@ class Backend_api extends EA_Controller {
     {
         try
         {
-            // Save customer changes to the database.
-            if ($this->input->post('customer_data'))
+            // Save visitor changes to the database.
+            if ($this->input->post('visitor_data'))
             {
-                $customer = json_decode($this->input->post('customer_data'), TRUE);
+                $visitors = json_decode($this->input->post('visitor_data'), TRUE);
 
                 $required_privileges = ( ! isset($customer['id']))
                     ? $this->privileges[PRIV_CUSTOMERS]['add']
@@ -580,7 +580,7 @@ class Backend_api extends EA_Controller {
                         new Text($this->input->post('delete_reason')));
                 }
 
-                $send_customer = $this->settings_model->get_setting('customer_notifications');
+                $send_customer = $this->settings_model->get_setting('visitor_notifications');
 
                 if ((bool)$send_customer === TRUE)
                 {
@@ -1864,7 +1864,7 @@ class Backend_api extends EA_Controller {
 
             $sgID = $this->db->escape_str($this->input->post('service_group_id'));
 
-            $response = $this->service_group_model->get_service_group_schedule_by_service_group_id($sgID);
+            $response = $this->service_group_model->get_service_group_by_id($sgID);
         }
         catch (Exception $exception)
         {
@@ -1890,7 +1890,7 @@ class Backend_api extends EA_Controller {
         {
             $schedule = json_decode($this->input->post('schedule'), TRUE);
 
-            $required_privileges = ( ! isset($schedule['service_group_schedule_id']))
+            $required_privileges = ( ! isset($schedule['service_group_id']))
                 ? $this->privileges[PRIV_USERS]['add']
                 : $this->privileges[PRIV_USERS]['edit'];
             if ($required_privileges == FALSE)
@@ -1908,7 +1908,7 @@ class Backend_api extends EA_Controller {
                 ];
             }
 
-            $this->service_group_model->update_service_group_schedules($schedule);
+            $this->service_group_model->update_service_group($schedule);
 
             $response = [
                 'status' => AJAX_SUCCESS,

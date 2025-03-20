@@ -373,10 +373,49 @@ class Appointments_model extends EA_Model {
         }
 
         $results = $this->db
-            ->select('appointments.*,services.name AS "service_name",users.id AS "provider_id",users.first_name AS "provider_first_name",users.last_name as "provider_last_name"')
+            ->select('appointments.*,services.name AS "service_name",resource.resource_id,resource.resource_name,resource.resource_description')
             ->from('appointments')
             ->join('services', 'services.id = appointments.id_services')
-            ->join('users', 'users.id = appointments.id_users_provider')
+            ->join('resource', 'resource.resource_id = appointments.resource_id')
+            ->where("DATE_FORMAT(start_datetime,'%Y-%m-%d')", $date)
+            ->order_by('appointments.start_datetime','ASC')
+            ->get();
+
+        return $results->result_array();
+    }
+
+    /**
+     * Get by start_datetime - get all appointments for the given date and hour
+     */
+    public function get_by_start_datetime($start_datetime = NULL) {
+        if ($start_datetime == NULL) {
+            throw new Exception('Invalid argument given, start_time cannot be empty');
+        }
+
+        $results = $this->db
+            ->select('a.*,s.name AS "service_name",sg.group_name as "service_group",r.resource_id,r.resource_name,r.resource_description,'
+                . 'i.ID as "inmate_id",i.inmate_name,i.inmate_classification_level,i.gender')
+            ->from('appointments a')
+            ->join('services s', 's.id = a.id_services')
+            ->join('service_group sg', 'sg.service_group_id = a.service_group_id')
+            ->join('resource r', 'r.resource_id = a.resource_id')
+            ->join('inmates i', 'i.ID = a.id_inmate')
+            ->where("DATE_FORMAT(a.start_datetime,'%Y-%m-%d %H:%i') = ", $start_datetime)
+            ->get();
+
+        return $results->result_array();
+    }
+
+    public function get_resources_by_date($date = NULL) {
+        if ($date == NULL) {
+            $date = date('Y-m-d');
+        }
+
+        $results = $this->db
+            ->select('appointments.*,services.name AS "service_name",resource.resource_id AS "resource_id",resource.resource_name as "resource_name",resource.resource_description as "resource_description"')
+            ->from('appointments')
+            ->join('services', 'services.id = appointments.id_services')
+            ->join('resource', 'resource.resource_id = appointments.resource_id')
             ->where("DATE_FORMAT(start_datetime,'%Y-%m-%d')", $date)
             ->order_by('appointments.start_datetime','ASC')
             ->get();
@@ -639,7 +678,7 @@ class Appointments_model extends EA_Model {
      *
      * @return int Returns the number of attendants for selected time period.
      */
-    public function get_other_service_attendants_number(DateTime $slot_start, DateTime $slot_end, $service_id, $provider_id, $exclude_appointment_id = NULL)
+    public function get_other_service_attendants_number(DateTime $slot_start, DateTime $slot_end, $service_id, $resource_id, $exclude_appointment_id = NULL)
     {
         if ($exclude_appointment_id)
         {
@@ -660,7 +699,7 @@ class Appointments_model extends EA_Model {
             ->group_end()
             ->group_end()
             ->where('id_services !=', $service_id)
-            ->where('id_users_provider', $provider_id)
+            ->where('resource_id', $resource_id)
             ->get()
             ->row()
             ->attendants_number;

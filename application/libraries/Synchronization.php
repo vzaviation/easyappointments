@@ -93,9 +93,9 @@ class Synchronization {
      * Synchronize removal of an appointment with external calendars.
      *
      * @param array $appointment Appointment record.
-     * @param array $provider Provider record.
+     * @param array $resource Resource record.
      */
-    public function sync_appointment_deleted($appointment, $provider)
+    public function sync_appointment_deleted($appointment, $resource)
     {
         if ($appointment['id_google_calendar'] != NULL)
         {

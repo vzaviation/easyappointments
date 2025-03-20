@@ -214,6 +214,7 @@
                                     </select>
                                 </div>
 
+                                <!--
                                 <div class="form-group">
                                     <label for="select-provider" class="control-label">
                                         <?= lang('provider') ?>
@@ -221,6 +222,7 @@
                                     </label>
                                     <select id="select-provider" class="required form-control"></select>
                                 </div>
+                                -->
 
                                 <div class="form-group">
                                     <label for="appointment-location" class="control-label">

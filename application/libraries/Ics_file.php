@@ -36,7 +36,7 @@ class Ics_file {
      *
      * @param array $appointment Appointment.
      * @param array $service Service.
-     * @param array $provider Provider.
+     * @param array $resource Resource.
      * @param array $customer Customer.
      *
      * @return string Returns the contents of the ICS file.
@@ -44,9 +44,9 @@ class Ics_file {
      * @throws CalendarEventException
      * @throws Exception
      */
-    public function get_stream($appointment, $service, $provider, $customer)
+    public function get_stream($appointment, $service, $resource, $customer)
     {
-        $appointment_timezone =  new DateTimeZone($provider['timezone']);
+        $appointment_timezone =  new DateTimeZone($resource['timezone']);
 
         $appointment_start = new DateTime($appointment['start_datetime'], $appointment_timezone);
         $appointment_end = new DateTime($appointment['end_datetime'], $appointment_timezone);
@@ -70,16 +70,11 @@ class Ics_file {
 
         $description = [
             '',
-            lang('provider'),
+            lang('location'),
             '',
-            lang('name') . ': ' . $provider['first_name'] . ' ' . $provider['last_name'],
-            lang('email') .': ' . $provider['email'],
-            lang('phone_number') . ': ' . $provider['phone_number'],
-            lang('address') . ': ' . $provider['address'],
-            lang('city') . ': ' . $provider['city'],
-            lang('zip_code') . ': ' . $provider['zip_code'],
+            lang('name') . ': ' . $resource['resource_name'] . ' : ' . $resource['resource_description'],
             '',
-            lang('customer'),
+            lang('visitor'),
             '',
             lang('name') . ': ' . $customer['first_name'] . ' ' . $customer['last_name'],
             lang('email') .': ' . $customer['email'],

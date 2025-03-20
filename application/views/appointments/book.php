@@ -713,14 +713,6 @@
             					</select>
                             </div>       
 
-                            <div class="form-group" style="display:none;">
-                                <label for="select-provider">
-                                    <strong><?= lang('provider') ?></strong>
-                                </label>
-
-                                <select id="select-provider" class="form-control"></select>
-                            </div>
-
                         </div>
                     </div>
                 </div>
@@ -1791,6 +1783,8 @@
                             <i class="fas fa-check-square mr-2"></i>
                             <?= ! $manage_mode ? lang('confirm') : lang('update') ?>
                         </button>
+                        <input type="hidden" name="service_group" value=""/>
+                        <input type="hidden" name="select-resource" value=""/>
                         <input type="hidden" name="csrfToken"/>
                         <input type="hidden" name="post_data"/>
                     </form>
@@ -1843,7 +1837,6 @@
     var GlobalVariables = {
         availableInmates: <?= json_encode($available_inmates) ?>,
         availableServices: <?= json_encode($available_services) ?>,
-        availableProviders: <?= json_encode($available_providers) ?>,
         baseUrl: <?= json_encode(config('base_url')) ?>,
         manageMode: <?= $manage_mode ? 'true' : 'false' ?>,
         customerToken: <?= json_encode($customer_token) ?>,
@@ -1852,9 +1845,8 @@
         firstWeekday: <?= json_encode($first_weekday) ?>,
         displayCookieNotice: <?= json_encode($display_cookie_notice === '1') ?>,
         appointmentData: <?= json_encode($appointment_data) ?>,
-        providerData: <?= json_encode($provider_data) ?>,
-        customerData: <?= json_encode($customer_data) ?>,
-        displayAnyProvider: <?= json_encode($display_any_provider) ?>,
+        resourceData: <?= json_encode($resource_data) ?>,
+        visitorData: <?= json_encode($visitor_data) ?>,
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>
     };
 

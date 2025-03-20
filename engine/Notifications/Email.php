@@ -68,9 +68,9 @@ class Email {
      * the appointment details.
      *
      * @param array $appointment Contains the appointment data.
-     * @param array $provider Contains the provider data.
+     * @param array $resource Contains the resource data.
      * @param array $service Contains the service data.
-     * @param array $customer Contains the customer data.
+     * @param array $visitors Contains the visitor data.
      * @param array $settings Contains settings of the company. At the time the "company_name", "company_link" and
      * "company_email" values are required in the array.
      * @param \EA\Engine\Types\Text $title The email title may vary depending the receiver.
@@ -85,7 +85,7 @@ class Email {
      */
     public function send_appointment_details(
         array $appointment,
-        array $provider,
+        array $resource,
         array $service,
         array $visitors,
         array $settings,
@@ -126,11 +126,11 @@ class Email {
                 throw new Exception('Invalid time_format value: ' . $settings['time_format']);
         }
 
-        $appointment_timezone = new DateTimeZone($provider['timezone']);
+        $appointment_timezone = new DateTimeZone($resource['timezone']);
         $appointment_start = new DateTime($appointment['start_datetime'], $appointment_timezone);
         $appointment_end = new DateTime($appointment['end_datetime'], $appointment_timezone);
 
-        if ($timezone && $timezone !== $provider['timezone'])
+        if ($timezone && $timezone !== $resource['timezone'])
         {
             $appointment_timezone = new DateTimeZone($timezone);
             $appointment_start->setTimezone($appointment_timezone);
@@ -146,10 +146,10 @@ class Email {
             'email_message' => $message->get(),
             'appointment_service' => $service['name'],
             'appointment_inmate' => $appointment['inmate_name'],
-            'appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
+            'appointment_provider' => $resource['resource_name'] . ' - ' . $resource['resource_description'],
             'appointment_start_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_end_date' => $appointment_end->format($date_format . ' ' . $time_format),
-            'appointment_timezone' => $timezones[empty($timezone) ? $provider['timezone'] : $timezone],
+            'appointment_timezone' => $timezones[empty($timezone) ? $resource['timezone'] : $timezone],
             'appointment_link' => $email_link,
             'company_link' => $settings['company_link'],
             'company_name' => $settings['company_name'],
@@ -183,18 +183,18 @@ class Email {
     }
 
     /**
-     * Send an email notification to both provider and customer on appointment removal.
+     * Send an email notification to both staff and visitor on appointment removal.
      *
-     * Whenever an appointment is cancelled or removed, both the provider and customer
+     * Whenever an appointment is cancelled or removed, both the staff and visitor
      * need to be informed. This method sends the same email twice.
      *
      * <strong>IMPORTANT!</strong> This method's arguments should be taken
      * from database before the appointment record is deleted.
      *
      * @param array $appointment The record data of the removed appointment.
-     * @param array $provider The record data of the appointment provider.
+     * @param array $resource The record data of the appointment provider.
      * @param array $service The record data of the appointment service.
-     * @param array $customer The record data of the appointment customer.
+     * @param array $visitors The record data of the appointment visitor.
      * @param array $settings Some settings that are required for this function. As of now this array must contain
      * the following values: "company_link", "company_name", "company_email".
      * @param \EA\Engine\Types\Email $recipient_email The email address of the email recipient.
@@ -205,7 +205,7 @@ class Email {
      */
     public function send_delete_appointment(
         array $appointment,
-        array $provider,
+        array $resource,
         array $service,
         array $visitors,
         array $settings,
@@ -243,10 +243,10 @@ class Email {
                 throw new Exception('Invalid time_format value: ' . $settings['time_format']);
         }
 
-        $appointment_timezone = new DateTimeZone($provider['timezone']);
+        $appointment_timezone = new DateTimeZone($resource['timezone']);
         $appointment_start = new DateTime($appointment['start_datetime'], $appointment_timezone);
 
-        if ($timezone && $timezone !== $provider['timezone'])
+        if ($timezone && $timezone !== $resource['timezone'])
         {
             $appointment_timezone = new DateTimeZone($timezone);
             $appointment_start->setTimezone($appointment_timezone);
@@ -255,10 +255,10 @@ class Email {
         $html = $this->CI->load->view('emails/delete_appointment', [
             'appointment_service' => $service['name'],
             'appointment_inmate' => $appointment['inmate_name'],
-            'appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
+            'appointment_provider' => $resource['resource_name'] . ' ' . $resource['resource_description'],
             'appointment_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_duration' => $service['duration'] . ' ' . lang('minutes'),
-            'appointment_timezone' => $timezones[empty($timezone) ? $provider['timezone'] : $timezone],
+            'appointment_timezone' => $timezones[empty($timezone) ? $resource['timezone'] : $timezone],
             'company_link' => $settings['company_link'],
             'company_name' => $settings['company_name'],
             'visitor_1_name' => $visitors[0]['first_name'] . ' ' . $visitors[0]['last_name'],
