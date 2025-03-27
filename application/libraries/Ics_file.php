@@ -72,7 +72,7 @@ class Ics_file {
             '',
             lang('location'),
             '',
-            lang('name') . ': ' . $resource['resource_name'] . ' : ' . $resource['resource_description'],
+            lang('name') . ': ' . $resource['resource_name'],
             '',
             lang('visitor'),
             '',
@@ -120,35 +120,12 @@ class Ics_file {
         $alarm->addAttendee($attendee);
         $event->addAlarm($alarm);
 
-        $attendee = new Attendee(new Formatter());
-
-        if (isset($provider['email']) && ! empty($provider['email']))
-        {
-            $attendee->setValue($provider['email']);
-        }
-
-        $attendee->setName($provider['first_name'] . ' ' . $provider['last_name']);
-        $attendee->setCalendarUserType('INDIVIDUAL')
-            ->setRole('REQ-PARTICIPANT')
-            ->setParticipationStatus('ACCEPTED')
-            ->setRsvp('FALSE');
-        $event->addAttendee($attendee);
-
-        // Set the organizer.
-        $organizer = new Organizer(new Formatter());
-
-        $organizer
-            ->setValue($provider['email'])
-            ->setName($provider['first_name'] . ' ' . $provider['last_name']);
-
-        $event->setOrganizer($organizer);
-
         // Setup calendar.
         $calendar = new Calendar();
 
         $calendar
             ->setProdId('-//EasyAppointments//Open Source Web Scheduler//EN')
-            ->setTimezone(new DateTimeZone($provider['timezone']))
+            ->setTimezone(new DateTimeZone($resource['timezone']))
             ->addEvent($event);
 
         // Setup exporter.

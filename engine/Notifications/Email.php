@@ -146,7 +146,7 @@ class Email {
             'email_message' => $message->get(),
             'appointment_service' => $service['name'],
             'appointment_inmate' => $appointment['inmate_name'],
-            'appointment_provider' => $resource['resource_name'] . ' - ' . $resource['resource_description'],
+            'appointment_resource' => $resource['resource_name'],
             'appointment_start_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_end_date' => $appointment_end->format($date_format . ' ' . $time_format),
             'appointment_timezone' => $timezones[empty($timezone) ? $resource['timezone'] : $timezone],
@@ -255,7 +255,7 @@ class Email {
         $html = $this->CI->load->view('emails/delete_appointment', [
             'appointment_service' => $service['name'],
             'appointment_inmate' => $appointment['inmate_name'],
-            'appointment_provider' => $resource['resource_name'] . ' ' . $resource['resource_description'],
+            'appointment_resource' => $resource['resource_name'],
             'appointment_date' => $appointment_start->format($date_format . ' ' . $time_format),
             'appointment_duration' => $service['duration'] . ' ' . lang('minutes'),
             'appointment_timezone' => $timezones[empty($timezone) ? $resource['timezone'] : $timezone],

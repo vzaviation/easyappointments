@@ -125,8 +125,8 @@ window.FrontendBook = window.FrontendBook || {};
 
             onChangeMonthYear: function (year, month, instance) {
                 var currentDate = new Date(year, month - 1, 1);
-                FrontendBookApi.getUnavailableDates($('#select-resource').val(), $('#select-service').val(),
-                    currentDate.toString('yyyy-MM-dd'), $('#select-inmate').val());
+                FrontendBookApi.getUnavailableDates($('#select-service').val(), currentDate.toString('yyyy-MM-dd'),
+                    $('#select-inmate').val());
             }
         });
 
@@ -448,6 +448,12 @@ window.FrontendBook = window.FrontendBook || {};
                 $('#step-' + prevTabIndex).addClass('active-step');
                 $('#wizard-frame-' + prevTabIndex).show('fade');
             });
+        });
+
+        $('#select-date').on('click', '.ui-datepicker-next', function (event) {
+            setTimeout(function () {
+                FrontendBookApi.applyPreviousUnavailableDates(); // New jQuery UI version will replace the td elements.
+            }, 300); // There is no draw event unfortunately.
         });
 
         $('#select-date').on('mousedown', '.ui-datepicker-calendar td', function (event) {

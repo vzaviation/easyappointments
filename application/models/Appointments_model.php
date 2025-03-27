@@ -98,20 +98,6 @@ class Appointments_model extends EA_Model {
                 . EVENT_MINIMUM_DURATION . ' minutes).');
         }
 
-        // Check if the provider's id is valid.
-        $num_rows = $this->db
-            ->select('*')
-            ->from('users')
-            ->join('roles', 'roles.id = users.id_roles', 'inner')
-            ->where('users.id', $appointment['id_users_provider'])
-            ->where('roles.slug', DB_SLUG_PROVIDER)
-            ->get()->num_rows();
-
-        if ($num_rows === 0)
-        {
-            throw new Exception('Appointment provider id is invalid.');
-        }
-
         if ($appointment['is_unavailable'] == FALSE)
         {
             /*   IGNORE current customer check in favor of Visitor rules
@@ -392,6 +378,13 @@ class Appointments_model extends EA_Model {
             throw new Exception('Invalid argument given, start_time cannot be empty');
         }
 
+        // Sometimes date will come in with ":00" seconds attached, and sometimes not
+        // Add them if missing
+        $datePatt = "/\d\d\d\d-\d\d-\d\d\s\d\d\:\d\d\:\d\d/";
+        if (preg_match($datePatt, $start_datetime, $matches, PREG_UNMATCHED_AS_NULL) == NULL) {
+            $start_datetime = $start_datetime . ":00";
+        }
+
         $results = $this->db
             ->select('a.*,s.name AS "service_name",sg.group_name as "service_group",r.resource_id,r.resource_name,r.resource_description,'
                 . 'i.ID as "inmate_id",i.inmate_name,i.inmate_classification_level,i.gender')
@@ -400,7 +393,31 @@ class Appointments_model extends EA_Model {
             ->join('service_group sg', 'sg.service_group_id = a.service_group_id')
             ->join('resource r', 'r.resource_id = a.resource_id')
             ->join('inmates i', 'i.ID = a.id_inmate')
-            ->where("DATE_FORMAT(a.start_datetime,'%Y-%m-%d %H:%i') = ", $start_datetime)
+            ->where("DATE_FORMAT(a.start_datetime,'%Y-%m-%d %H:%i:%s') = ", $start_datetime)
+            ->get();
+
+        return $results->result_array();
+    }
+
+    /**
+     * Get by inmate and month - given an inmate ID and a date,
+     *  find all the inmates appointments for that month
+     */
+    public function get_by_inmate_and_month($inmateId, $date = NULL) {
+        if ($date == NULL) {
+            $dateStr = date('Y-m');
+        } else {
+            $dateStr = $date->format('Y-m');
+        }
+
+        $results = $this->db
+            ->select('appointments.*,services.name AS "service_name",resource.resource_id,resource.resource_name,resource.resource_description')
+            ->from('appointments')
+            ->join('services', 'services.id = appointments.id_services')
+            ->join('resource', 'resource.resource_id = appointments.resource_id')
+            ->where("DATE_FORMAT(start_datetime,'%Y-%m')", $dateStr)
+            ->where('appointments.id_inmate', $inmateId)
+            ->order_by('appointments.start_datetime','ASC')
             ->get();
 
         return $results->result_array();
@@ -708,7 +725,7 @@ class Appointments_model extends EA_Model {
     /**
      * Get appointment info by date and inmate
      */
-    public function get_appointment_by_date_inmate($inmate_id, $date = NULL) {
+    public function get_appointments_by_date_inmate($inmate_id, $date = NULL) {
         if ($date == NULL) {
             $date = date('Y-m-d');
         }
@@ -718,7 +735,6 @@ class Appointments_model extends EA_Model {
             ->select('a.*')
             ->from('appointments a')
             ->where($whereArray)
-            ->limit(1)
             ->get();
 
         if ($result->num_rows() == 0)
@@ -727,7 +743,7 @@ class Appointments_model extends EA_Model {
         }
         else
         {
-            return $result->row_array();
+            return $result->result_array;
         }
     }
 }

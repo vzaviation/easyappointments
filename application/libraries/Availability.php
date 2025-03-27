@@ -607,6 +607,25 @@ class Availability {
         return array_values($available_hours);
     }
 
+    public function screen_existing_appointment_times($inmate, $date, $hour_list) {
+        $hour_list_out = $hour_list;
+
+        foreach ($hour_list as $hour_block) {
+            $start_datetime = $date . " " . $hour_block;
+            $appointments = $this->CI->appointments_model->get_by_start_datetime($start_datetime);
+
+            foreach ($appointments as $appt) {
+                if ($appt['id_inmate'] == $inmate['ID']) {
+                    if (($key = array_search($hour_block, $hour_list_out)) !== false) {
+                        unset($hour_list_out[$key]);
+                    }
+                }
+            }
+        }
+
+        return $hour_list_out;
+    }
+
     public function check_resource_availability($resources, $date, $hour_list) {
         $hour_list_out = [];
         $used_resource_ids = [];

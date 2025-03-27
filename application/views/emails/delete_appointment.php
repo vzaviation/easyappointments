@@ -25,8 +25,8 @@
                 <td style="padding: 3px;"><?= $appointment_inmate ?></td>
             </tr>
             <tr>
-                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('provider') ?></td>
-                <td style="padding: 3px;"><?= $appointment_provider ?></td>
+                <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('resource') ?></td>
+                <td style="padding: 3px;"><?= $appointment_resource ?></td>
             </tr>
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('start') ?></td>
@@ -60,6 +60,9 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"></td>
                 <td style="padding: 3px;"></td>
             </tr>
+            <?php
+                if ($visitor_2_name != "N/A") {
+            ?>
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('name') ?></td>
                 <td style="padding: 3px;"><?= $visitor_2_name ?></td>
@@ -80,6 +83,10 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"></td>
                 <td style="padding: 3px;"></td>
             </tr>
+            <?php
+                }
+                if ($visitor_3_name != "N/A") {
+            ?>
             <tr>
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('name') ?></td>
                 <td style="padding: 3px;"><?= $visitor_3_name ?></td>
@@ -96,6 +103,9 @@
                 <td class="label" style="padding: 3px;font-weight: bold;"><?= lang('address') ?></td>
                 <td style="padding: 3px;"><?= $visitor_3_address ?></td>
             </tr>
+            <?php
+                }
+            ?>
         </table>
 
         <h2><?= lang('reason') ?></h2>

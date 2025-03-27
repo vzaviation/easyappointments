@@ -83,6 +83,7 @@ class Appointments extends EA_Controller {
             $privacy_policy_content = $this->settings_model->get_setting('privacy_policy_content');
             $timezones = $this->timezones->to_array();
             $available_inmates = $this->inmates_model->get_available_inmates();
+            $visitors_allowed = $this->settings_model->get_setting('visitors_allowed');
 
             // If an appointment hash is provided then it means that the customer is trying to edit a registered
             // appointment record.
@@ -174,7 +175,8 @@ class Appointments extends EA_Controller {
                 'terms_and_conditions_content' => $terms_and_conditions_content,
                 'display_privacy_policy' => $display_privacy_policy,
                 'privacy_policy_content' => $privacy_policy_content,
-                'timezones' => $timezones
+                'timezones' => $timezones,
+                'visitors_allowed' => $visitors_allowed
             ];
         }
         catch (Exception $exception)
@@ -272,7 +274,8 @@ class Appointments extends EA_Controller {
         //$customer = $this->customers_model->get_row($appointment['id_users_customer']);
         $visitors = $this->visitors_model->get_appointment_visitors($appointment['id']);
 
-        $resource = $this->resources_model->get_full_resource_by_service_group_and_id($appointment['service_group_id'],$appointment['resource_id']);
+        $resourceObj = $this->resources_model->get_full_resource_by_service_group_and_id($appointment['service_group_id'],$appointment['resource_id']);
+        $resource = json_decode(json_encode($resourceObj), true);
 
         $service = $this->services_model->get_row($appointment['id_services']);
 
@@ -323,14 +326,20 @@ class Appointments extends EA_Controller {
 
             $match = false;
 
-            // Pull the list of visitors given the inmate_id
-            $visitors = $this->inmate_visitor_model->get_inmate_visitors($inmate_id);
-            foreach ($visitors as $visitor) {
-                if ( (strtolower($visitor["visitor_first_name"]) == strtolower($first_name)) &&
-                     (strtolower($visitor["visitor_last_name"]) == strtolower($last_name)) ) {
+            // Check global setting to make sure authorization is enabled
+            $visitor_authorization_flag = $this->settings_model->get_setting('visitor_authorization_flag');
+            if ($visitor_authorization_flag == "1") {
+                // Pull the list of visitors given the inmate_id
+                $visitors = $this->inmate_visitor_model->get_inmate_visitors($inmate_id);
+                foreach ($visitors as $visitor) {
+                    if ( (strtolower($visitor["visitor_first_name"]) == strtolower($first_name)) &&
+                        (strtolower($visitor["visitor_last_name"]) == strtolower($last_name)) ) {
                         $match = true;
                         break;
+                    }
                 }
+            } else {
+                $match = true;
             }
 
             $response = [
@@ -356,7 +365,7 @@ class Appointments extends EA_Controller {
     {
         try {
             // pull and return existing appointment visitors for the given date and inmate
-            $appointments = $this->appointments_model->get_appointment_by_date_inmate($inmate_id, $appt_date);
+            $appointments = $this->appointments_model->get_appointments_by_date_inmate($inmate_id, $appt_date);
             return $appointments;
         }
         catch (Exception $exception)
@@ -537,10 +546,10 @@ class Appointments extends EA_Controller {
 
             // Check for existing appointment with this inmate
             // If exists, use that info and tack on new visitors
-            // Otherwise, find first available provider for this inmate's provider block
+            // Otherwise, find first available resource for this inmate's provider block
             $appointment = $this->check_datetime_availability();
 
-            if ((empty($appointment['service_group_id'])) || (empty($appointment['resource_id'])))
+            if (!isset($appointment) || (empty(@$appointment['service_group_id'])) || (empty(@$appointment['resource_id'])))
             {
                 throw new Exception(lang('requested_hour_is_unavailable'));
             }
@@ -647,58 +656,46 @@ class Appointments extends EA_Controller {
     protected function check_datetime_availability()
     {
         $post_data = $this->input->post('post_data');
-
         $appointment = $post_data['appointment'];
-
         $date = date('Y-m-d', strtotime($appointment['start_datetime']));
 
-        // Get any existing appointment with the inmate
+        // Get service_group / resource information
+        $service_id = $appointment['id_services'];
         $inmate_id = $appointment['id_inmate'];
-        $existing_appt = $this->fetch_appointments_by_date_for_inmate($inmate_id,$date);
-        if (! empty($existing_appt)) {
-            return $existing_appt;
+        if ($service_id != VISITATION_SERVICE_ID) {
+            // Get the valid resources for the service type
+            $resources = $this->search_resources_by_service($service_id);
         } else {
-            if ((!isset($appointment['resource_id'])) ||
-                ($appointment['resource_id'] == NULL) ||
-                ($appointment['resource_id'] === ANY_PROVIDER)) {
-                $service_id = $appointment['id_services'];
-                $resources = $this->search_resources_by_inmate($inmate_id, $service_id);
+            // Get the valid resources (and associated data) for this inmate
+            $resources = $this->search_resources_by_inmate($inmate_id);
+        }
 
-                // Check for existing appointments on this date at this time
-                // Grab the first provider that is not already spoken for
-                $resources_used = $this->search_resources_in_use($appointment['start_datetime']);
-                foreach ($resources as $searchResource) {
-                    if (!in_array($searchResource['resource_id'], $resources_used, true)) {
-                        $appointment['service_group_id'] = $searchResource['service_group_id'];
-                        $appointment['resource_id'] = $searchResource['resource_id'];
-                        break;
-                    }
-                }
-
-                return $appointment;
-            }
-
-            $service = $this->services_model->get_row($appointment['id_services']);
-
-            $exclude_appointment_id = isset($appointment['id']) ? $appointment['id'] : NULL;
-
-            $resource = $this->resources_model->get_full_resource_by_service_group_and_id($appointment['service_group_id'],$appointment['resource_id']);
-
-            $available_hours = $this->availability->get_available_hours($date, $service, $resource, $exclude_appointment_id);
-
-            $is_still_available = FALSE;
-
-            $appointment_hour = date('H:i', strtotime($appointment['start_datetime']));
-
-            foreach ($available_hours as $available_hour) {
-                if ($appointment_hour === $available_hour) {
-                    $is_still_available = TRUE;
+        // Remove this for now
+        // Get any existing appointment with the inmate
+//        $existing_appts = $this->fetch_appointments_by_date_for_inmate($inmate_id,$date);
+//        if (! empty($existing_appts)) {
+//            return $existing_appt;
+//        } else {
+            // Check for existing appointments on this date at this time
+            // Grab the first resource that is not already spoken for
+            // If there are no resources left at this time, time is no longer available
+            $resources_used = $this->search_resources_in_use($appointment['start_datetime']);
+            $res_assigned = false;
+            foreach ($resources as $searchResource) {
+                if (!in_array($searchResource['resource_id'], $resources_used, true)) {
+                    $appointment['service_group_id'] = $searchResource['service_group_id'];
+                    $appointment['resource_id'] = $searchResource['resource_id'];
+                    $res_assigned = true;
                     break;
                 }
             }
 
-            return $is_still_available ? $appointment : NULL;
-        }
+            if (!$res_assigned) {
+                return NULL;
+            } else {
+                return $appointment;
+            }
+//        }
     }
 
     public function ajax_get_unavailable_dates()
@@ -718,6 +715,8 @@ class Appointments extends EA_Controller {
 
             $default_timezone = $this->settings_model->get_setting('default_timezone');
             $inmate_restricted_age = $this->settings_model->get_setting('inmate_restricted_age');
+            $inmate_visitors_per_day = $this->settings_model->get_setting('inmate_visitors_per_day');
+            $inmate_visits_per_week = $this->settings_model->get_setting('inmate_visits_per_week');
             $visitors_allowed = $this->settings_model->get_setting('visitors_allowed');
 
             //  Attorney Visits - $service_id = ATTORNEY_SERVICE_ID
@@ -762,7 +761,7 @@ class Appointments extends EA_Controller {
                 }
                 
                 // Get the appointment data of any existing visits with this inmate
-                $appointments = $this->inmates_model->get_inmate_appointments($inmate_id);
+                $appointments = $this->appointments_model->get_by_inmate_and_month($inmate_id,$selected_date);
                 foreach ($appointments as $appt) {
                     $appointment_ids[] = $appt["id"];
                 }
@@ -816,18 +815,35 @@ class Appointments extends EA_Controller {
                 if (empty($available_hours)) {
                     $unavailable_dates[] = $loop_date->format('Y-m-d');
                 } else {
-                    // Check if the inmate already has visitors_allowed appointment-visitor slots filled up for the day
-                    // If so, no go (for non-attorney visits)
+                    // For inmate_visitation, this date may become unavailable for two reasons:
+                    //  1. Inmate already has met inmate_visits_per_week quota
+                    //  2. If inmate_visitors_per_day > 0,
+                    //     Check if the inmate already has visitors_allowed appointment-visitor slots filled up for the day
+                    //     If so, no go (for non-attorney visits)
                     if ($service_id == VISITATION_SERVICE_ID) {
-                        $visitorSlotsForDate = 0;
-                        foreach ($appointments as $appt) {
-                            $startDate = new DateTime($appt["start_datetime"]);
-                            if ($startDate->format('Y-m-d') == $loop_date->format('Y-m-d')) {
-                                $visitorSlotsForDate++;
+                        if ($inmate_visitors_per_day > 0) {
+                            $visitorSlotsForDate = 0;
+                            foreach ($appointments as $appt) {
+                                $startDate = new DateTime($appt["start_datetime"]);
+                                if ($startDate->format('Y-m-d') == $loop_date->format('Y-m-d')) {
+                                    $visitorSlotsForDate++;
+                                }
                             }
-                        }
-                        if ($visitorSlotsForDate >= $visitors_allowed) {
-                            $unavailable_dates[] = $loop_date->format('Y-m-d');
+                            if ($visitorSlotsForDate >= $inmate_visitors_per_day) {
+                                $unavailable_dates[] = $loop_date->format('Y-m-d');
+                            }
+                        } else {
+                            // Check on how many appointments in the current week (Mon - Sun)
+                            $visitorSlotsForWeek = 0;
+                            foreach ($appointments as $appt) {
+                                $startDate = new DateTime($appt["start_datetime"]);
+                                if ($startDate->format('W') == $loop_date->format('W')) {
+                                    $visitorSlotsForWeek++;
+                                }
+                            }
+                            if ($visitorSlotsForWeek >= $inmate_visits_per_week) {
+                                $unavailable_dates[] = $loop_date->format('Y-m-d');
+                            }
                         }
                     }
                 }
@@ -915,9 +931,11 @@ class Appointments extends EA_Controller {
 
             //    We now should have *all* available hour slots
             //    Remove slots based on:
-            //    1:  Any special handling (such as inmate classification conflicts with existing appointments from other
+            //    1:  Check for an existing appointment for this inmate at this time
+            //    2:  Any special handling (such as inmate classification conflicts with existing appointments from other
             //        inmates
-            //    2:  Make sure all resources are not engaged for each available_hour period
+            //    3:  Make sure all resources are not engaged for each available_hour period
+            $response = $this->availability->screen_existing_appointment_times($inmate,$selected_date,$response);
             $response = $this->availability->special_hours_handling($inmate,$selected_date,$response);
             $response = $this->availability->check_resource_availability($resources,$selected_date,$response);
         }
@@ -1003,7 +1021,7 @@ class Appointments extends EA_Controller {
 
     protected function search_resources_in_use($appointment_start_time)
     {
-        $available_resources = $this->appointments_model->get_by_date($appointment_start_time);
+        $available_resources = $this->appointments_model->get_by_start_datetime($appointment_start_time);
         $resource_list = [];
 
         foreach ($available_resources as $resource)

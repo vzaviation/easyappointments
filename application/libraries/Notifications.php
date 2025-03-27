@@ -52,16 +52,17 @@ class Notifications {
      *
      * @param array $appointment Appointment record.
      * @param array $service Service record.
-     * @param array $resource Resource record.
+     * @param stdClass $resourceObj Resource record.
      * @param array $vistors Visitors records.
      * @param array $settings Required settings for the notification content.
      * @param bool|false $manage_mode
      */
-    public function notify_appointment_saved($appointment, $service, $resource, $visitors, $settings, $manage_mode = FALSE)
+    public function notify_appointment_saved($appointment, $service, $resourceObj, $visitors, $settings, $manage_mode = FALSE)
     {
         try
         {
             $email = new EmailClient($this->CI, $this->CI->config->config);
+            $resource = json_decode(json_encode($resourceObj), true);
 
             foreach ($visitors as $visitor) {
                 if (isset($visitor['email']) && $visitor['email'] != "") {

@@ -777,7 +777,7 @@
                     <div class="vl_information">
                     1. The inmate designates five (5) individuals who are authorized to visit.  Minors fifteen (15) years or younger are not required to be listed.  All visitors sixteen (16) years or older must show some form of picture identification.  Minors under sixteen (16) years of age must be accompanied by an adult.
                     <br/><br/>
-                    2. Only three (3) people from the inmate's list may be in the visitation room at any one time.
+                    2. Only <?= @$visitors_allowed ?> people from the inmate's list may be in the visitation room at any one time.
                     </div>
 
                     <div class="row frame-content" id="visitor-1-basic-info">
