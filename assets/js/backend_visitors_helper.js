@@ -184,9 +184,6 @@
             const checked = $(this).is(':checked');
             const visitor_id = $(this).data('id');
 
-            // Save the flag notes here also, if any
-            const flag_notes = $('[name="visitor-flag-notes-' + visitor_id + '"]').val();
-
             // Call to update the DB
             var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_set_visitor_flag_visitors';
 
@@ -194,7 +191,7 @@
                 csrfToken: GlobalVariables.csrfToken,
                 visitor_id: visitor_id,
                 checked: checked,
-                flag_notes: flag_notes
+                user_id: GlobalVariables.user.id
             };
     
             $.post(url, data)
@@ -210,6 +207,14 @@
                     const flagCBname = "visitor-flag-check-" + visitor_id;
                     const flagCBchecked = (visitor.flag && visitor.flag == 1) ? true : false;
                     $('[name="' + flagCBname + '"]').prop('checked',flagCBchecked);
+
+                    const flaglastUpdateName = "flag-last-update-name-" + visitor_id;
+                    const lastUpdateName = (visitor.flag_last_update_user_name) ? "Last Updated By: " + visitor.flag_last_update_user_name : "Last Updated By: N/A";
+                    $('[name="' + flaglastUpdateName + '"]').text(lastUpdateName);
+                    const flaglastUpdateDate = "flag-last-update-date-" + visitor_id;
+                    const lastUpdateDate = (visitor.flag_last_update_date) ? "Last Updated Date: " + visitor.flag_last_update_date : "Last Updated Date: N/A";
+                    $('[name="' + flaglastUpdateDate + '"]').text(lastUpdateDate);
+
                 }.bind(this));
             //
         });
@@ -227,7 +232,8 @@
             var data = {
                 csrfToken: GlobalVariables.csrfToken,
                 visitor_id: visitor_id,
-                flag_notes: flag_notes
+                flag_notes: flag_notes,
+                user_id: GlobalVariables.user.id
             };
     
             $.post(url, data)
@@ -243,6 +249,13 @@
                     const flagCBname = "visitor-flag-check-" + visitor_id;
                     const flagCBchecked = (visitor.flag && visitor.flag == 1) ? true : false;
                     $('[name="' + flagCBname + '"]').prop('checked',flagCBchecked);
+
+                    const flaglastUpdateName = "flag-last-update-name-" + visitor_id;
+                    const lastUpdateName = (visitor.flag_last_update_user_name) ? "Last Updated By: " + visitor.flag_last_update_user_name : "Last Updated By: N/A";
+                    $('[name="' + flaglastUpdateName + '"]').text(lastUpdateName);
+                    const flaglastUpdateDate = "flag-last-update-date-" + visitor_id;
+                    const lastUpdateDate = (visitor.flag_last_update_date) ? "Last Updated Date: " + visitor.flag_last_update_date : "Last Updated Date: N/A";
+                    $('[name="' + flaglastUpdateDate + '"]').text(lastUpdateDate);
                 }.bind(this));
             //
         });
@@ -376,42 +389,43 @@
 
         $('#visitor-appointments').empty();
 
-        if (!visitor.appointments.length) {
+        if ((!visitor.appointments) || (!visitor.appointments.length)) {
             $('<p/>', {
                 'text': EALang.no_records_found
             })
                 .appendTo('#visitor-appointments');
+        } else {
+
+            visitor.appointments.forEach(function (appointment) {
+                var start = GeneralFunctions.formatDate(Date.parse(appointment.start_datetime), GlobalVariables.dateFormat, true);
+                var end = GeneralFunctions.formatDate(Date.parse(appointment.end_datetime), GlobalVariables.dateFormat, true);
+
+                $('<div/>', {
+                    'class': 'appointment-row',
+                    'name': 'appointment-row-' + appointment.id,
+                    'data-id': appointment.id,
+                    'html': [
+                        // Time and Service
+                        $('<div/>', {
+                            'text': start + ' to ' + end
+                        }),
+                        $('<div/>', {
+                            'text': appointment.service_name
+                        }),
+                        // Inmate
+                        $('<div/>', {
+                            'style': 'padding-left:14px;font-weight:bold;',
+                            'text': 'Inmate: ' + appointment.inmate_name
+                        }),
+                        // Resource
+                        $('<div/>', {
+                            'style': 'padding-left:14px;font-weight:bold;',
+                            'text': 'Phone: ' + appointment.resource_name
+                        })
+                    ]
+                }).appendTo('#visitor-appointments');
+            });
         }
-
-        visitor.appointments.forEach(function (appointment) {
-            var start = GeneralFunctions.formatDate(Date.parse(appointment.start_datetime), GlobalVariables.dateFormat, true);
-            var end = GeneralFunctions.formatDate(Date.parse(appointment.end_datetime), GlobalVariables.dateFormat, true);
-
-            $('<div/>', {
-                'class': 'appointment-row',
-                'name': 'appointment-row-' + appointment.id,
-                'data-id': appointment.id,
-                'html': [
-                    // Time and Service
-                    $('<div/>', {
-                        'text': start + ' to ' + end
-                    }),
-                    $('<div/>', {
-                        'text': appointment.service_name
-                    }),
-                    // Inmate
-                    $('<div/>', {
-                        'style': 'padding-left:14px;font-weight:bold;',
-                        'text': 'Inmate: ' + appointment.inmate_name
-                    }),
-                    // Provider
-                    $('<div/>', {
-                        'style': 'padding-left:14px;font-weight:bold;',
-                        'text': 'Phone: ' + appointment.provider_first_name + " " + appointment.provider_last_name
-                    })
-                ]
-            }).appendTo('#visitor-appointments');
-        });
     };
 
     /**
@@ -556,6 +570,7 @@
             const vIDState = visitor.id_state ? visitor.id_state : "N/A";
             const vIDImageSrc = visitor.id_image_filename ? '/storage/uploads/user_doc/' + visitor.id_image_filename : '/assets/img/no-ID.jpg';
             const vFlagDate = visitor.flag_date ? Date.parse(visitor.flag_date).toString('MM/dd/yyyy') : "N/A";
+            const luFlagDate = visitor.flag_last_update_date ? Date.parse(visitor.flag_last_update_date).toString('MM/dd/yyyy HH:mm:ss') : "N/A";
 
             // Create sections for the attorney info, if they exist
             let vAttorneyInfo = "<br/>";
@@ -658,6 +673,18 @@
                                                 'data-id': visitor_id,
                                                 'type': 'button',
                                                 'value': 'Save Notes'
+                                            }),
+                                            $('<br/>'),
+                                            $('<span/>', {
+                                                'name': 'visitor-flag-last-update-name-' + visitor_id,
+                                                'style': 'vertical-align:top',
+                                                'text': 'Last Updated By: ' + visitor.flag_last_update_user_name
+                                            }),
+                                            $('<br/>'),
+                                            $('<span/>', {
+                                                'name': 'visitor-flag-last-update-date-' + visitor_id,
+                                                'style': 'vertical-align:top',
+                                                'text': 'Last Updated Date: ' + luFlagDate
                                             }),
                                             $('<br/>'),
                                             $('<div/>', {

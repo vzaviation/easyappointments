@@ -112,6 +112,16 @@
                                     <?= lang('company_link_hint') ?>
                                 </span>
                             </div>
+
+                            <div class="form-group">
+                                <label for="default-timezone">
+                                    <?= lang('default_timezone') ?>
+                                </label>
+                                <?= render_timezone_dropdown('id="default-timezone" class="form-control required"') ?>
+                                <span class="form-text text-muted">
+                                    <?= lang('default_timezone_hint') ?>
+                                </span>
+                            </div>
                             <div class="form-group">
                                 <label for="date-format">
                                     <?= lang('date_format') ?>

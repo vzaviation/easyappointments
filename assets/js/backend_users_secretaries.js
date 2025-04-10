@@ -154,6 +154,7 @@
             var secretary = {
                 first_name: $('#secretary-first-name').val(),
                 last_name: $('#secretary-last-name').val(),
+                badge_number: $('#agency-staff-badge-number').val(),
                 email: $('#secretary-email').val(),
                 mobile_number: $('#secretary-mobile-number').val(),
                 phone_number: $('#secretary-phone-number').val(),
@@ -356,6 +357,7 @@
         $('#secretary-id').val(secretary.id);
         $('#secretary-first-name').val(secretary.first_name);
         $('#secretary-last-name').val(secretary.last_name);
+        $('#agency-staff-badge-number').val(secretary.badge_number);
         $('#secretary-email').val(secretary.email);
         $('#secretary-mobile-number').val(secretary.mobile_number);
         $('#secretary-phone-number').val(secretary.phone_number);

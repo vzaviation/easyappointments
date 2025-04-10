@@ -1,9 +1,4 @@
-<script src="<?= asset_url('assets/js/backend_settings_system.js') ?>"></script>
-<script src="<?= asset_url('assets/js/backend_settings_user.js') ?>"></script>
-<script src="<?= asset_url('assets/js/backend_settings.js') ?>"></script>
-<script src="<?= asset_url('assets/js/working_plan.js') ?>"></script>
-<script src="<?= asset_url('assets/ext/jquery-ui/jquery-ui-timepicker-addon.min.js') ?>"></script>
-<script src="<?= asset_url('assets/ext/jquery-jeditable/jquery.jeditable.min.js') ?>"></script>
+<script src="<?= asset_url('assets/js/backend_service_group.js') ?>"></script>
 <script>
     var GlobalVariables = {
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
@@ -13,6 +8,7 @@
         timeFormat: <?= json_encode($time_format) ?>,
         userSlug: <?= json_encode($role_slug) ?>,
         timezones: <?= json_encode($timezones) ?>,
+        serviceGroups: <?= json_encode($service_groups) ?>,
         settings: {
             system: <?= json_encode($system_settings) ?>,
             user: <?= json_encode($user_settings) ?>
@@ -27,7 +23,7 @@
     };
 
     $(function () {
-        BackendSettings.initialize(true);
+        BackendServiceGroup.initialize(true, GlobalVariables);
     });
 </script>
 <script type="text/javascript">
@@ -107,6 +103,7 @@
                                     <th><?= lang('service_group_name') ?></th>
                                     <th><?= lang('description') ?></th>
                                     <th><?= lang('service_group_service') ?></th>
+                                    <th><?= lang('timezone') ?></th>
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
@@ -128,6 +125,9 @@
                                                 }
                                                 ?>
                                             </select>
+                                        </td>
+                                        <td>
+                                            <?= render_timezone_dropdown('id="timezone_0" ') ?>
                                         </td>
                                         <td>
                                             <div style="width:150px;">
@@ -158,8 +158,12 @@
                                             </select>
                                         </td>
                                         <td>
+                                            <?php $tz_attr = 'id="timezone_' . $service_group['service_group_id'] . '" name="timezone_' . $service_group['service_group_id'] . '" ' ?>
+                                            <?= render_timezone_dropdown($tz_attr) ?>
+                                        </td>
+                                        <td>
                                             <button type="submit" id="update_button" name="update" class="btn btn-secondary btn-sm mb-2" data-id="<?= @$service_group['service_group_id'] ?>">Update</button>
-                                            <button type="submit" id="delete_button" name="delete" class="btn btn-warning btn-sm mb-2" data-id="<?= @$service_group['service_group_id'] ?>">Delete</button>
+<!--                                            <button type="submit" id="delete_button" name="delete" class="btn btn-warning btn-sm mb-2" data-id="<?= @$service_group['service_group_id'] ?>">Delete</button>  -->
                                         </td>
                                     </tr>
                                 <?php

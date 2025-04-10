@@ -776,7 +776,7 @@ class Appointments extends EA_Controller {
     
             // Get the service record.
             $service = $this->services_model->get_row($service_id);
-            $today_date = new DateTime(date('Y-m-d 00:00:00'), new DateTimeZone($default_timezone));
+            $today_date = new DateTime("now", new DateTimeZone($default_timezone));
 
             for ($i = 1; $i <= $number_of_days_in_month; $i++)
             {

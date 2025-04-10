@@ -29,7 +29,7 @@
             document.onmousemove = resetTimer;
             document.onmousedown = resetTimer; // touchscreen presses
             document.ontouchstart = resetTimer;
-            document.onclick = resetTimer;  
+            document.onclick = resetTimer;
             document.onkeydown = resetTimer;
 
             function resetForm() {
@@ -475,7 +475,7 @@
     </script>
 
     <style>
-            #loading {
+        #loading {
         position: fixed;
         display: flex;
         justify-content: center;

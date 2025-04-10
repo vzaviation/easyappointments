@@ -57,6 +57,19 @@ class Resources_model extends EA_Model {
         return $resources;
     }
 
+    function get_resources_by_service_group_id($service_group_id)
+    {
+        $this->db->where('esg.service_group_id', $service_group_id);
+        $this->db->distinct();
+        $this->db->select('esg.service_id,es.name as "service_name",es.duration,er.resource_id,er.resource_name,er.resource_description');
+        $this->db->from('ea_service_group esg');
+        $this->db->join('ea_services es','es.id = esg.service_id','left');
+        $this->db->join('ea_service_group_resource esgr','esgr.service_group_id = esg.service_group_id','left');
+        $this->db->join('ea_resource er','er.resource_id = esgr.resource_id','left');
+        $resources = $this->db->get()->result_array();
+        return $resources;
+    }
+
     // Checks for existing resource_id - if already in table, does update
     // If new, does insert
     function update_resource($record)

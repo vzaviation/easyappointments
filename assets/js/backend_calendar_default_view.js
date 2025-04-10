@@ -233,14 +233,14 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             var data;
 
             if (lastFocusedEventData.data.workingPlanException) {
-                var providerId = $('#select-filter-item').val();
+                var resourceId = $('#select-filter-item').val();
 
-                var provider = GlobalVariables.availableProviders.find(function (availableProvider) {
-                    return Number(availableProvider.id) === Number(providerId);
+                var resource = GlobalVariables.availableResources.find(function (availableResource) {
+                    return Number(availableResource.resource_id) === Number(resourceId);
                 });
 
-                if (!provider) {
-                    throw new Error('Provider could not be found: ' + providerId);
+                if (!resource) {
+                    throw new Error('Resource could not be found: ' + resourceId);
                 }
 
                 var successCallback = function () {
@@ -249,11 +249,11 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     var workingPlanExceptions = JSON.parse(provider.settings.working_plan_exceptions) || {};
                     delete workingPlanExceptions[date];
 
-                    for (var index in GlobalVariables.availableProviders) {
-                        var availableProvider = GlobalVariables.availableProviders[index];
+                    for (var index in GlobalVariables.availableResources) {
+                        var availableResource = GlobalVariables.availableResources[index];
 
-                        if (Number(availableProvider.id) === Number(providerId)) {
-                            availableProvider.settings.working_plan_exceptions = JSON.stringify(workingPlanExceptions);
+                        if (Number(availableResource.resource_id) === Number(resourceId)) {
+                            availableResource.working_plan_exceptions = JSON.stringify(workingPlanExceptions);
                             break;
                         }
                     }
@@ -342,14 +342,14 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     editable: true,
                 });
 
-                var providerId = $('#select-filter-item').val();
+                var resourceId = $('#select-filter-item').val();
 
-                var provider = GlobalVariables.availableProviders.find(function (availableProvider) {
-                    return Number(availableProvider.id) === Number(providerId);
+                var resource = GlobalVariables.availableResources.find(function (availableResource) {
+                    return Number(availableResource.resource_id) === Number(resourceId);
                 });
 
-                if (provider && provider.timezone) {
-                    $('.provider-timezone').text(GlobalVariables.timezones[provider.timezone]);
+                if (resource && resource.timezone) {
+                    $('.resource-timezone').text(GlobalVariables.timezones[resource.timezone]);
                 }
 
                 // If the user has already the sync enabled then apply the proper style changes.
@@ -500,10 +500,10 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 'html': [
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
-                        'text': EALang.provider
+                        'text': EALang.resource
                     }),
                     $('<span/>', {
-                        'text': event.data ? event.data.provider.first_name + ' ' + event.data.provider.last_name : '-'
+                        'text': event.data ? event.data.resource.resource_name : "-"
                     }),
                     $('<br/>'),
 
@@ -603,16 +603,16 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     $('<br/>'),
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
-                        'text': EALang.provider
+                        'text': EALang.resource
                     }),
-                    GeneralFunctions.renderMapIcon(event.data.provider),
+                    GeneralFunctions.renderMapIcon(event.data.resource),
                     $('<span/>', {
-                        'text': event.data.provider.first_name + ' ' + event.data.provider.last_name
+                        'text': event.data.resource.resource_name
                     }),
                     $('<br/>'),
                     $('<strong/>', {
                         'class': 'd-inline-block mr-2',
-                        'text': EALang.customer
+                        'text': EALang.visitor
                     }),
                     GeneralFunctions.renderMapIcon(event.data.customer),
                     $('<span/>', {
@@ -750,7 +750,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
             // Must delete the following because only appointment data should be provided to the AJAX call.
             delete appointment.customer;
-            delete appointment.provider;
+            delete appointment.resource;
             delete appointment.service;
 
             // Success callback
@@ -899,7 +899,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
             // Must delete the following because only appointment data should be provided to the ajax call.
             delete appointment.customer;
-            delete appointment.provider;
+            delete appointment.resource;
             delete appointment.service;
 
             appointment.start_datetime = Date.parseExact(
@@ -1138,16 +1138,16 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 var calendarView = $('#calendar').fullCalendar('getView');
 
                 if (filterType === FILTER_TYPE_PROVIDER && calendarView.name !== 'month') {
-                    var provider = GlobalVariables.availableProviders.find(function (availableProvider) {
-                        return Number(availableProvider.id) === Number(recordId);
+                    var resource = GlobalVariables.availableResources.find(function (availableResource) {
+                        return Number(availableResource.resource_id) === Number(recordId);
                     });
 
-                    if (!provider) {
-                        throw new Error('Provider was not found.');
+                    if (!resource) {
+                        throw new Error('Resource was not found.');
                     }
 
-                    var workingPlan = JSON.parse(provider.settings.working_plan);
-                    var workingPlanExceptions = JSON.parse(provider.settings.working_plan_exceptions);
+                    var workingPlan = JSON.parse(resource.settings.working_plan);
+                    var workingPlanExceptions = JSON.parse(resource.settings.working_plan_exceptions);
                     var unavailabilityEvent;
                     var viewStart;
                     var viewEnd;
@@ -1192,7 +1192,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                                     data: {
                                         date: weekdayDate,
                                         workingPlanException: workingPlanExceptions[weekdayDate],
-                                        provider: provider
+                                        resource: resource
                                     }
                                 };
 
@@ -1312,7 +1312,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                                         data: {
                                             date: weekdayDate,
                                             workingPlanException: workingPlanExceptions[weekdayDate],
-                                            provider: provider
+                                            resource: resource
                                         }
                                     };
 
@@ -1494,12 +1494,12 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     $('#select-service').val(service.id).trigger('change');
 
                 } else {
-                    var provider = GlobalVariables.availableProviders.find(function (provider) {
-                        return Number(provider.id) === Number($('#select-filter-item').val());
+                    var resource = GlobalVariables.availableResources.find(function (resource) {
+                        return Number(resource.resource_id) === Number($('#select-filter-item').val());
                     });
 
                     service = GlobalVariables.availableServices.find(function (service) {
-                        return provider.services.indexOf(service.id) !== -1
+                        return resource.services.indexOf(service.id) !== -1
                     });
 
                     if (service) {
@@ -1512,15 +1512,15 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
                     $('#select-service').trigger('change');
 
-                    if (provider) {
-                        $('#select-provider').val(provider.id);
+                    if (resource) {
+                        $('#select-resource').val(resource.resource_id);
                     }
 
-                    if (!$('#select-provider').val()) {
-                        $('#select-provider option:first').prop('selected', true);
+                    if (!$('#select-resource').val()) {
+                        $('#select-resource option:first').prop('selected', true);
                     }
 
-                    $('#select-provider').trigger('change');
+                    $('#select-resource').trigger('change');
                 }
 
                 // Preselect time
@@ -1585,24 +1585,6 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 'label': EALang.services,
                 'type': 'services-group',
             }).append(services)
-                .appendTo('#select-filter-item');
-        }
-
-        if (GlobalVariables.availableProviders.length > 0) {
-            $('<optgroup/>', {
-                'label': EALang.providers,
-                'type': 'providers-group',
-                'html': GlobalVariables.availableProviders.map(function (availableProvider) {
-                    var hasGoogleSync = availableProvider.settings.google_sync === '1' ? 'true' : 'false';
-
-                    return $('<option/>', {
-                        'value': availableProvider.id,
-                        'type': FILTER_TYPE_PROVIDER,
-                        'google-sync': hasGoogleSync,
-                        'text': availableProvider.first_name + ' ' + availableProvider.last_name
-                    })
-                })
-            })
                 .appendTo('#select-filter-item');
         }
 

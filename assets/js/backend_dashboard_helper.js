@@ -34,7 +34,7 @@
      */
     DashboardHelper.prototype.servicesSelect = function () {
         var instance = this;
-        // Set up a provider select object
+        // Set up a service select object
         let serviceSelect = "<select id='services'>";
         serviceSelect += "<option value='-1'>-- Please select a service --</option>";
         GlobalVariables.services.forEach(function(service) {
@@ -46,19 +46,19 @@
     };
 
     /*
-     *  Create a provider select object
+     *  Create a resource select object
      */
-    DashboardHelper.prototype.providerSelect = function () {
+    DashboardHelper.prototype.resourceSelect = function () {
         var instance = this;
-        // Set up a provider select object
-        let provSelect = "<select id='providers'>";
-        provSelect += "<option value='-1'>-- Please select a provider --</option>";
-        GlobalVariables.providers.forEach(function(prov) {
-            let option = "<option value='" + prov.provider_id + "'>" + prov.provider_first_name + " " + prov.provider_last_name + "</option>";
-            provSelect +=  option;
+        // Set up a resource select object
+        let resSelect = "<select id='resources'>";
+        resSelect += "<option value='-1'>-- Please select a resource --</option>";
+        GlobalVariables.resources.forEach(function(res) {
+            let option = "<option value='" + res.resource_id + "'>" + res.resource_name + "</option>";
+            resSelect +=  option;
         });
-        provSelect += "</select>";
-        return provSelect;
+        resSelect += "</select>";
+        return resSelect;
     };
 
     /*
@@ -165,9 +165,9 @@
                     $( "#appt-datepicker" ).datepicker();
                     $( "#start-timepicker" ).timepicker();
                     $( "#end-timepicker" ).timepicker();
-                    const optText = appointment.provider_first_name.trim() + " " + appointment.provider_last_name.trim();
-                    $("select#providers option").filter(function() {
-                        return this.text == optText;
+//                    const optText = appointment.resource_name.trim();
+                    $("select#resources option").filter(function() {
+                        return this.value == appointment.resource_id;
                     }).attr('selected', true);
                 }
             });
@@ -339,7 +339,7 @@
             $('#add-appt-start-timepicker').timepicker();
             $('#add-appt-end-timepicker').timepicker();
             $('#add-appt-services').append(this.servicesSelect());
-            $('#add-appt-providers').append(this.providerSelect());
+            $('#add-appt-resources').append(this.resourceSelect());
             $('#add-appt-inmates').append(this.inmateSelect());
             $('#add-appt-select-existing-visitor').append(this.visitorSelect())
 
@@ -563,7 +563,7 @@
                     // Provider
                     $('<div/>', {
                         'style': 'padding-left:14px;font-weight:bold;',
-                        'text': 'Phone: ' + appointment.provider_first_name + " " + appointment.provider_last_name
+                        'text': 'Phone: ' + appointment.resource_name
                     }).append(canceledDiv)
                 ]
             })
@@ -587,9 +587,9 @@
                     $( "#appt-datepicker" ).datepicker();
                     $( "#start-timepicker" ).timepicker();
                     $( "#end-timepicker" ).timepicker();
-                    let optText = appointment.provider_first_name + " " + appointment.provider_last_name;
-                    $("select#providers option").filter(function() {
-                        return this.text == optText;
+//                    let optText = appointment.resource_name;
+                    $("select#resources option").filter(function() {
+                        return this.value == appointment.resource_id;
                     }).attr('selected', true);
                 }
             });
@@ -667,7 +667,7 @@
                 // Providers
                 $('<div/>', {
                     'text': 'Phone: '
-                }).append(this.providerSelect()),
+                }).append(this.resourceSelect()),
                 $('<div/>', {
                     'text': (appointment.canceled) ? 'Canceled Date: ' + Date.parse(appointment.canceled).toString('MM/dd/yyyy') : 'Canceled Date: N/A'
                 }),

@@ -13,7 +13,7 @@
         next_date: <?= json_encode($next_date) ?>,
         appointments: <?= json_encode($appointments) ?>,
         sel_appt: <?= json_encode($sel_appt) ?>,
-        providers: <?= json_encode($providers) ?>,
+        resources: <?= json_encode($resources) ?>,
         services: <?= json_encode($services) ?>,
         inmates: <?= json_encode($inmates) ?>,
         visitors: <?= json_encode($visitors) ?>,
@@ -81,7 +81,7 @@
                         <input id="add-appt-start-timepicker" type="text" />
                         <div id="add-appt-inmates">Inmate:<br/>
                         </div>
-                        <div id="add-appt-providers">Phone:<br/>
+                        <div id="add-appt-resources">Phone:<br/>
                         </div>
                         <br/>
                         <div id="add-appointment-details-buttons">

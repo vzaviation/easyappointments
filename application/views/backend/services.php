@@ -119,9 +119,10 @@
                         <input id="service-duration" class="form-control required" type="number" min="15">
                     </div>
 
+                    <!--
                     <div class="form-group">
                         <label for="service-price">
-                            <?= lang('price') ?>
+                            <= lang('price') ?>
                             <span class="text-danger">*</span>
                         </label>
                         <input id="service-price" class="form-control required">
@@ -129,37 +130,37 @@
 
                     <div class="form-group">
                         <label for="service-currency">
-                            <?= lang('currency') ?>
+                            <= lang('currency') ?>
 
                         </label>
                         <input id="service-currency" class="form-control" maxlength="32">
                     </div>
-
+                    -->
                     <div class="form-group">
                         <label for="service-category">
                             <?= lang('category') ?>
                         </label>
                         <select id="service-category" class="form-control"></select>
                     </div>
-
+                    <!--
                     <div class="form-group">
                         <label for="service-availabilities-type">
-                            <?= lang('availabilities_type') ?>
+                            <= lang('availabilities_type') ?>
 
                         </label>
                         <select id="service-availabilities-type" class="form-control">
                             <option value="<?= AVAILABILITIES_TYPE_FLEXIBLE ?>">
-                                <?= lang('flexible') ?>
+                                <= lang('flexible') ?>
                             </option>
                             <option value="<?= AVAILABILITIES_TYPE_FIXED ?>">
-                                <?= lang('fixed') ?>
+                                <= lang('fixed') ?>
                             </option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="service-attendants-number">
-                            <?= lang('attendants_number') ?>
+                            <= lang('attendants_number') ?>
                             <span class="text-danger">*</span>
                         </label>
                         <input id="service-attendants-number" class="form-control required" type="number" min="1">
@@ -167,12 +168,12 @@
 
                     <div class="form-group">
                         <label for="service-location">
-                            <?= lang('location') ?>
+                            <= lang('location') ?>
 
                         </label>
                         <input id="service-location" class="form-control">
                     </div>
-
+                    -->
                     <div class="form-group">
                         <label for="service-description">
                             <?= lang('description') ?>

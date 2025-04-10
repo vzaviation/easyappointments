@@ -68,59 +68,6 @@ window.BackendUsers = window.BackendUsers || {};
             $('.nav-item-admins').show();
         }
 
-        // Fill the services and providers list boxes.
-        GlobalVariables.services.forEach(function (service) {
-            $('<div/>', {
-                'class': 'checkbox',
-                'html': [
-                    $('<div/>', {
-                        'class': 'checkbox form-check',
-                        'html': [
-                            $('<input/>', {
-                                'class': 'form-check-input',
-                                'type': 'checkbox',
-                                'data-id': service.id,
-                                'prop': {
-                                    'disabled': true
-                                }
-                            }),
-                            $('<label/>', {
-                                'class': 'form-check-label',
-                                'text': service.name,
-                                'for': service.id
-                            })
-                        ]
-                    })
-                ]
-            })
-                .appendTo('#provider-services');
-        });
-
-        GlobalVariables.providers.forEach(function (provider) {
-            $('<div/>', {
-                'class': 'checkbox',
-                'html': [
-                    $('<div/>', {
-                        'class': 'checkbox form-check',
-                        'html': [
-                            $('<input/>', {
-                                'class': 'form-check-input',
-                                'type': 'checkbox',
-                                'data-id': provider.id,
-                                'checked': true
-                            }),
-                            $('<label/>', {
-                                'class': 'form-check-label',
-                                'text': provider.first_name + ' ' + provider.last_name,
-                                'for': provider.id
-                            })
-                        ]
-                    })
-                ]
-            })
-                .appendTo('#secretary-providers');
-        });
-
         // Bind event handlers.
         if (defaultEventHandlers) {
             bindEventHandlers();

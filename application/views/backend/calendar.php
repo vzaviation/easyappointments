@@ -15,7 +15,7 @@
 <script>
     var GlobalVariables = {
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
-        availableProviders: <?= json_encode($available_providers) ?>,
+        availableResources: <?= json_encode($available_resources) ?>,
         availableServices: <?= json_encode($available_services) ?>,
         baseUrl: <?= json_encode($base_url) ?>,
         dateFormat: <?= json_encode($date_format) ?>,
@@ -96,13 +96,6 @@
                     data-tippy-content="<?= lang('reload_appointments_hint') ?>">
                 <i class="fas fa-sync-alt"></i>
             </button>
-
-            <?php if ($calendar_view === 'default'): ?>
-                <a class="btn btn-light" href="<?= site_url('backend?view=table') ?>"
-                   data-tippy-content="<?= lang('table') ?>">
-                    <i class="fas fa-table"></i>
-                </a>
-            <?php endif ?>
 
             <?php if ($calendar_view === 'table'): ?>
                 <a class="btn btn-light" href="<?= site_url('backend?view=default') ?>"

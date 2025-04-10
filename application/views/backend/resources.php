@@ -103,7 +103,8 @@
                                 <thead>
                                 <tr>
                                     <th><?= lang('resource_name') ?></th>
-                                    <th><?= lang('resource_description') ?></th>
+                                    <th><?= lang('description') ?></th>
+                                    <th><?= lang('active') ?></th>
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
@@ -114,6 +115,9 @@
                                         </td>
                                         <td>
                                             <input type="text" size="50" name="resource_description_0" value="" />
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" name="resource_active_0" value="1" checked />
                                         </td>
                                         <td>
                                             <div style="width:150px;">
@@ -129,11 +133,15 @@
                                             <input type="text" size="20" name="<?= 'resource_name_'. @$resource['resource_id'] ?>" value="<?= @$resource['resource_name'] ?>" />
                                         </td>
                                         <td>
-                                            <input type="text" size="50" name="<?= 'description_'. @$resource['resource_id'] ?>" value="<?= @$resource['resource_description'] ?>" />
+                                            <input type="text" size="50" name="<?= 'resource_description_'. @$resource['resource_id'] ?>" value="<?= @$resource['resource_description'] ?>" />
+                                        </td>
+                                        <td>
+                                            <?php $res_checked = ($resource['active'] == "1") ? "checked" : "" ?>
+                                            <input type="checkbox" name="<?= 'resource_active_'. @$resource['resource_id'] ?>" value="1" <?= $res_checked ?> />
                                         </td>
                                         <td>
                                             <button type="submit" id="update_button" name="update" class="btn btn-secondary btn-sm mb-2" data-id="<?= @$resource['resource_id'] ?>">Update</button>
-                                            <button type="submit" id="delete_button" name="delete" class="btn btn-warning btn-sm mb-2" data-id="<?= @$resource['resource_id'] ?>">Delete</button>
+<!--                                            <button type="submit" id="delete_button" name="delete" class="btn btn-warning btn-sm mb-2" data-id="<?= @$resource['resource_id'] ?>">Delete</button> -->
                                         </td>
                                     </tr>
                                 <?php

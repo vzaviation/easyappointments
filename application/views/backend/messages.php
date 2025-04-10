@@ -1,7 +1,5 @@
 <link rel="stylesheet" type="text/css" href="<?= asset_url('/assets/ext/jquery-fullcalendar/fullcalendar.min.css') ?>">
 
-<script src="<?= asset_url('assets/ext/jquery-fullcalendar/fullcalendar.min.js') ?>"></script>
-<script src="<?= asset_url('assets/ext/jquery-ui/jquery-ui-timepicker-addon.min.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_messages_helper.js') ?>"></script>
 <script src="<?= asset_url('assets/js/backend_messages.js') ?>"></script>
 <script>
@@ -9,8 +7,6 @@
         csrfToken: <?= json_encode($this->security->get_csrf_hash()) ?>,
         today: <?= json_encode($today) ?>,
         messages: <?= json_encode($messages) ?>,
-        dateFormat: <?= json_encode($date_format) ?>,
-        timeFormat: <?= json_encode($time_format) ?>,
         baseUrl: <?= json_encode($base_url) ?>,
         user: {
             id: <?= $user_id ?>,

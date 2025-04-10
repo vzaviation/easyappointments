@@ -62,12 +62,18 @@ window.BackendSettings = window.BackendSettings || {};
                 workingPlan = $.parseJSON(setting.value);
             }
 
+            // Default to Chicago, but override if set
+            $('#default-timezone').val("America/Chicago");
+            if (setting.name === 'default_timezone') {
+                $('#default-timezone').val(setting.value);
+            }
+
             if (setting.name === 'visitor_notifications') {
                 $('#visitor-notifications').prop('checked', Boolean(Number(setting.value)));
             }
 
             if (setting.name === 'visitation_rules_html') {
-                $('#visitation-rules').trumbowyg('html', setting.value);
+                $('#visitation-rules').val(setting.value);
             }
 
             if (setting.name === 'visitor_authorization_flag') {

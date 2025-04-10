@@ -122,10 +122,6 @@
             const checked = $(this).is(':checked');
             const inmate_id = $(this).data('id');
 
-            // Save the flag notes here also, if any
-            const flag_notes = $('[name="inmate-flag-notes-' + inmate_id + '"]').val();
-//            console.log("*** FLAG Inmate ID: " + inmate_id + " / checked " + checked);
-
             // Call to update the DB
             var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_set_inmate_flag_inmates';
 
@@ -133,7 +129,7 @@
                 csrfToken: GlobalVariables.csrfToken,
                 inmate_id: inmate_id,
                 checked: checked,
-                flag_notes: flag_notes
+                user_id: GlobalVariables.user.id
             };
     
             $.post(url, data)
@@ -141,19 +137,24 @@
                     const inmate = response;
 //                    console.log("I: " + JSON.stringify(inmate));
 
-                    // reset the form to get updated data
-                    const housed = $('#filter-by-housed').is(':checked');
-                    const key = $('#filter-inmates .key').val();
-                    $('#filter-inmates .selected').removeClass('selected');
-                    instance.resetForm();
-                    instance.filter(key,housed);
-
-                    instance.displayInmate(inmate);
-
                     const inmate_id = inmate.ID;
+                    $('#filter-inmates .inmate-row[data-id="' + inmate_id + '"]').addClass('selected');
+
                     const flagCBname = "inmate-flag-check-" + inmate_id;
                     const flagCBchecked = (inmate.inmate_flag && inmate.inmate_flag == 1) ? true : false;
                     $('[name="' + flagCBname + '"]').prop('checked',flagCBchecked);
+
+                    const flagDateName = "inmate-flag-check-date-" + inmate_id;
+                    const flagDate = (inmate.inmate_flag_date) ? "Date Flagged: " + inmate.inmate_flag_date : "Date Flagged: N/A";
+                    $('[name="' + flagDateName + '"]').text(flagDate);
+
+                    const flaglastUpdateName = "inmate-flag-last-update-name-" + inmate_id;
+                    const lastUpdateName = (inmate.inmate_flag_last_update_user_name) ? "Last Updated By: " + inmate.inmate_flag_last_update_user_name : "Last Updated By: N/A";
+                    $('[name="' + flaglastUpdateName + '"]').text(lastUpdateName);
+                    const flaglastUpdateDate = "inmate-flag-last-update-date-" + inmate_id;
+                    const lastUpdateDate = (inmate.inmate_flag_last_update_date) ? "Last Updated Date: " + inmate.inmate_flag_last_update_date : "Last Updated Date: N/A";
+                    $('[name="' + flaglastUpdateDate + '"]').text(lastUpdateDate);
+
                 }.bind(this));
             //
         });
@@ -171,7 +172,8 @@
             var data = {
                 csrfToken: GlobalVariables.csrfToken,
                 inmate_id: inmate_id,
-                flag_notes: flag_notes
+                flag_notes: flag_notes,
+                user_id: GlobalVariables.user.id
             };
     
             $.post(url, data)
@@ -179,19 +181,19 @@
                     const inmate = response;
 //                    console.log("OUT I: " + JSON.stringify(inmate));
 
-                    // reset the form to get updated data
-                    const housed = $('#filter-by-housed').is(':checked');
-                    const key = $('#filter-inmates .key').val();
-                    $('#filter-inmates .selected').removeClass('selected');
-                    instance.resetForm();
-                    instance.filter(key,housed);
-
-                    instance.displayInmate(inmate);
-
                     const inmate_id = inmate.ID;
+                    $('#filter-inmates .inmate-row[data-id="' + inmate_id + '"]').addClass('selected');
+
                     const flagCBname = "inmate-flag-check-" + inmate_id;
                     const flagCBchecked = (inmate.inmate_flag && inmate.inmate_flag == 1) ? true : false;
                     $('[name="' + flagCBname + '"]').prop('checked',flagCBchecked);
+
+                    const flaglastUpdateName = "inmate-flag-last-update-name-" + inmate_id;
+                    const lastUpdateName = (inmate.inmate_flag_last_update_user_name) ? "Last Updated By: " + inmate.inmate_flag_last_update_user_name : "Last Updated By: N/A";
+                    $('[name="' + flaglastUpdateName + '"]').text(lastUpdateName);
+                    const flaglastUpdateDate = "inmate-flag-last-update-date-" + inmate_id;
+                    const lastUpdateDate = (inmate.inmate_flag_last_update_date) ? "Last Updated Date: " + inmate.inmate_flag_last_update_date : "Last Updated Date: N/A";
+                    $('[name="' + flaglastUpdateDate + '"]').text(lastUpdateDate);
                 }.bind(this));
             //
         });
@@ -583,6 +585,7 @@
 
             const inmate_id = inmate.ID;
             const vFlagDate = inmate.inmate_flag_date ? Date.parse(inmate.inmate_flag_date).toString('MM/dd/yyyy') : "N/A";
+            const luFlagDate = inmate.inmate_flag_last_update_date ? Date.parse(inmate.inmate_flag_last_update_date).toString('MM/dd/yyyy HH:mm:ss') : "N/A";
 
             $('<div/>', {
                 'id': 'inmate-info-outer',
@@ -646,6 +649,7 @@
                                     }),
                                     $('<span/>', {
                                         'class': 'inmate-flag-check',
+                                        'name': 'inmate-flag-check-date-' + inmate_id,
                                         'style': 'padding-left:10px',
                                         'text': 'Date Flagged: ' + vFlagDate
                                     }),
@@ -677,6 +681,25 @@
                                                 'value': 'Save Notes',
                                                 'style': 'text-align:right;'
                                             })
+                                        ]
+                                    }),
+                                    $('<div/>', {
+                                        'style': 'padding-top:5px;',
+                                        'html': [
+                                            $('<span/>', {
+                                                'class': 'inmate-flag-check',
+                                                'name': 'inmate-flag-last-update-name-' + inmate_id,
+                                                'style': 'vertical-align:top',
+                                                'text': 'Last Updated By: ' + inmate.inmate_flag_last_update_user_name
+                                            }),
+                                            $('<br/>'),
+                                            $('<span/>', {
+                                                'class': 'inmate-flag-check',
+                                                'name': 'inmate-flag-last-update-date-' + inmate_id,
+                                                'style': 'vertical-align:top',
+                                                'text': 'Last Updated Date: ' + luFlagDate
+                                            }),
+                                            $('<br/>')
                                         ]
                                     })
                                 ]

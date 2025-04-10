@@ -33,7 +33,7 @@ class Backend extends EA_Controller {
         $this->load->model('inmates_model');
         $this->load->model('inmate_visitor_model');
         $this->load->model('messages_model');
-        $this->load->model('providers_model');
+        $this->load->model('resources_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
         $this->load->model('services_model');
@@ -79,22 +79,14 @@ class Backend extends EA_Controller {
         $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
         $view['company_name'] = $this->settings_model->get_setting('company_name');
         $view['require_phone_number'] = $this->settings_model->get_setting('require_phone_number');
-        $view['available_providers'] = $this->providers_model->get_available_providers();
+        $view['available_resources'] = $this->resources_model->get_all_resources();
         $view['available_services'] = $this->services_model->get_available_services();
         $view['customers'] = $this->customers_model->get_batch();
         $view['calendar_view'] = ! empty($calendar_view_query_param) ? $calendar_view_query_param : $user['settings']['calendar_view'];
         $view['timezones'] = $this->timezones->to_array();
         $this->set_user_data($view);
 
-        if ($this->session->userdata('role_slug') === DB_SLUG_SECRETARY)
-        {
-            $secretary = $this->secretaries_model->get_row($this->session->userdata('user_id'));
-            $view['secretary_providers'] = $secretary['providers'];
-        }
-        else
-        {
-            $view['secretary_providers'] = [];
-        }
+        $view['secretary_providers'] = [];
 
         $results = $this->appointments_model->get_batch(['hash' => $appointment_hash]);
 
@@ -258,13 +250,13 @@ class Backend extends EA_Controller {
         $view['prev_date'] = date('Y-m-d', strtotime('-1 day', strtotime($appt_date)));
         $view['next_date'] = date('Y-m-d', strtotime('+1 day', strtotime($appt_date)));
 
-        $view['appointments'] = $this->appointments_model->get_by_date($appt_date);
+        $view['appointments'] = $this->appointments_model->get_resources_by_date($appt_date);
 
         // Also, check for appointent ID in params and select that appt if there
         $view['sel_appt'] = $this->input->get('aid') ? $this->input->get('aid') : "";
 
-        // Pass in lists of services, providers, inmates, visitors
-        $view['providers'] = $this->appointments_model->get_providers();
+        // Pass in lists of services, resources, inmates, visitors
+        $view['resources'] = $this->resources_model->get_all_resources();
         $view['services'] = $this->appointments_model->get_services();
         $view['inmates'] = $this->inmates_model->get_all();
         $view['visitors'] = $this->visitors_model->get_all();
@@ -300,19 +292,11 @@ class Backend extends EA_Controller {
         $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
         $view['require_phone_number'] = $this->settings_model->get_setting('require_phone_number');
         $view['visitors'] = $this->visitors_model->get_all();
-        $view['available_providers'] = $this->providers_model->get_available_providers();
+        $view['available_resources'] = $this->resources_model->get_all_resources();
         $view['available_services'] = $this->services_model->get_available_services();
         $view['timezones'] = $this->timezones->to_array();
 
-        if ($this->session->userdata('role_slug') === DB_SLUG_SECRETARY)
-        {
-            $secretary = $this->secretaries_model->get_row($this->session->userdata('user_id'));
-            $view['secretary_providers'] = $secretary['providers'];
-        }
-        else
-        {
-            $view['secretary_providers'] = [];
-        }
+        $view['secretary_providers'] = [];
 
         $this->set_user_data($view);
 
@@ -415,7 +399,7 @@ class Backend extends EA_Controller {
         $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
         $view['admins'] = $this->admins_model->get_batch();
         $view['agency_admins'] = $this->agency_admins_model->get_batch();
-        $view['providers'] = $this->providers_model->get_batch();
+//        $view['providers'] = $this->providers_model->get_batch();
         $view['secretaries'] = $this->secretaries_model->get_batch();
         $view['services'] = $this->services_model->get_batch();
         $view['working_plan'] = $this->settings_model->get_setting('company_working_plan');
@@ -490,7 +474,8 @@ class Backend extends EA_Controller {
             if ($thisId) {
                 $resource['resource_id'] = $thisId;
                 $resource['resource_name'] = $this->input->post('resource_name_' . $thisId);
-                $resource['resource_description'] = $this->input->post('description_' . $thisId);
+                $resource['resource_description'] = $this->input->post('resource_description_' . $thisId);
+                $resource['active'] = $this->input->post('resource_active_' . $thisId);
                 if ($resource['resource_name']) {
                     $this->Resources_model->update_resource($resource);
                 }
@@ -503,6 +488,7 @@ class Backend extends EA_Controller {
             // Add a new resource
             $newResource['resource_name'] = $this->input->post('resource_name_0');
             $newResource['resource_description'] = $this->input->post('resource_description_0');
+            $newResource['active'] = $this->input->post('resource_active_0');
             if ((isset($newResource['resource_name'])) && ($newResource['resource_name'] != "")) {
                 // insert new
                 $res = $this->Resources_model->update_resource($newResource);
@@ -622,6 +608,7 @@ class Backend extends EA_Controller {
                 $item['service_group_id'] = $thisId;
                 $item['group_name'] = $this->input->post('group_name_' . $thisId);
                 $item['group_description'] = $this->input->post('group_description_' . $thisId);
+                $item['timezone'] = $this->input->post('timezone_' . $thisId);
                 $item['service_id'] = $this->input->post('service_id_' . $thisId);
                 if ($item['group_name']) {
                     $this->Service_group_model->update_service_group($item);
@@ -635,6 +622,7 @@ class Backend extends EA_Controller {
             // Add a new item
             $newItem['group_name'] = $this->input->post('group_name_0');
             $newItem['group_description'] = $this->input->post('group_description_0');
+            $newItem['timezone'] = $this->input->post('timezone_0');
             $newItem['service_id'] = $this->input->post('service_id_0');
             if ((isset($newItem['group_name'])) && ($newItem['group_name'] != "")) {
                 // insert new

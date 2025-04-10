@@ -58,7 +58,7 @@ export class DBCellLookupData {
             Utility.Log(this.writerLog, " === === " + recordCnt + " rows fetched from cell_lookup table");
             for (const dbRow of rows[0]) {
                 let row = this.eaCellLookupRow(dbRow);
-                const key = Utility.toLowerCase(row["description"]);
+                const key = Utility.toLowerCase(row["cell"]);
                 if (Utility.isNotEmpty(key)) {
                     if (!dataMap.has(key)) {
                         dataMap.set(key, row.inmate_classification_level);

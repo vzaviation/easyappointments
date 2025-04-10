@@ -44,7 +44,6 @@ class Backend_api extends EA_Controller {
         $this->load->model('inmate_visitor_model');
         $this->load->model('inmates_model');
         $this->load->model('messages_model');
-        $this->load->model('providers_model');
         $this->load->model('resources_model');
         $this->load->model('roles_model');
         $this->load->model('secretaries_model');
@@ -213,32 +212,14 @@ class Backend_api extends EA_Controller {
 
             foreach ($response['appointments'] as &$appointment)
             {
-                $appointment['provider'] = $this->providers_model->get_row($appointment['id_users_provider']);
+                $appointment['resource'] = $this->resources_model->get_resource_by_id($appointment['resource_id']);
                 $appointment['service'] = $this->services_model->get_row($appointment['id_services']);
-                //$appointment['customer'] = $this->customers_model->get_row($appointment['id_users_customer']);
                 $appointment['visitors'] = $this->visitors_model->get_appointment_visitors($appointment['id']);
                 $appointment['customer'] = $appointment['visitors'][0];
             }
 
             // Get unavailable periods (only for provider).
             $response['unavailables'] = [];
-
-            if ($this->input->post('filter_type') == FILTER_TYPE_PROVIDER)
-            {
-                $where_clause = $where_id . ' = ' . $record_id . '
-                    AND ((start_datetime > ' . $start_date . ' AND start_datetime < ' . $end_date . ') 
-                    or (end_datetime > ' . $start_date . ' AND end_datetime < ' . $end_date . ') 
-                    or (start_datetime <= ' . $start_date . ' AND end_datetime >= ' . $end_date . ')) 
-                    AND is_unavailable = 1
-                ';
-
-                $response['unavailables'] = $this->appointments_model->get_batch($where_clause);
-            }
-
-            foreach ($response['unavailables'] as &$unavailable)
-            {
-                $unavailable['provider'] = $this->providers_model->get_row($unavailable['id_users_provider']);
-            }
 
             $this->output
                 ->set_content_type('application/json')
@@ -1136,6 +1117,17 @@ class Backend_api extends EA_Controller {
             }
 
             $inmates = $this->inmates_model->get_batch($where, $limit, NULL, $order_by);
+
+            // Add the inmate_flag_last_updated_user name
+            foreach ($inmates as &$inmate) {
+                if ((isset($inmate['inmate_flag_last_update_user'])) &&
+                    ($inmate['inmate_flag_last_update_user'] != null)) {
+                    $inmate['inmate_flag_last_update_user_name'] = $this->user_model->get_user_display_name($inmate['inmate_flag_last_update_user']);
+                } else {
+                    $inmate['inmate_flag_last_update_user_name'] = "";
+                }
+            }
+
             $response = $inmates;
         }
         catch (Exception $exception)
@@ -1196,10 +1188,13 @@ class Backend_api extends EA_Controller {
     {
         try
         {
+            $default_timezone = $this->settings_model->get_setting('default_timezone');
+
             $inmate_id = json_decode($this->input->post('inmate_id'), TRUE);
             $checked = json_decode($this->input->post('checked'), TRUE);
-            $flag_notes = $this->input->post('flag_notes');
+            $user_id = json_decode($this->input->post('user_id'), TRUE);
             $flag_date = date('Y-m-d');
+            $flag_datetime = (new DateTime("now", new DateTimeZone($default_timezone)))->format('Y-m-d H:i:s');
 
             if ($this->privileges[PRIV_INMATES]['edit'] == FALSE)
             {
@@ -1210,17 +1205,24 @@ class Backend_api extends EA_Controller {
             $inmate = $this->inmates_model->get_row($inmate_id);
 
             // First - if checked is false, we will remove the flag, date, and notes
+            $inmate['inmate_flag_last_update_user'] = $user_id;
+            $inmate['inmate_flag_last_update_date'] = $flag_datetime;
             if (!$checked) {
                 $inmate['inmate_flag'] = 0;
-                $inmate['inmate_flag_notes'] = "";
                 $inmate['inmate_flag_date'] = null;
             } else {
                 $inmate['inmate_flag'] = 1;
-                $inmate['inmate_flag_notes'] = $flag_notes;
                 $inmate['inmate_flag_date'] = $flag_date;
             }
             // Update the inmate record
             $this->inmates_model->update($inmate);
+
+            if ((isset($inmate['inmate_flag_last_update_user'])) &&
+                ($inmate['inmate_flag_last_update_user'] != null)) {
+                $inmate['inmate_flag_last_update_user_name'] = $this->user_model->get_user_display_name($inmate['inmate_flag_last_update_user']);
+            } else {
+                $inmate['inmate_flag_last_update_user_name'] = "";
+            }
 
             $this->output->set_output(json_encode($inmate));
         }
@@ -1243,9 +1245,13 @@ class Backend_api extends EA_Controller {
     {
         try
         {
+            $default_timezone = $this->settings_model->get_setting('default_timezone');
+
             $inmate_id = json_decode($this->input->post('inmate_id'), TRUE);
             $flag_notes = $this->input->post('flag_notes');
+            $user_id = json_decode($this->input->post('user_id'), TRUE);
             $flag_date = date('Y-m-d');
+            $flag_datetime = (new DateTime("now", new DateTimeZone($default_timezone)))->format('Y-m-d H:i:s');
 
             if ($this->privileges[PRIV_INMATES]['edit'] == FALSE)
             {
@@ -1255,14 +1261,19 @@ class Backend_api extends EA_Controller {
             // Get the existing inmate record
             $inmate = $this->inmates_model->get_row($inmate_id);
 
-            $inmate['inmate_flag'] = 1;
             $inmate['inmate_flag_notes'] = $flag_notes;
-            if ($inmate['inmate_flag_date'] == null) {
-                $inmate['inmate_flag_date'] = $flag_date;
-            }
+            $inmate['inmate_flag_last_update_user'] = $user_id;
+            $inmate['inmate_flag_last_update_date'] = $flag_datetime;
 
             // Update the inmate record
             $this->inmates_model->update($inmate);
+
+            if ((isset($inmate['inmate_flag_last_update_user'])) &&
+                ($inmate['inmate_flag_last_update_user'] != null)) {
+                $inmate['inmate_flag_last_update_user_name'] = $this->user_model->get_user_display_name($inmate['inmate_flag_last_update_user']);
+            } else {
+                $inmate['inmate_flag_last_update_user_name'] = "";
+            }
 
             $this->output->set_output(json_encode($inmate));
         }
@@ -2523,6 +2534,14 @@ class Backend_api extends EA_Controller {
             {
                 $appointments = $this->visitors_model->get_appointments_visitor($visitor['id']);
                 $visitor['appointments'] = $appointments;
+
+                if ((isset($visitor['flag_last_update_user'])) &&
+                    ($visitor['flag_last_update_user'] != null)) {
+                    $visitor['flag_last_update_user_name'] = $this->user_model->get_user_display_name($visitor['flag_last_update_user']);
+                } else {
+                    $visitor['flag_last_update_user_name'] = "";
+                }
+
             }
 
             $response = $visitors;
@@ -2740,10 +2759,13 @@ class Backend_api extends EA_Controller {
     {
         try
         {
+            $default_timezone = $this->settings_model->get_setting('default_timezone');
+
             $visitor_id = json_decode($this->input->post('visitor_id'), TRUE);
             $checked = json_decode($this->input->post('checked'), TRUE);
-            $flag_notes = $this->input->post('flag_notes');
+            $user_id = json_decode($this->input->post('user_id'), TRUE);
             $flag_date = date('Y-m-d');
+            $flag_datetime = (new DateTime("now", new DateTimeZone($default_timezone)))->format('Y-m-d H:i:s');
 
             if ($this->privileges[PRIV_CUSTOMERS]['edit'] == FALSE)
             {
@@ -2753,18 +2775,26 @@ class Backend_api extends EA_Controller {
             // Get the existing visitor record
             $visitor = $this->visitors_model->get_row($visitor_id);
 
+            $visitor['flag_last_update_user'] = $user_id;
+            $visitor['flag_last_update_date'] = $flag_datetime;
+
             // First - if checked is false, we will remove the flag, date, and notes
             if (!$checked) {
                 $visitor['flag'] = 0;
-                $visitor['flag_notes'] = "";
                 $visitor['flag_date'] = null;
             } else {
                 $visitor['flag'] = 1;
-                $visitor['flag_notes'] = $flag_notes;
                 $visitor['flag_date'] = $flag_date;
             }
             // Update the visitor record
             $this->visitors_model->update($visitor);
+
+            if ((isset($visitor['flag_last_update_user'])) &&
+                ($visitor['flag_last_update_user'] != null)) {
+                $visitor['flag_last_update_user_name'] = $this->user_model->get_user_display_name($visitor['flag_last_update_user']);
+            } else {
+                $visitor['flag_last_update_user_name'] = "";
+            }
 
             $this->output->set_output(json_encode($visitor));
         }
@@ -2787,9 +2817,13 @@ class Backend_api extends EA_Controller {
     {
         try
         {
+            $default_timezone = $this->settings_model->get_setting('default_timezone');
+
             $visitor_id = json_decode($this->input->post('visitor_id'), TRUE);
             $flag_notes = $this->input->post('flag_notes');
+            $user_id = json_decode($this->input->post('user_id'), TRUE);
             $flag_date = date('Y-m-d');
+            $flag_datetime = (new DateTime("now", new DateTimeZone($default_timezone)))->format('Y-m-d H:i:s');
 
             if ($this->privileges[PRIV_CUSTOMERS]['edit'] == FALSE)
             {
@@ -2799,14 +2833,20 @@ class Backend_api extends EA_Controller {
             // Get the existing visitor record
             $visitor = $this->visitors_model->get_row($visitor_id);
 
-            $visitor['flag'] = 1;
+            $visitor['flag_last_update_user'] = $user_id;
+            $visitor['flag_last_update_date'] = $flag_datetime;
+
             $visitor['flag_notes'] = $flag_notes;
-            if ($visitor['flag_date'] == null) {
-                $visitor['flag_date'] = $flag_date;
-            }
 
             // Update the visitor record
             $this->visitors_model->update($visitor);
+
+            if ((isset($visitor['flag_last_update_user'])) &&
+                ($visitor['flag_last_update_user'] != null)) {
+                $visitor['flag_last_update_user_name'] = $this->user_model->get_user_display_name($visitor['flag_last_update_user']);
+            } else {
+                $visitor['flag_last_update_user_name'] = "";
+            }
 
             $this->output->set_output(json_encode($visitor));
         }

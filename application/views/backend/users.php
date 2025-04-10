@@ -16,7 +16,6 @@
         timeFormat: <?= json_encode($time_format) ?>,
         admins: <?= json_encode($admins) ?>,
         agency_admins: <?= json_encode($agency_admins) ?>,
-        providers: <?= json_encode($providers) ?>,
         secretaries: <?= json_encode($secretaries) ?>,
         services: <?= json_encode($services) ?>,
         timezones: <?= json_encode($timezones) ?>,
@@ -416,7 +415,7 @@
             </div>
         </div>
 
-        <!-- SECRETARIES TAB -->
+        <!-- SECRETARIES TAB ==> AGENCY STAFF NOW-->
 
         <div class="tab-pane active" id="secretaries">
             <div class="row">
@@ -496,6 +495,13 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input id="secretary-last-name" class="form-control required" maxlength="512">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-staff-badge-number">
+                                    <?= lang('badge_number') ?>
+                                </label>
+                                <input id="agency-staff-badge-number" class="form-control" maxlength="50">
                             </div>
 
                             <div class="form-group">
@@ -714,6 +720,13 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input id="agency-admin-last-name" class="form-control required" maxlength="512">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="agency-admin-badge-number">
+                                    <?= lang('badge_number') ?>
+                                </label>
+                                <input id="agency-admin-badge-number" class="form-control" maxlength="50">
                             </div>
 
                             <div class="form-group">
